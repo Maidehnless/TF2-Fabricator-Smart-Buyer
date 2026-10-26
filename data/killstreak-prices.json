@@ -1,6 +1,6 @@
 {
   "schema": "maidehnless.tf2.killstreak_priority.v1",
-  "generatedAtUTC": "2026-10-26T19:00:06.894Z",
+  "generatedAtUTC": "2026-10-26T20:50:04.505Z",
   "currency": "AUD",
   "scannerVersion": "1.2",
   "totalNames": 550,
@@ -284,8 +284,8 @@
       "Festivized Killstreak Huo-Long Heater"
     ],
     "specialized": [
-      "Specialized Killstreak Natascha",
       "Specialized Killstreak Splendid Screen",
+      "Specialized Killstreak Natascha",
       "Specialized Killstreak Huntsman",
       "Specialized Killstreak Sydney Sleeper",
       "Specialized Killstreak Overdose",
@@ -1079,8 +1079,10 @@
       "status": "priced",
       "price": 0.72,
       "displayPrice": "A$ 0.72",
-      "source": "exact-priceoverview",
-      "checkedAtUTC": "2026-10-26T17:59:26.423Z"
+      "source": "github-actions-priceoverview",
+      "checkedAtUTC": "2026-10-26T20:49:15.840Z",
+      "lastAttemptAtUTC": "2026-10-26T20:49:15.840Z",
+      "lastResult": "priced"
     },
     {
       "name": "Killstreak Minigun",
@@ -1529,8 +1531,10 @@
       "status": "priced",
       "price": 0.72,
       "displayPrice": "A$ 0.72",
-      "source": "exact-priceoverview",
-      "checkedAtUTC": "2026-10-26T18:05:43.668Z"
+      "source": "github-actions-priceoverview",
+      "checkedAtUTC": "2026-10-26T20:49:50.942Z",
+      "lastAttemptAtUTC": "2026-10-26T20:49:50.942Z",
+      "lastResult": "priced"
     },
     {
       "name": "Killstreak Homewrecker",
@@ -1579,8 +1583,10 @@
       "status": "priced",
       "price": 0.72,
       "displayPrice": "A$ 0.72",
-      "source": "exact-priceoverview",
-      "checkedAtUTC": "2026-10-26T18:06:03.751Z"
+      "source": "github-actions-priceoverview",
+      "checkedAtUTC": "2026-10-26T20:49:33.611Z",
+      "lastAttemptAtUTC": "2026-10-26T20:49:33.611Z",
+      "lastResult": "priced"
     },
     {
       "name": "Killstreak Baby Face's Blaster",
@@ -1849,8 +1855,10 @@
       "status": "priced",
       "price": 0.72,
       "displayPrice": "A$ 0.72",
-      "source": "exact-priceoverview",
-      "checkedAtUTC": "2026-10-26T18:09:20.878Z"
+      "source": "github-actions-priceoverview",
+      "checkedAtUTC": "2026-10-26T20:49:42.515Z",
+      "lastAttemptAtUTC": "2026-10-26T20:49:42.515Z",
+      "lastResult": "priced"
     },
     {
       "name": "Killstreak Fists",
@@ -1859,8 +1867,10 @@
       "status": "priced",
       "price": 0.72,
       "displayPrice": "A$ 0.72",
-      "source": "exact-priceoverview",
-      "checkedAtUTC": "2026-10-26T18:09:33.325Z"
+      "source": "github-actions-priceoverview",
+      "checkedAtUTC": "2026-10-26T20:50:00.044Z",
+      "lastAttemptAtUTC": "2026-10-26T20:50:00.044Z",
+      "lastResult": "priced"
     },
     {
       "name": "Killstreak Scottish Resistance",
@@ -2009,8 +2019,10 @@
       "status": "priced",
       "price": 0.72,
       "displayPrice": "A$ 0.72",
-      "source": "exact-priceoverview",
-      "checkedAtUTC": "2026-10-26T18:12:15.682Z"
+      "source": "github-actions-priceoverview",
+      "checkedAtUTC": "2026-10-26T20:49:24.886Z",
+      "lastAttemptAtUTC": "2026-10-26T20:49:24.886Z",
+      "lastResult": "priced"
     },
     {
       "name": "Killstreak Maul",
@@ -2460,7 +2472,9 @@
       "price": 2.41,
       "displayPrice": "A$ 2.41",
       "source": "exact-priceoverview",
-      "checkedAtUTC": "2026-10-26T18:16:39.231Z"
+      "checkedAtUTC": "2026-10-26T18:16:39.231Z",
+      "lastAttemptAtUTC": "2026-10-26T20:50:04.505Z",
+      "lastResult": "throttled"
     },
     {
       "name": "Specialized Killstreak Wrap Assassin",
@@ -2557,10 +2571,12 @@
       "tier": "specialized",
       "marketUrl": "https://steamcommunity.com/market/listings/440/Specialized%20Killstreak%20Splendid%20Screen",
       "status": "priced",
-      "price": 2.37,
-      "displayPrice": "A$ 2.37",
-      "source": "exact-priceoverview",
-      "checkedAtUTC": "2026-10-26T18:18:29.862Z"
+      "price": 2.34,
+      "displayPrice": "A$ 2.34",
+      "source": "github-actions-priceoverview",
+      "checkedAtUTC": "2026-10-26T20:49:29.160Z",
+      "lastAttemptAtUTC": "2026-10-26T20:49:29.160Z",
+      "lastResult": "priced"
     },
     {
       "name": "Specialized Killstreak Pretty Boy's Pocket Pistol",
@@ -2589,8 +2605,10 @@
       "status": "priced",
       "price": 2.38,
       "displayPrice": "A$ 2.38",
-      "source": "exact-priceoverview",
-      "checkedAtUTC": "2026-10-26T18:19:07.425Z"
+      "source": "github-actions-priceoverview",
+      "checkedAtUTC": "2026-10-26T20:49:46.729Z",
+      "lastAttemptAtUTC": "2026-10-26T20:49:46.729Z",
+      "lastResult": "priced"
     },
     {
       "name": "Specialized Killstreak Ambassador",
@@ -2879,8 +2897,10 @@
       "status": "priced",
       "price": 2.38,
       "displayPrice": "A$ 2.38",
-      "source": "exact-priceoverview",
-      "checkedAtUTC": "2026-10-26T18:24:48.876Z"
+      "source": "github-actions-priceoverview",
+      "checkedAtUTC": "2026-10-26T20:49:37.832Z",
+      "lastAttemptAtUTC": "2026-10-26T20:49:37.832Z",
+      "lastResult": "priced"
     },
     {
       "name": "Specialized Killstreak Holy Mackerel",
@@ -3447,10 +3467,12 @@
       "tier": "specialized",
       "marketUrl": "https://steamcommunity.com/market/listings/440/Specialized%20Killstreak%20Overdose",
       "status": "priced",
-      "price": 2.39,
-      "displayPrice": "A$ 2.39",
-      "source": "exact-priceoverview",
-      "checkedAtUTC": "2026-10-26T18:34:36.848Z"
+      "price": 2.38,
+      "displayPrice": "A$ 2.38",
+      "source": "github-actions-priceoverview",
+      "checkedAtUTC": "2026-10-26T20:49:55.494Z",
+      "lastAttemptAtUTC": "2026-10-26T20:49:55.494Z",
+      "lastResult": "priced"
     },
     {
       "name": "Specialized Killstreak Unarmed Combat",
@@ -3497,10 +3519,12 @@
       "tier": "specialized",
       "marketUrl": "https://steamcommunity.com/market/listings/440/Specialized%20Killstreak%20Natascha",
       "status": "priced",
-      "price": 2.37,
-      "displayPrice": "A$ 2.37",
-      "source": "exact-priceoverview",
-      "checkedAtUTC": "2026-10-26T18:34:56.876Z"
+      "price": 2.36,
+      "displayPrice": "A$ 2.36",
+      "source": "github-actions-priceoverview",
+      "checkedAtUTC": "2026-10-26T20:49:20.507Z",
+      "lastAttemptAtUTC": "2026-10-26T20:49:20.507Z",
+      "lastResult": "priced"
     },
     {
       "name": "Specialized Killstreak Back Scatter",
@@ -6063,11 +6087,14 @@
       "checkedAtUTC": "2026-10-26T18:55:55.709Z"
     }
   ],
-  "latestPublishedUTC": "2026-10-26T19:00:06.894Z",
-  "updaterVersion": "seed",
+  "latestPublishedUTC": "2026-10-26T20:50:04.505Z",
+  "updaterVersion": "1.1.0",
   "lastRun": {
-    "successful": 0,
-    "attempted": 0,
-    "source": "initial snapshot"
+    "attempted": 12,
+    "successful": 11,
+    "unlisted": 0,
+    "errors": 0,
+    "rateLimitedOrStopped": true,
+    "completedUTC": "2026-10-26T20:50:04.505Z"
   }
 }
