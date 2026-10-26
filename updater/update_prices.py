@@ -8,6 +8,7 @@ import argparse
 import datetime as dt
 import json
 import logging
+import math
 import random
 import re
 import sys
@@ -29,15 +30,43 @@ def utc_now():
     return dt.datetime.now(dt.timezone.utc).isoformat(timespec='milliseconds').replace('+00:00', 'Z')
 
 
+def valid_timestamp(value):
+    try:
+        parsed = dt.datetime.fromisoformat(value.replace('Z', '+00:00'))
+        return parsed.tzinfo is not None
+    except (ValueError, AttributeError, TypeError):
+        return False
+
+
 def read_db(path):
     obj = json.loads(path.read_text(encoding='utf-8'))
-    assert obj.get('schema') == SCHEMA and obj.get('currency') == 'AUD', 'Unexpected database schema or currency'
-    rows = obj['prices']
-    assert len(rows) == 550 and len({x['name'] for x in rows}) == 550, 'Expected 550 unique exact item names'
+    if not isinstance(obj, dict) or obj.get('schema') != SCHEMA or obj.get('currency') != 'AUD':
+        raise ValueError('Unexpected database schema or currency')
+    rows = obj.get('prices')
+    if not isinstance(rows, list) or len(rows) != 550:
+        raise ValueError('Expected 550 price rows')
+    seen = set()
+    for row in rows:
+        if not isinstance(row, dict) or not isinstance(row.get('name'), str) or row['name'] in seen:
+            raise ValueError('Invalid or duplicate price row')
+        seen.add(row['name'])
+        if row.get('tier') not in ('regular', 'specialized') or row.get('status') not in ('priced', 'unavailable'):
+            raise ValueError('Invalid tier or status')
+        if row['status'] == 'priced':
+            price = row.get('price')
+            if isinstance(price, bool) or not isinstance(price, (float, int)) or not math.isfinite(price) or price <= 0:
+                raise ValueError('Invalid price')
+            if not valid_timestamp(row.get('checkedAtUTC')):
+                raise ValueError('Invalid checked timestamp')
     for tier in ('regular', 'specialized'):
         names = {x['name'] for x in rows if x['tier'] == tier}
-        assert len(names) == 275, 'Expected exactly 275 names per tier'
-        assert set(obj['priority'][tier]) == names, 'Priority list differs from allowable names'
+        priority = obj.get('priority', {}).get(tier)
+        if len(names) != 275 or not isinstance(priority, list) or len(priority) != 275 or set(priority) != names:
+            raise ValueError('Expected 275 unique prioritized names per tier')
+    if not valid_timestamp(obj.get('generatedAtUTC')):
+        raise ValueError('Invalid publication timestamp')
+    if obj.get('pricedCount') != sum(x['status'] == 'priced' for x in rows):
+        raise ValueError('Invalid priced count')
     return obj
 
 
@@ -148,6 +177,7 @@ def main(argv=None):
             price = lookup(row)
             timestamp = utc_now()
             row['lastAttemptAtUTC'] = timestamp
+            row['lastResult'] = 'no_active_listings' if price is None else 'priced'
             if price is None:
                 # No live ask found. Do not destroy the last verified price.
                 # The snapshot stays as last known, and this can be investigated.
@@ -161,11 +191,15 @@ def main(argv=None):
                 okay += 1
                 logging.info('Updated %s: A$ %s', row['name'], price)
         except RateLimited as exc:
+            row['lastAttemptAtUTC'] = utc_now()
+            row['lastResult'] = 'throttled'
             logging.warning('%s. Stopping without further requests.', exc)
             stopped = True
             break
         except (ValueError, urllib.error.URLError, TimeoutError, json.JSONDecodeError) as exc:
             errors += 1
+            row['lastAttemptAtUTC'] = utc_now()
+            row['lastResult'] = 'error'
             logging.warning('Could not verify %s: %s', row['name'], exc)
             if errors >= 5:
                 logging.warning('Too many errors; stopping without requesting other items')
@@ -178,12 +212,12 @@ def main(argv=None):
         rebuild_priority(db)
         db['generatedAtUTC'] = stamp
         db['latestPublishedUTC'] = stamp
-        db['updaterVersion'] = '1.0'
+        db['updaterVersion'] = '1.1.0'
         db['lastRun'] = {'attempted': attempted, 'successful': okay,
                          'unlisted': unavailable, 'errors': errors,
                          'rateLimitedOrStopped': stopped, 'completedUTC': stamp}
         readcheck = path.with_suffix('.json.tmp')
-        readcheck.write_text(json.dumps(db, ensure_ascii=False, indent=2)+'\n', encoding='utf-8')
+        readcheck.write_text(json.dumps(db, ensure_ascii=False, indent=2, allow_nan=False)+'\n', encoding='utf-8')
         read_db(readcheck)
         readcheck.replace(path)
     else:

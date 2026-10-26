@@ -1,0 +1,15 @@
+{
+  "name": "tf2-fabricator-smart-buyer",
+  "version": "1.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "test": "node --test tests/*.test.mjs",
+    "check": "node scripts/build.mjs --check && node --check TF2_Fabricator_Smart_Buyer.user.js && npm test && python3 -m unittest discover -s updater -v",
+    "benchmark": "node scripts/benchmark.mjs"
+  },
+  "devDependencies": {
+    "linkedom": "^0.18.14"
+  }
+}

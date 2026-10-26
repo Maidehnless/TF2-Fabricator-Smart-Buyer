@@ -55,4 +55,43 @@ class TestUpdater(unittest.TestCase):
                 mod.main(['--database',str(target),'--limit','1','--leading','0','--delay','3'])
             self.assertEqual(target.read_bytes(),contents)
 
+
+class TestValidationAndFailures(unittest.TestCase):
+    def mutate(self, change):
+        with tempfile.TemporaryDirectory() as folder:
+            target=Path(folder)/'db.json'
+            db=json.loads(DB.read_text())
+            change(db)
+            target.write_text(json.dumps(db))
+            with self.assertRaises(ValueError): mod.read_db(target)
+
+    def test_duplicate_priority_entries_rejected(self):
+        self.mutate(lambda db: db['priority']['regular'].append(db['priority']['regular'][0]))
+
+    def test_nonfinite_price_rejected(self):
+        self.mutate(lambda db: db['prices'][0].update(price=float('nan')))
+
+    def test_invalid_checked_timestamp_rejected(self):
+        self.mutate(lambda db: db['prices'][0].update(checkedAtUTC='not-a-date'))
+
+    def test_failed_attempt_rotates_after_partial_success(self):
+        with tempfile.TemporaryDirectory() as folder:
+            target=Path(folder)/'db.json';shutil.copy(DB,target)
+            selected=mod.choose_rows(mod.read_db(target),2,0)
+            with patch.object(mod,'lookup',side_effect=[ValueError('network'),Decimal('0.07')]), patch.object(mod.time,'sleep'):
+                mod.main(['--database',str(target),'--limit','2','--leading','0','--delay','3'])
+            new=mod.read_db(target)
+            row=next(x for x in new['prices'] if x['name']==selected[0]['name'])
+            self.assertEqual('error',row['lastResult'])
+            self.assertTrue(row['lastAttemptAtUTC'])
+            self.assertEqual(selected[0]['checkedAtUTC'],row['checkedAtUTC'])
+
+    def test_rate_limit_after_success_stops_remaining_requests(self):
+        with tempfile.TemporaryDirectory() as folder:
+            target=Path(folder)/'db.json';shutil.copy(DB,target)
+            with patch.object(mod,'lookup',side_effect=[Decimal('0.07'),mod.RateLimited('429')]) as lookup,patch.object(mod.time,'sleep'):
+                mod.main(['--database',str(target),'--limit','3','--leading','0','--delay','3'])
+            self.assertEqual(2,lookup.call_count)
+            self.assertEqual(1,mod.read_db(target)['lastRun']['successful'])
+
 if __name__=='__main__': unittest.main()
