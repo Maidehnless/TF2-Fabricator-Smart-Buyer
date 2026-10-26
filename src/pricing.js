@@ -15,12 +15,13 @@ export const SmartPricing = (() => {
         if (new Set(valid.map(o => o.currency)).size > 1) throw new Error('Inconsistent wallet currency');
         return valid.sort((a,b) => a.price - b.price || a.name.localeCompare(b.name)).slice(0,quantity);
     }
-    async function scan({names, quantity, limit, read, signal, onProgress = () => {}}) {
+    async function scan({names, quantity, limit, read, signal, onProgress = () => {}, onFailure = () => {}}) {
         const unique = [...new Set(names)];
         const offers = [];
-        let checked=0, failures=0, attempted=0, stopped=false;
+        let checked=0, failures=0, attempted=0, stopped=false, stopReason='';
+        const failureDetails=[];
         const snapshot = () => ({offers:selectOffers(offers,quantity), checked, failures, attempted,
-            total:unique.length, budget:Math.min(limit,unique.length), stopped,
+            total:unique.length, budget:Math.min(limit,unique.length), stopped, stopReason, failureDetails:[...failureDetails],
             complete:checked===unique.length && failures===0});
         for (const name of unique.slice(0,limit)) {
             abort(signal);
@@ -35,15 +36,19 @@ export const SmartPricing = (() => {
             } catch (error) {
                 if (error.name === 'AbortError') throw error;
                 failures++;
-                if (throttled(error) || failures >= 3) stopped=true;
+                const detail={name,message:String(error.message || error).slice(0,300)};
+                failureDetails.push(detail);
+                onFailure(detail);
+                if (throttled(error)) {stopped=true;stopReason='rate_limited';}
+                else if(failures>=3) {stopped=true;stopReason='failure_limit';}
             }
             onProgress(snapshot());
             if (stopped) break;
         }
         return {...snapshot(),candidateOffers:offers};
     }
-    async function refreshSelection({offers,quantity,read,signal,now=Date.now,maxAge=60000,maxChecks=10}) {
-        let pool=[...offers], attempts=0, failures=0, stopped=false;
+    async function refreshSelection({offers,quantity,read,signal,now=Date.now,maxAge=60000,maxChecks=10,onFailure=()=>{}}) {
+        let pool=[...offers], attempts=0, failures=0, stopped=false, stopReason='';
         const fresh=o=>Number.isFinite(o.verifiedAt) && now()-o.verifiedAt<maxAge;
         while(attempts<maxChecks) {
             abort(signal);
@@ -59,10 +64,11 @@ export const SmartPricing = (() => {
             } catch(error) {
                 if(error.name==='AbortError') throw error;
                 failures++;
-                if(throttled(error) || failures>=3) {stopped=true;break;}
+                onFailure({name:stale.name,message:String(error.message || error).slice(0,300),phase:'freshness'});
+                if(throttled(error) || failures>=3) {stopped=true;stopReason=throttled(error)?'rate_limited':'failure_limit';break;}
             }
         }
-        return {offers:selectOffers(pool.filter(fresh),quantity),failures,stopped};
+        return {offers:selectOffers(pool.filter(fresh),quantity),failures,stopped,stopReason};
     }
     function createClient({now=Date.now, wait=ms=>new Promise(r=>setTimeout(r,ms)),
         interval=3400, ttl=30000, cooldown=60000, capacity=600}={}) {

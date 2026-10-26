@@ -4,7 +4,7 @@
 // @author       Maidehnless
 // @icon         https://avatars.akamai.steamstatic.com/2d1c9b05adb94b479e8671f9133e3d9189fcd23a_full.jpg
 // @license      MIT
-// @version      1.1.0
+// @version      1.1.1
 // @description  Checks ranked individual Killstreak weapon offers, subtracts owned robot parts and builds manual fabricator purchase links and kit sale estimates.
 // @match        https://steamcommunity.com/*/inventory*
 // @match        https://steamcommunity.com/market/multibuy*
@@ -39,12 +39,13 @@ const SmartPricing = (() => {
         if (new Set(valid.map(o => o.currency)).size > 1) throw new Error('Inconsistent wallet currency');
         return valid.sort((a,b) => a.price - b.price || a.name.localeCompare(b.name)).slice(0,quantity);
     }
-    async function scan({names, quantity, limit, read, signal, onProgress = () => {}}) {
+    async function scan({names, quantity, limit, read, signal, onProgress = () => {}, onFailure = () => {}}) {
         const unique = [...new Set(names)];
         const offers = [];
-        let checked=0, failures=0, attempted=0, stopped=false;
+        let checked=0, failures=0, attempted=0, stopped=false, stopReason='';
+        const failureDetails=[];
         const snapshot = () => ({offers:selectOffers(offers,quantity), checked, failures, attempted,
-            total:unique.length, budget:Math.min(limit,unique.length), stopped,
+            total:unique.length, budget:Math.min(limit,unique.length), stopped, stopReason, failureDetails:[...failureDetails],
             complete:checked===unique.length && failures===0});
         for (const name of unique.slice(0,limit)) {
             abort(signal);
@@ -59,15 +60,19 @@ const SmartPricing = (() => {
             } catch (error) {
                 if (error.name === 'AbortError') throw error;
                 failures++;
-                if (throttled(error) || failures >= 3) stopped=true;
+                const detail={name,message:String(error.message || error).slice(0,300)};
+                failureDetails.push(detail);
+                onFailure(detail);
+                if (throttled(error)) {stopped=true;stopReason='rate_limited';}
+                else if(failures>=3) {stopped=true;stopReason='failure_limit';}
             }
             onProgress(snapshot());
             if (stopped) break;
         }
         return {...snapshot(),candidateOffers:offers};
     }
-    async function refreshSelection({offers,quantity,read,signal,now=Date.now,maxAge=60000,maxChecks=10}) {
-        let pool=[...offers], attempts=0, failures=0, stopped=false;
+    async function refreshSelection({offers,quantity,read,signal,now=Date.now,maxAge=60000,maxChecks=10,onFailure=()=>{}}) {
+        let pool=[...offers], attempts=0, failures=0, stopped=false, stopReason='';
         const fresh=o=>Number.isFinite(o.verifiedAt) && now()-o.verifiedAt<maxAge;
         while(attempts<maxChecks) {
             abort(signal);
@@ -83,10 +88,11 @@ const SmartPricing = (() => {
             } catch(error) {
                 if(error.name==='AbortError') throw error;
                 failures++;
-                if(throttled(error) || failures>=3) {stopped=true;break;}
+                onFailure({name:stale.name,message:String(error.message || error).slice(0,300),phase:'freshness'});
+                if(throttled(error) || failures>=3) {stopped=true;stopReason=throttled(error)?'rate_limited':'failure_limit';break;}
             }
         }
-        return {offers:selectOffers(pool.filter(fresh),quantity),failures,stopped};
+        return {offers:selectOffers(pool.filter(fresh),quantity),failures,stopped,stopReason};
     }
     function createClient({now=Date.now, wait=ms=>new Promise(r=>setTimeout(r,ms)),
         interval=3400, ttl=30000, cooldown=60000, capacity=600}={}) {
@@ -138,7 +144,7 @@ const SmartPricing = (() => {
     const BUTTON_SPACER_ID = 'tf2-fabricator-button-spacer';
     const ERROR_DIALOG_ID = 'tf2-fabricator-error-report-dialog';
     const ERROR_LOG_ID = 'tf2-fabricator-error-report-log';
-    const SCRIPT_VERSION = '1.1.0';
+    const SCRIPT_VERSION = '1.1.1';
     const PRICE_DB_URL = 'https://raw.githubusercontent.com/Maidehnless/TF2-Fabricator-Smart-Buyer/main/data/killstreak-prices.json';
     const PRICE_DB_CACHE_KEY = 'tf2-fabricator-remote-price-db-v1';
     const MODE_STORAGE_KEY = 'tf2-fabricator-verify-mode-v1';
@@ -2329,6 +2335,28 @@ const SmartPricing = (() => {
     // ============================================================
 
 // Source: src/transport.js
+    // Steam's Market can return either its legacy JSON envelope or a modern
+    // HTML document carrying inert JSON state. Never evaluate page JavaScript.
+    function decodeSteamMarketResponse(text) {
+        const raw=String(text || '').trim();
+        if (!raw) throw Error('Steam returned an empty Market response');
+        if (raw.startsWith('{') || raw.startsWith('[') || raw === 'null') {
+            try { return JSON.parse(raw); }
+            catch (_) { throw Error('Steam returned malformed Market JSON'); }
+        }
+        const doc=new DOMParser().parseFromString(raw,'text/html');
+        const state=doc.querySelector('script#valve-ssr-data[type="application/json"], script#valve-ssr-data');
+        if (!state) throw Error('Steam returned HTML without embedded Market data' +
+            (doc.title ? ' (' + doc.title.slice(0,80) + ')' : ''));
+        try {
+            const ssr=JSON.parse(state.textContent);
+            const rawQueries=ssr?.renderContext?.queryData;
+            const queries=typeof rawQueries==='string' ? JSON.parse(rawQueries) : rawQueries;
+            if (!Array.isArray(queries?.queries)) throw Error('missing query cache');
+            return {marketFormat:'steam-ssr',queries:queries.queries};
+        } catch(error) { throw Error('Steam embedded Market data could not be decoded: ' + error.message); }
+    }
+
     // All Market adapters share pacing, deduplication, short caching and a cooldown.
     function requestHTML(url, options = {}) {
         return marketClient.get('html:' + url, () => requestHTMLUncached(url), options);
@@ -2453,7 +2481,7 @@ const SmartPricing = (() => {
                     onload: function (response) {
 
                         writeDiagnostic('log',
-                            '[TF2 Kit BuyOrder] HTTP status:',
+                            '[TF2 Market JSON/SSR] HTTP status:',
                             response.status
                         );
 
@@ -2478,19 +2506,13 @@ const SmartPricing = (() => {
                                 response.response &&
                                 typeof response.response === 'object'
                                     ? response.response
-                                    : JSON.parse(
-                                        response.responseText
-                                    );
+                                    : decodeSteamMarketResponse(response.responseText);
 
                             resolve(data);
 
                         } catch (error) {
 
-                            reject(
-                                new Error(
-                                    'Steam returned invalid JSON.'
-                                )
-                            );
+                            reject(error);
                         }
                     },
 
@@ -3569,8 +3591,61 @@ const SmartPricing = (() => {
         return 'https://steamcommunity.com/market/listings/440/' + encodeURIComponent(name) + '/render/?' + params;
     }
 
+    function extractModernIndividualOffers(data,name,quantity,requestedCurrency) {
+        const matches=data.queries.filter(q => Array.isArray(q?.queryKey) &&
+            q.queryKey[0] === 'market_item_search' && Number(q.queryKey[1]?.appid) === 440 &&
+            normalizeMarketName(q.queryKey[1]?.strItemName) === normalizeMarketName(name));
+        if (!matches.length) throw Error('Steam embedded listing query is missing for the requested item');
+        const offers=[];
+        let checkedPage=false, emptyPage=false, seenRows=0, ownRows=0;
+        for (const query of matches) {
+            const pages=query.state?.data?.pages;
+            if (!Array.isArray(pages)) continue;
+            for (const page of pages) {
+                if (!Array.isArray(page?.listings)) continue;
+                checkedPage=true;
+                if (!page.listings.length && Number(page.total_count)===0) emptyPage=true;
+                for (const listing of page.listings) {
+                    seenRows++;
+                    if ([true,1,'1'].includes(listing?.bMine)) { ownRows++; continue; }
+                    const id=listing?.listingid;
+                    if (typeof id!=='string' || !/^\d+$/.test(id)) continue;
+                    const desc=listing.description;
+                    if (Number(desc?.appid)!==440 || normalizeMarketName(desc.market_hash_name)!==normalizeMarketName(name)) continue;
+                    const asset=listing.asset;
+                    if (Number(asset?.appid)!==440) continue;
+                    const amount=Number(asset.amount);
+                    if (!Number.isSafeInteger(amount) || amount<1) continue;
+                    const currencyID=Number(listing.eCurrency);
+                    if (!Number.isSafeInteger(currencyID) || currencyID<=0) throw Error('Steam omitted listing currency metadata');
+                    if (requestedCurrency && currencyID!==requestedCurrency) throw Error('Steam returned a different wallet currency');
+                    const parsed=parseSteamPrice(listing.strSubtotal);
+                    const base=listing.unPrice, fee=listing.unFee;
+                    if (!parsed || !(parsed.format.prefix || parsed.format.suffix) ||
+                        !Number.isSafeInteger(base) || base<=0 || !Number.isSafeInteger(fee) || fee<0 ||
+                        !Number.isSafeInteger(base+fee) || parsed.minorUnits!==base+fee)
+                        throw Error('Steam listing subtotal does not match its integer price and buyer fee');
+                    let price=parsed.minorUnits;
+                    if (amount>1) {
+                        const unitBase=listing.unPricePerUnit,unitFee=listing.unFeePerUnit;
+                        if (!Number.isSafeInteger(unitBase) || unitBase<=0 || !Number.isSafeInteger(unitFee) || unitFee<0 ||
+                            (unitBase+unitFee)*amount!==price) throw Error('Steam stack has no verifiable per-unit price');
+                        price=unitBase+unitFee;
+                    }
+                    const currency=JSON.stringify([currencyID,parsed.format.prefix,parsed.format.suffix,parsed.format.decimals]);
+                    for(let i=0;i<Math.min(amount,quantity);i++) offers.push({name,price,
+                        priceText:formatSteamCurrency(price,parsed.format),currency,listingID:id+':'+i,fromDetail:true,
+                        url:'https://steamcommunity.com/market/listings/440/'+encodeURIComponent(name)});
+                }
+            }
+        }
+        if (!offers.length && !(checkedPage && (emptyPage || (seenRows>0 && ownRows===seenRows)))) throw Error('No verifiable individual offers in Steam embedded listings');
+        return SmartPricing.selectOffers(offers,quantity);
+    }
+
     // Only use localized buyer prices. Raw seller currency must never stand in for wallet currency.
     function extractIndividualOffers(data, name, quantity, requestedCurrency) {
+        if (data?.marketFormat === 'steam-ssr') return extractModernIndividualOffers(data,name,quantity,requestedCurrency);
         if (!data || ![true,1,'1'].includes(data.success)) throw Error('Steam listing response unsuccessful');
         if (!data.listinginfo || typeof data.listinginfo !== 'object') throw Error('Missing listing information');
         if (!Object.keys(data.listinginfo).length) {
@@ -3633,24 +3708,30 @@ const SmartPricing = (() => {
             return cached.result;
         }
         const limit=weaponVerificationMode==='fast'?4:weaponVerificationMode==='balanced'?10:names.length;
-        const result=await SmartPricing.scan({names,quantity,limit,signal,onProgress,
+        const reportFailure=detail=>writeDiagnostic('warn','[TF2 Pricing] Candidate failed:',detail);
+        const result=await SmartPricing.scan({names,quantity,limit,signal,onProgress,onFailure:reportFailure,
             read:(name,signal)=>readIndividualWeaponOffers(name,quantity,currency,signal)});
         // Exhaustive runs can outlive the quote TTL. Reprice old winners and then
         // reconsider the pool; never silently present a fifteen-minute-old quote as fresh.
-        const refreshed=await SmartPricing.refreshSelection({offers:result.candidateOffers,quantity,signal,
+        const refreshed=await SmartPricing.refreshSelection({offers:result.candidateOffers,quantity,signal,onFailure:reportFailure,
             read:(name)=>readIndividualWeaponOffers(name,quantity,currency,signal)});
         result.offers=refreshed.offers;
         result.failures+=refreshed.failures;
         result.stopped ||= refreshed.stopped;
+        if (refreshed.stopReason) result.stopReason=refreshed.stopReason;
         delete result.candidateOffers;
         result.tier=tier;
         // Listing pages have bounded depth and undocumented ordering; do not claim global minimum.
         result.verifiedMinimum=false;
         if(result.offers.length && !result.failures) weaponSearchCache.set(key,{time:Math.min(...result.offers.map(o=>o.verifiedAt)),result});
         writeDiagnostic('log','[TF2 Pricing] Scan coverage:',{tier,checked:result.checked,total:result.total,
-            failures:result.failures,offers:result.offers.map(o=>[o.name,o.priceText])});
-        if(!result.offers.length) throw Error(result.stopped?'Steam verification stopped or throttled; try again shortly':
-            'No individual offers verified in '+result.attempted+' checked names; try a deeper mode or Steam Market search');
+            failures:result.failures,stopReason:result.stopReason,failureDetails:result.failureDetails,offers:result.offers.map(o=>[o.name,o.priceText])});
+        if(!result.offers.length) {
+            const last=result.failureDetails.at(-1);
+            throw Error(result.stopReason==='rate_limited'?'Steam rate limit or access restriction; try again shortly':
+                'No individual offers verified in '+result.attempted+' checked names' +
+                (last ? '. '+last.name+': '+last.message : '; no available listings found'));
+        }
         return result;
     }
 

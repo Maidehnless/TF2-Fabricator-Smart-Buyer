@@ -51,3 +51,12 @@ synthetic. No purchase or hosted repository write is part of this deliverable.
 - Manual refresh clears quote caches without bypassing the rate-limit cooldown.
 - Rationale retained: improve the pricing subsystem and keep existing proven UI/format adapters;
   the installed release remains a self-contained userscript.
+
+## 1.1.1 compatibility repair
+
+The supplied live Firefox failure was reproduced against the primary Steam endpoint with
+identical request headers: HTTP 200 now returns modern HTML/SSR, not legacy JSON.
+Transport now accepts either representation; exact-name listing queries, buyer currency,
+listing IDs and price+fee subtotals are validated. Own sell listings are excluded.
+Per-candidate errors and distinct rate-limit/failure-limit causes are retained.
+The reduced live public fixture and 13 added regression tests cover this change.

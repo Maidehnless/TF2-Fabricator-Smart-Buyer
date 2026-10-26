@@ -1,12 +1,12 @@
-# Release validation — 1.1.0
+# Release validation — 1.1.1
 
 Baseline: public repository commit `80ab530`, retrieved 27 October 2026.
-The live userscript metadata was 1.0.1 (internal diagnostics 2.8.0); both now use 1.1.0.
+The live userscript metadata was 1.0.1 (internal diagnostics 2.8.0); both now use 1.1.1.
 
 ## Automated checks
 
-- `npm run check`: deterministic release build equality, JavaScript syntax, 38 JavaScript
-  tests and 9 Python tests (47 total).
+- `npm run check`: deterministic release build equality, JavaScript syntax, 51 JavaScript
+  tests and 9 Python tests (60 total).
 - JS covers individual seller quantities, duplicates, currencies, aborts, request pacing,
   cache expiration/manual clearing, 429 cooldown, stale winner revalidation, selected-card
   parsing, ordered checkout URLs, partial/paginated inventory, diagnostics, strict DB rows,
@@ -15,7 +15,7 @@ The live userscript metadata was 1.0.1 (internal diagnostics 2.8.0); both now us
   kit buy-order net estimate, cancellation propagation and robot-only fallback.
 - Python covers database validation, AUD parsing, successful incremental publication,
   failed-attempt rotation, preserving per-item checked dates, and stopping on rate limits.
-- Synthetic HTML/JSON fixtures run through the actual built adapters via VM and Linkedom.
+- Synthetic HTML/JSON fixtures and a reduced captured public Steam response run through the actual built adapters via VM and Linkedom.
   Test-only export injection is absent from the installed userscript.
 
 ## Performance evidence
@@ -59,3 +59,23 @@ browser validation. This avoids another duplicated 550-name source in the update
 A local Playwright launch was unavailable because no Chromium binary is installed.
 No browser-session smoke test is reported as passed. Network and publication failures
 must be reported rather than interpreted as successful refreshes.
+
+## 1.1.1 production failure and primary-source reproduction
+
+The supplied Firefox report showed robot-part deductions and the kit estimate succeeding,
+then three HTTP-200 weapon requests failing. Version 1.1.0 discarded each parse error,
+so the report only showed a generic stopped/throttled message.
+
+A read-only GET to Steam's Specialized Killstreak Bat `/render/` endpoint reproduced
+HTTP 200 with a modern HTML page, both normally and with the script's exact Accept,
+X-Requested-With and Referer headers. It contains `script#valve-ssr-data`, whose nested
+renderContext.queryData includes a `market_item_search` query with individual listings.
+The response's first two observed USD subtotals were $1.73 and $1.74. The updated actual
+adapter parsed both full live responses successfully; the reduced fixture retains the
+public listing fields without account/header state or page scripts.
+
+Thirteen added tests cover the live response shape, transport-to-scan integration, exact
+app/item query scope, price+fee agreement, AUD/USD mismatch rejection, wrong item data,
+unsafe IDs, own-listing exclusions, empty results, stack unit pricing, HTML without data, legacy JSON and candidate
+diagnostics. No script from the downloaded HTML is evaluated. Signed-in Firefox/AUD
+behaviour and actual checkout remain unverified.

@@ -22,8 +22,10 @@ export async function loadApp(html='<html><head></head><body></body></html>') {
     'findFinishedKitName','buildMultiBuyURL','extractIndividualOffers','parseRobotPartInventoryPage',
     'missingRobotParts','isViewedInventoryOwn','getMultiBuyTotal','validatePublishedPriceDatabase',
     'redactDiagnosticText','ownedRobotInventory','createInventoryPriceSettings','updateMultiBuyButton',
-    'getCheapestInputWeapon','priceDatabase','SmartPricing','walletContext'];
-  const code=(await bundle({bootstrap:false})).replace(/\n\}\)\(\);\s*$/,`\nglobalThis.app={${exports.join(',')},setHTML:fn=>requestHTML=fn,setJSON:fn=>requestJSON=fn,setInventory:fn=>requestInventoryJSON=fn,refreshOwnedRobotInventory};\n})();`);
+    'decodeSteamMarketResponse','getCheapestInputWeapon','priceDatabase','SmartPricing','walletContext'];
+  const source=await bundle({bootstrap:false});
+  const declaration=source.includes('function decodeSteamMarketResponse(')?'':'const decodeSteamMarketResponse=undefined;';
+  const code=source.replace(/\n\}\)\(\);\s*$/,`\n${declaration}\nglobalThis.app={${exports.join(',')},setHTML:fn=>requestHTML=fn,setJSON:fn=>requestJSON=fn,setInventory:fn=>requestInventoryJSON=fn,refreshOwnedRobotInventory};\n})();`);
   vm.runInContext(code,ctx);
   return {app:ctx.app,ctx,document,window,logs,run:s=>vm.runInContext(s,ctx)};
 }

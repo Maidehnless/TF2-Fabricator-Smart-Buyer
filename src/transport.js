@@ -1,3 +1,25 @@
+    // Steam's Market can return either its legacy JSON envelope or a modern
+    // HTML document carrying inert JSON state. Never evaluate page JavaScript.
+    function decodeSteamMarketResponse(text) {
+        const raw=String(text || '').trim();
+        if (!raw) throw Error('Steam returned an empty Market response');
+        if (raw.startsWith('{') || raw.startsWith('[') || raw === 'null') {
+            try { return JSON.parse(raw); }
+            catch (_) { throw Error('Steam returned malformed Market JSON'); }
+        }
+        const doc=new DOMParser().parseFromString(raw,'text/html');
+        const state=doc.querySelector('script#valve-ssr-data[type="application/json"], script#valve-ssr-data');
+        if (!state) throw Error('Steam returned HTML without embedded Market data' +
+            (doc.title ? ' (' + doc.title.slice(0,80) + ')' : ''));
+        try {
+            const ssr=JSON.parse(state.textContent);
+            const rawQueries=ssr?.renderContext?.queryData;
+            const queries=typeof rawQueries==='string' ? JSON.parse(rawQueries) : rawQueries;
+            if (!Array.isArray(queries?.queries)) throw Error('missing query cache');
+            return {marketFormat:'steam-ssr',queries:queries.queries};
+        } catch(error) { throw Error('Steam embedded Market data could not be decoded: ' + error.message); }
+    }
+
     // All Market adapters share pacing, deduplication, short caching and a cooldown.
     function requestHTML(url, options = {}) {
         return marketClient.get('html:' + url, () => requestHTMLUncached(url), options);
@@ -122,7 +144,7 @@
                     onload: function (response) {
 
                         writeDiagnostic('log',
-                            '[TF2 Kit BuyOrder] HTTP status:',
+                            '[TF2 Market JSON/SSR] HTTP status:',
                             response.status
                         );
 
@@ -147,19 +169,13 @@
                                 response.response &&
                                 typeof response.response === 'object'
                                     ? response.response
-                                    : JSON.parse(
-                                        response.responseText
-                                    );
+                                    : decodeSteamMarketResponse(response.responseText);
 
                             resolve(data);
 
                         } catch (error) {
 
-                            reject(
-                                new Error(
-                                    'Steam returned invalid JSON.'
-                                )
-                            );
+                            reject(error);
                         }
                     },
 

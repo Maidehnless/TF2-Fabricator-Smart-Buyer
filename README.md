@@ -1,4 +1,4 @@
-# TF2 Fabricator Smart Buyer 1.1.0
+# TF2 Fabricator Smart Buyer 1.1.1
 
 Tampermonkey helper for Specialized and Professional TF2 Killstreak Kit Fabricators.
 It reads the selected recipe, subtracts verified owned robot parts, checks individual
@@ -16,6 +16,20 @@ weapon sell listings, and prepares manual Steam Market purchase links. No API ke
 For GitHub: copy the release files and folders into the existing repository, retaining
 **underscores** in `TF2_Fabricator_Smart_Buyer.user.js`. The metadata now points to that
 actual filename. Price publication and script code updates remain separate.
+
+## 1.1.1 compatibility fix
+
+Steam can now return a full HTML/SSR Market page from the legacy `/render/` URL,
+even with HTTP 200 and JSON request headers. Version 1.1.0 expected JSON and stopped
+after three failed parses. Version 1.1.1 accepts both formats, reading inert embedded
+`valve-ssr-data` JSON without executing page scripts. It checks the exact item query,
+individual listing IDs, currency and fee-inclusive subtotal. It does not use grouped
+minimum prices as evidence for two copies.
+
+Each failed weapon now records its exact reason. Three parser failures are reported
+as verification failures rather than incorrectly implying Steam throttled requests.
+The new format was reproduced from Steam and covered by a reduced public-response
+fixture. Signed-in Firefox/AUD verification remains for the installation smoke test.
 
 ## What changed
 
@@ -118,8 +132,7 @@ publishes. A publication date is not a freshness guarantee for every weapon.
 
 See `docs/TEST_REPORT.md` and `docs/PRICING_REFINEMENT.md` for the audit and evidence.
 The release has automated unit, DOM-fixture and mocked integration coverage. Steam
-Markup examples from the earlier supplied captures informed the adapter; bundled fixtures
-are synthetic. No real Firefox/Chromium Tampermonkey session, live Steam purchase flow,
+Markup examples from the earlier supplied captures informed the adapter; bundled fixtures include synthetic markup and a reduced public Steam listing response. No real Firefox/Chromium Tampermonkey session, live Steam purchase flow,
 or hosted GitHub Actions execution was verified here. Public Market endpoints are
 undocumented and can be unavailable or change response shape.
 
