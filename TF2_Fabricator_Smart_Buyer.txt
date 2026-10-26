@@ -4,7 +4,7 @@
 // @author       Maidehnless
 // @icon         https://avatars.akamai.steamstatic.com/2d1c9b05adb94b479e8671f9133e3d9189fcd23a_full.jpg
 // @license      MIT
-// @version      1.1.2
+// @version      1.1.3
 // @description  Checks ranked individual Killstreak weapon offers, subtracts owned robot parts and builds manual fabricator purchase links and kit sale estimates.
 // @match        https://steamcommunity.com/*/inventory*
 // @match        https://steamcommunity.com/market/multibuy*
@@ -144,13 +144,13 @@ const SmartPricing = (() => {
     const BUTTON_SPACER_ID = 'tf2-fabricator-button-spacer';
     const ERROR_DIALOG_ID = 'tf2-fabricator-error-report-dialog';
     const ERROR_LOG_ID = 'tf2-fabricator-error-report-log';
-    const SCRIPT_VERSION = '1.1.2';
+    const SCRIPT_VERSION = '1.1.3';
     const PRICE_DB_URL = 'https://raw.githubusercontent.com/Maidehnless/TF2-Fabricator-Smart-Buyer/main/data/killstreak-prices.json';
     const PRICE_DB_CACHE_KEY = 'tf2-fabricator-remote-price-db-v1';
     const MODE_STORAGE_KEY = 'tf2-fabricator-verify-mode-v1';
     const PRICE_DB_REFRESH_MS = 15 * 60 * 1000;
-    const priceDatabase = { status: 'loading', generatedAt: '', priority: null, rows: null, error: '', loadedAt: 0 };
-    let weaponVerificationMode = ['fast', 'balanced', 'exhaustive'].includes(GM_getValue(MODE_STORAGE_KEY, 'balanced'))
+    const priceDatabase = { status: 'loading', generatedAt: '', priority: null, rows: null, error: '', loadedAt: 0, currency: 'USD' };
+    let weaponVerificationMode = ['fast', 'balanced', 'long', 'exhaustive'].includes(GM_getValue(MODE_STORAGE_KEY, 'balanced'))
         ? GM_getValue(MODE_STORAGE_KEY, 'balanced') : 'balanced';
     const MULTIBUY_WEAPON_PANEL_ID = 'tf2-fabricator-multibuy-weapon-panel';
     const WEAPON_INPUT_ID = 'tf2-fabricator-cheapest-weapon';
@@ -1488,13 +1488,48 @@ const SmartPricing = (() => {
         runUpdateSafely();
     }
 
+    const ownedInventoryAuto = {enabled:false,owner:null,attempts:0,readinessChecks:0,nextAt:0,timer:null};
+    function ensureOwnedRobotInventory() {
+        const auto=ownedInventoryAuto;
+        auto.enabled=true;
+        if (ownedRobotInventory.inFlight || ownedRobotInventory.status==='loading') return ownedRobotInventory.inFlight;
+        const owner=currentInventoryOwnerID();
+        const schedule=delay=>{
+            if(auto.timer!==null) return;
+            auto.timer=setTimeout(()=>{auto.timer=null;ensureOwnedRobotInventory();},delay);
+        };
+        if(!owner || !isViewedInventoryOwn(owner)) {
+            if(ownedRobotInventory.status!=='unavailable') {
+                ownedRobotInventory.status='unavailable';
+                ownedRobotInventory.error='Waiting to confirm the signed-in inventory owner.';
+                ownedRobotInventory.counts=new Map();
+                notifyInventoryUpdate();
+            }
+            if(auto.readinessChecks<10) {auto.readinessChecks++;schedule(1500);}
+            return Promise.resolve(null);
+        }
+        if(auto.owner!==owner) {
+            auto.owner=owner;auto.attempts=0;auto.nextAt=0;
+            clearTimeout(auto.timer);auto.timer=null;
+        }
+        if(ownedRobotInventory.status==='ready' && ownedRobotInventory.steamID===owner &&
+            Date.now()-ownedRobotInventory.updatedAt<INVENTORY_CACHE_MS) return Promise.resolve(ownedRobotInventory.counts);
+        if(auto.attempts>=3) return Promise.resolve(null);
+        if(Date.now()<auto.nextAt) {schedule(auto.nextAt-Date.now());return Promise.resolve(null);}
+        auto.attempts++;
+        auto.nextAt=Date.now()+10000;
+        return refreshOwnedRobotInventory(true).finally(()=>{
+            if(ownedRobotInventory.status==='ready') {auto.attempts=0;clearTimeout(auto.timer);auto.timer=null;}
+            if(ownedRobotInventory.status==='error' && auto.attempts<3) schedule(Math.max(0,auto.nextAt-Date.now()));
+        });
+    }
+
     async function refreshOwnedRobotInventory(force = false) {
         const inventory = ownedRobotInventory;
         if (inventory.inFlight) return inventory.inFlight;
-        if (!force && inventory.status === 'ready' &&
-            Date.now() - inventory.updatedAt < INVENTORY_CACHE_MS) return inventory.counts;
-
         const owner = currentInventoryOwnerID();
+        if (!force && inventory.status === 'ready' && inventory.steamID === owner && isViewedInventoryOwn(owner) &&
+            Date.now() - inventory.updatedAt < INVENTORY_CACHE_MS) return inventory.counts;
         if (!owner || !isViewedInventoryOwn(owner)) {
             inventory.status = 'unavailable';
             inventory.error = 'Could not confirm the inventory belongs to the signed-in Steam user.';
@@ -3355,7 +3390,7 @@ const SmartPricing = (() => {
 // Source: src/database-settings.js
     function validatePublishedPriceDatabase(data) {
         if (!data || data.schema !== 'maidehnless.tf2.killstreak_priority.v1' ||
-            data.currency !== 'AUD' || !Array.isArray(data.prices) || data.prices.length !== 550 ||
+            !['USD','AUD'].includes(data.currency) || !Array.isArray(data.prices) || data.prices.length !== 550 ||
             !data.priority || !Array.isArray(data.priority.regular) ||
             !Array.isArray(data.priority.specialized)) {
             throw new Error('GitHub price database has an unexpected format.');
@@ -3382,6 +3417,7 @@ const SmartPricing = (() => {
 
     function applyPublishedPriceDatabase(data) {
         const previous = priceDatabase.generatedAt;
+        priceDatabase.currency = data.currency;
         priceDatabase.priority = data.priority;
         priceDatabase.rows = new Map(data.prices.map(item => [item.name, item]));
         priceDatabase.generatedAt = data.latestPublishedUTC || data.generatedAtUTC;
@@ -3455,7 +3491,7 @@ const SmartPricing = (() => {
         const description = document.getElementById('tf2-price-db-status');
         if (description) description.textContent = priceDatabase.error
             ? ('Cached / offline: ' + priceDatabase.error)
-            : priceDatabase.status === 'ready' ? 'Published GitHub priority list loaded (AUD snapshot)' :
+            : priceDatabase.status === 'ready' ? 'Published GitHub priority list loaded (' + priceDatabase.currency + (priceDatabase.currency === 'AUD' ? ' legacy ranking)' : ' snapshot)') :
                 priceDatabase.status === 'loading' ? 'Loading price list…' : 'No published price list available';
     }
 
@@ -3488,9 +3524,10 @@ const SmartPricing = (() => {
         label.style.cssText = 'display:block;font-weight:bold;margin-bottom:4px;';
         const select = document.createElement('select');
         select.style.cssText = 'width:100%;padding:5px;background:#101822;color:#fff;border:1px solid #526477;';
-        for (const [value, text] of [['fast', 'Fast — 4 ranked names'],
-            ['balanced', 'Balanced — 10 ranked names'],
-            ['exhaustive', 'Exhaustive — all eligible weapons']]) {
+        for (const [value, text] of [['fast', 'Fast — 10 Killstreak entries'],
+            ['balanced', 'Balanced — 25 Killstreak entries'],
+            ['long', 'Long — 50 Killstreak entries'],
+            ['exhaustive', 'Exhaustive — all Killstreak entries']]) {
             const option = document.createElement('option');
             option.value = value;
             option.textContent = text;
@@ -3702,7 +3739,7 @@ const SmartPricing = (() => {
             onProgress?.(cached.result);
             return cached.result;
         }
-        const limit=weaponVerificationMode==='fast'?4:weaponVerificationMode==='balanced'?10:names.length;
+        const limit=weaponVerificationMode==='exhaustive'?names.length:({fast:10,balanced:25,long:50}[weaponVerificationMode] || 25);
         const reportFailure=detail=>writeDiagnostic('warn','[TF2 Pricing] Candidate failed:',detail);
         const result=await SmartPricing.scan({names,quantity,limit,signal,onProgress,onFailure:reportFailure,
             read:(name,signal)=>readIndividualWeaponOffers(name,quantity,currency,signal)});
@@ -4382,7 +4419,7 @@ const SmartPricing = (() => {
             const found = lastProgress?.offers.slice(0,weaponRequirement.quantity) || [];
             const progress = lastProgress ? lastProgress.attempted + '/' + lastProgress.budget : '0';
             const message = 'Weapon price search is still running.\n\n' +
-                'Ranked names checked: ' + progress + '\n' +
+                'Killstreak entries checked: ' + progress + '\n' +
                 'Weapon offers found: ' + found.length + '/' + weaponRequirement.quantity + '\n\n' +
                 (found.length ? found.map(o => o.name + ' — ' + o.priceText).join('\n') + '\n\n' : '') +
                 (found.length < weaponRequirement.quantity ? 'This link does not yet include every required weapon.\n\n' : '') +
@@ -4431,7 +4468,7 @@ const SmartPricing = (() => {
                     if (progress.offers.length) showSelectedWeaponOffers(weaponInfo, progress.offers, false);
                     else weaponInfo.replaceChildren();
                     const status = document.createElement('div');
-                    status.textContent = 'Checking ranked names: ' + progress.attempted + '/' + progress.budget +
+                    status.textContent = 'Checking Killstreak entries: ' + progress.attempted + '/' + progress.budget +
                         ' · ' + progress.offers.length + '/' + weaponRequirement.quantity + ' offers available so far';
                     status.style.color = '#a8b9c7';
                     weaponInfo.appendChild(status);
@@ -4472,7 +4509,7 @@ const SmartPricing = (() => {
                         weaponInfo.appendChild(incomplete);
                     }
                     const coverage = document.createElement('div');
-                    coverage.textContent = selection.checked + '/' + selection.total + ' eligible names checked · ' +
+                    coverage.textContent = selection.checked + '/' + selection.total + ' Killstreak entries checked · ' +
                         selection.failures + ' failed' + (selection.stopped ? ' · verification stopped early' : '') +
                         ' · offers checked ' + new Date(Math.min(...selected.map(o => o.verifiedAt))).toLocaleTimeString();
                     coverage.style.color = '#a8b9c7';
@@ -4644,7 +4681,7 @@ const SmartPricing = (() => {
     async function runUpdateSafely() {
 
         try {
-
+            if (ownedInventoryAuto.enabled) ensureOwnedRobotInventory();
             await updateMultiBuyButton();
 
         } catch (error) {
@@ -4687,7 +4724,7 @@ const SmartPricing = (() => {
         runUpdateSafely();
     });
     setInterval(()=>loadPublishedPriceDatabase().then(scheduleUpdate).catch(()=>{}),PRICE_DB_REFRESH_MS);
-    refreshOwnedRobotInventory().catch(error=>writeDiagnostic('warn','[TF2 Inventory]',error));
+    ensureOwnedRobotInventory()?.catch(error=>writeDiagnostic('warn','[TF2 Inventory]',error));
     runUpdateSafely();
     // Weapon checks start only for the current recipe. No speculative scans of either tier.
 
