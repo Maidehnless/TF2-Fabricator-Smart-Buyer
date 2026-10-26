@@ -1,0 +1,75 @@
+name: Refresh Killstreak Prices
+
+on:
+  workflow_dispatch:
+    inputs:
+      scan_mode:
+        description: "How many Steam Market entries to check"
+        required: true
+        type: choice
+        default: test
+        options:
+          - test
+          - incremental
+          - full
+  schedule:
+    - cron: '17 */6 * * *'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: tf2-price-database-refresh
+  cancel-in-progress: false
+
+jobs:
+  update-prices:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Check database integrity
+        run: python updater/update_prices.py --validate
+
+      - name: Refresh prices
+        env:
+          SCAN_MODE: ${{ inputs.scan_mode || 'incremental' }}
+        shell: bash
+        run: |
+          case "$SCAN_MODE" in
+            test)
+              python updater/update_prices.py --limit 6 --leading 2 --delay 4
+              ;;
+            incremental)
+              python updater/update_prices.py --limit 60 --leading 8 --delay 4
+              ;;
+            full)
+              python updater/update_prices.py --limit 550 --leading 8 --delay 4
+              ;;
+            *)
+              echo "Unknown scan mode: $SCAN_MODE" >&2
+              exit 1
+              ;;
+          esac
+
+      - name: Commit updated price database
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/killstreak-prices.json
+          if git diff --cached --quiet; then
+            echo "No verified price changes to publish."
+            exit 0
+          fi
+          git commit -m "Update TF2 Killstreak price database"
+          git push
