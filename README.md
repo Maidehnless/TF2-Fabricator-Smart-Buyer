@@ -1,145 +1,191 @@
-# TF2 Fabricator Smart Buyer 1.1.1
+<div align="center">
 
-Tampermonkey helper for Specialized and Professional TF2 Killstreak Kit Fabricators.
-It reads the selected recipe, subtracts verified owned robot parts, checks individual
-weapon sell listings, and prepares manual Steam Market purchase links. No API key is needed.
+# TF2 Fabricator Smart Buyer
 
-## Install or update
+**A Steam inventory userscript for planning Killstreak Kit Fabricator purchases.**
 
-1. Open Tampermonkey's dashboard and edit your existing **TF2 Fabricator Smart Buyer** script.
-2. Replace its complete contents with `TF2_Fabricator_Smart_Buyer.txt`, then save.
-   Alternatively, install `TF2_Fabricator_Smart_Buyer.user.js`. Keep only one active copy.
-3. Reload your Steam TF2 inventory and select a Specialized or Professional Fabricator.
-4. Open **TF2 Multi-Buy Settings** beside Steam's **More...** control to choose verification
-   depth, refresh live prices, or check the published ranking's date.
+Find eligible Killstreak weapon inputs, account for robot parts you already own, and build Steam Community Market Multi-Buy links without adding up every ingredient by hand.
 
-For GitHub: copy the release files and folders into the existing repository, retaining
-**underscores** in `TF2_Fabricator_Smart_Buyer.user.js`. The metadata now points to that
-actual filename. Price publication and script code updates remain separate.
+[![Version](https://img.shields.io/badge/userscript-v2.8.0-1b2838)](./TF2_Fabricator_Smart_Buyer.user.js)
+[![Platform](https://img.shields.io/badge/platform-Steam%20Community%20Market-1b2838)](https://steamcommunity.com/market/)
+[![License: MIT](https://img.shields.io/badge/license-MIT-green)](./LICENSE)
 
-## 1.1.1 compatibility fix
+**[Install the userscript](https://raw.githubusercontent.com/Maidehnless/TF2-Fabricator-Smart-Buyer/main/TF2_Fabricator_Smart_Buyer.user.js)** · **[View the price database](./data/killstreak-prices.json)** · **[Report a problem](https://github.com/Maidehnless/TF2-Fabricator-Smart-Buyer/issues)**
 
-Steam can now return a full HTML/SSR Market page from the legacy `/render/` URL,
-even with HTTP 200 and JSON request headers. Version 1.1.0 expected JSON and stopped
-after three failed parses. Version 1.1.1 accepts both formats, reading inert embedded
-`valve-ssr-data` JSON without executing page scripts. It checks the exact item query,
-individual listing IDs, currency and fee-inclusive subtotal. It does not use grouped
-minimum prices as evidence for two copies.
+</div>
 
-Each failed weapon now records its exact reason. Three parser failures are reported
-as verification failures rather than incorrectly implying Steam throttled requests.
-The new format was reproduced from Steam and covered by a reduced public-response
-fixture. Signed-in Firefox/AUD verification remains for the installation smoke test.
+> [!IMPORTANT]
+> This is an **unofficial, community-made tool**. It is not affiliated with Valve or Steam. It **does not automatically purchase items, execute trades, or guarantee the lowest Market price**. Always review the actual price and quantity on Steam before buying.
 
-## What changed
+## What does it do?
 
-- **Direct individual listings:** check historically ranked Market names directly; remove
-  the separate exact-name search for every candidate. Historical AUD values only decide
-  check order; displayed prices come from localized fee-inclusive Steam listings.
-- **Progressive results:** usable verified weapon links appear during the scan. Final
-  combined checkout is checked after that mode's scan finishes.
-- **Less unnecessary work:** no scans of both tiers on page load. Check only the selected
-  recipe's tier, cancel obsolete queued requests, and share in-flight/short cached replies.
-- **Real quantity depth:** compare distinct listing IDs, including two differently priced
-  copies of one name. Parse the recipe's actual input quantity, including quantities above two.
-- **Currency checks:** require converted currency IDs and localized buyer prices. Missing
-  or mismatched metadata fails visibly; raw seller prices are never substituted.
-- **Freshness:** individual responses live for 60 seconds, robot/kit page quotes for 30.
-  Long scans revalidate stale winners and reconsider competing offers. Final UI shows when
-  the selected offers were observed. Use **Refresh live prices** after waiting or trading.
-- **Safer DOM and checkout:** scope parsing to the visible selected card, ignore our own
-  observer mutations, keep the robot purchase link disabled during inventory checks, and
-  validate Multi-Buy item identities and requested quantities as well as row count.
-- **Maintainable release:** focused source files, deterministic single-file build,
-  byte-identical TXT distribution, regression tests and a deterministic request benchmark.
-- **Updater hardening:** explicit validation also works with `python -O`; reject duplicate
-  priorities, nonfinite prices and invalid timestamps. Track failed attempts so rotation
-  does not continually select the same failures after partially successful runs.
+Selecting a **Specialized** or **Professional Killstreak Kit Fabricator** in your Steam TF2 inventory gives you a shopping plan based on its currently displayed recipe.
 
-## Verification modes
+- **Reads the fabricator's remaining recipe.** Recognizes robot parts and the required regular or Specialized Killstreak weapon inputs, including their quantities.
+- **Subtracts owned robot parts.** Checks the signed-in user's own TF2 inventory, counts the eight supported robot-part types, and removes already-covered quantities from the shopping list.
+- **Searches eligible weapons by price.** Uses a publicly hosted ranking to try historically inexpensive Market names first, then checks current individual Steam sell listings.
+- **Handles more than one weapon.** Professional fabricators can use two differently named weapons—or two copies of the same weapon—if those are the cheapest verified offers found.
+- **Preserves recipe order in Multi-Buy.** Builds a Steam Multi-Buy URL in the order ingredients appear on the selected card, omitting parts with nothing left to buy.
+- **Shows an estimated kit insta-sell value.** Reads the finished kit's highest buy order and applies an approximate 15% selling-fee deduction, so you can compare the potential return with the cost of completing the recipe.
+- **Shows progress and diagnostics.** Keeps available purchase links accessible as the weapon check progresses and provides a copyable error report when something goes wrong.
 
-| Mode | Ranked names checked per tier | Intended use |
+If Steam cannot price a selected weapon within Multi-Buy, the script can fall back to a robot-part-only link and provide separate weapon Market links.
+
+## Installation
+
+**Requirements:** A desktop browser with a userscript manager such as [Tampermonkey](https://www.tampermonkey.net/), a Steam account, and access to your Steam Community inventory and Market.
+
+1. Install and enable Tampermonkey (or a compatible userscript manager).
+2. Open **[TF2_Fabricator_Smart_Buyer.user.js](https://raw.githubusercontent.com/Maidehnless/TF2-Fabricator-Smart-Buyer/main/TF2_Fabricator_Smart_Buyer.user.js)** and approve the installation prompt. Alternatively, copy the contents of [the TXT version](./TF2_Fabricator_Smart_Buyer.txt) into a new userscript.
+3. Make sure **only one copy** of this userscript is enabled.
+4. Open your own [Steam inventory](https://steamcommunity.com/my/inventory/) and select the *Team Fortress 2* inventory.
+5. Click a Specialized or Professional Killstreak Kit Fabricator to see its purchase options.
+
+The script runs on Steam Community inventory pages and Steam's Market Multi-Buy page. It does not require a Steam Web API key or a GitHub account from users.
+
+## How to use it
+
+1. **Select a fabricator.** Its displayed recipe determines which parts and how many Killstreak weapons are needed.
+2. **Review owned parts.** The script checks your inventory and shows how many robot parts you still need. Use **Refresh** beside the robot-part summary after trading, buying, or crafting.
+3. **Choose a search mode.** Click **TF2 Multi-Buy Settings** beside Steam's **More...** menu.
+4. **Check the weapon results.** The script searches the appropriate tier and displays currently verified candidates and their Market links. Results may improve as more entries are checked.
+5. **Open Multi-Buy.** Use **Buy All** when supported, or the remaining-parts link and separate weapon links if Steam cannot combine them. **Confirm the final quantities and total on Steam** before placing any order.
+6. **Compare the finished kit value.** The **Kit Insta-Sell Price** link/estimate is a guide, not a guaranteed profit calculation.
+
+### Verification modes
+
+| Mode | Killstreak entries checked | Best for |
 | --- | ---: | --- |
-| Fast | 4 | Short initial search |
-| Balanced (default) | 10 | Broader comparison with moderate request cost |
-| Exhaustive | 275 | All allowlisted names in that tier; can take roughly 15 minutes plus network delays |
+| **Fast** | 10 | Getting a quick shortlist |
+| **Balanced** *(default)* | 25 | General use and a wider price comparison |
+| **Long** | 50 | Searching more candidates for better offers |
+| **Exhaustive** | All eligible names in the required tier | Maximum available coverage, at the cost of time and requests |
 
-These budgets deliberately replace the old 10/25/275 budgets. Fast and Balanced trade
-coverage for speed; neither guarantees the global lowest price. All modes report
-**lowest verified among checked listings**. Exhaustive still uses bounded listing-page
-depth (at least 10 rows per name), and can stop early on errors or throttling. Revalidation
-of old selected offers is bounded to ten additional requests; unresolved old quotes are
-excluded. A valid name with no sellers differs from a failed response.
+These modes set the number of **ranked Market names** to inspect, not the number of copies for sale. Even Exhaustive mode may be limited by Steam errors, rate limits, changing availability, or the depth of individual listing pages. The correct description is **“cheapest verified among the listings checked,”** not “guaranteed cheapest on Steam.”
 
-All Market adapters share serial 3.4-second pacing. HTTP 401/403/429 stops further
-queued Market traffic for at least 60 seconds. The script never retries purchases or
-executes a transaction. Already-running network responses may complete after a recipe
-switch and be cached, but cannot update the superseded recipe.
+The settings popup also shows the timestamp of the published price database and offers controls to refresh live prices or the ranking.
 
-## Features retained
+## How prices work
 
-- Exact displayed recipe order and quantities; omit unused/fully-owned robot material rows.
-- Only the signed-in player's confirmed robot parts are deducted, across paginated inventory.
-  Failed/partial scans use full requirements. **Owned Killstreak weapons are not deducted.**
-- Regular versus Specialized input eligibility, with exact Festivized names retained in URLs.
-- Robot-only checkout and separate weapon links when Steam rejects combined Multi-Buy rows.
-- Finished-kit highest-buy-order estimate, with the previous approximate 15% deduction.
-  This is an estimate, not an exact reproduction of Steam's rounded/minimum fees.
-- Scrollable error report with copy support and the existing Discord support link.
-- GitHub ranking download, validated stored fallback and six-hour hosted updater workflow.
+There are **two separate sources of information**:
 
-## Development
+| Source | Purpose | Currency |
+| --- | --- | --- |
+| [`data/killstreak-prices.json`](./data/killstreak-prices.json) | Historical prices and the order in which candidate weapon names are checked | AUD reference snapshot |
+| Steam Community Market | Current individual weapon listings, robot-part totals, and finished-kit buy orders | **The user's Steam wallet currency** |
 
-Node 20.19+ and Python 3.10+; the installed userscript itself has no package dependencies.
-`linkedom` is used only for development fixture tests.
+The published AUD database **never changes the user's purchase currency** and is **not** a quoted checkout price. The script verifies individual sell listings, rather than assuming that two copies are available at a single advertised minimum. Prices can change or disappear after verification.
 
-```sh
-npm ci
-npm run build
-npm run check
-npm run benchmark
+Regular and **Festivized regular** weapons compete in the same regular tier; Specialized and **Festivized Specialized** weapons compete in the Specialized tier. The exact Market names remain distinct because their URLs and individual listings differ. Not every weapon has an existing Festivized Market variant.
+
+The userscript caches successful database downloads and can fall back to cached rankings or its internal eligible-name list if GitHub is unavailable. A publication timestamp indicates when the database file was produced, **not** when every individual weapon was last rechecked.
+
+## What is counted in your inventory?
+
+Only **robot parts owned by the signed-in user** are considered for automatic deduction:
+
+| Battle-Worn | Reinforced | Pristine |
+| --- | --- | --- |
+| Robot Money Furnace | Robot Humor Suppression Pump | Robot Currency Digester |
+| Robot Taunt Processor | Robot Emotion Detector | Robot Brainstorm Bulb |
+| Robot KB-808 | Robot Bomb Stabilizer | — |
+
+For each part, `quantity to buy = max(0, recipe requirement - owned quantity)`.
+
+The script checks all returned inventory pages and only applies deductions when it can identify the inventory as belonging to the signed-in user. If the inventory cannot be verified or loads incompletely, it uses the full remaining recipe rather than guessing what you own.
+
+**Owned Killstreak weapons are not checked or deducted.** Their required quantities are still priced against Market offers.
+
+## Price database and updater
+
+The shared database contains **550 candidate Market names**, split into **275 regular** and **275 Specialized** entries. It retains exact names, the relative search order, the last observed prices, per-item check times, and unavailable-entry information.
+
+- **[Database JSON](./data/killstreak-prices.json)** — public data consumed by the userscript.
+- **[Updater source](./updater/update_prices.py)** — standalone Python script that refreshes prices using Steam's public Market price overview data.
+- **[Updater tests](./updater/test_updater.py)** — verifies database constraints, price parsing, and failure behaviour.
+
+The updater is intentionally separate from the userscript. It maintains a useful **ranking**, while each user still checks live offers locally when selecting a fabricator. The updater preserves the last verified price when an item has no available listing or a request fails; a completely unsuccessful scan does not replace the published data.
+
+### Run the updater manually (maintainers)
+
+Python 3 is required; the published updater uses the standard library and has no third-party package requirements.
+
+From the repository root:
+
+```bash
+# Validate the existing database without accessing Steam
+python updater/update_prices.py --validate
+
+# Small initial price check
+python updater/update_prices.py --limit 6 --leading 2 --delay 4
+
+# Incremental scan (default: 60 names)
+python updater/update_prices.py --limit 60 --leading 8 --delay 4
+
+# Unit tests
+python -m unittest discover -s updater -p "test_*.py"
 ```
 
-Edit `src/`, not the generated root `.user.js` / `.txt`. The build concatenates source
-in a fixed order with its userscript metadata. `npm run check` rejects stale generated
-files and runs both JavaScript and Python suites.
+Review the resulting `data/killstreak-prices.json` diff before committing. The scan may be interrupted or rate-limited by Steam; do not interpret a successful Python exit as proof that every requested price was updated.
 
-| Source | Responsibility |
+### Automate updates with GitHub Actions
+
+To run the updater without leaving a PC on, add or enable a workflow at **`.github/workflows/update-prices.yml`** with:
+
+- `schedule` for periodic incremental refreshes and `workflow_dispatch` for manual runs;
+- a checkout step, Python setup, and a command invoking `updater/update_prices.py`;
+- `permissions: contents: write` so the workflow can commit valid database updates;
+- a concurrency limit to avoid overlapping publication jobs.
+
+Once the workflow has been committed to the repository's default branch, use **Actions → your price update workflow → Run workflow** to test a small batch before enabling a larger schedule. The GitHub-hosted runner can be blocked or rate-limited by Steam, so check the logs and the database timestamps. The presence of the Python updater alone does **not** schedule it.
+
+## Repository layout
+
+```text
+TF2-Fabricator-Smart-Buyer/
+├── TF2_Fabricator_Smart_Buyer.user.js   # Installable userscript
+├── TF2_Fabricator_Smart_Buyer.txt       # Text copy of the userscript
+├── data/
+│   └── killstreak-prices.json           # Published price priorities
+├── updater/
+│   ├── update_prices.py                 # Python Market price updater
+│   └── test_updater.py                  # Updater tests
+├── README.md
+└── LICENSE
+```
+
+An optional `.github/workflows/update-prices.yml` can be added to automate publishing.
+
+## Troubleshooting
+
+| Issue | What to check |
 | --- | --- |
-| `src/pricing.js` | Offer selection, coverage, freshness rechecks, request scheduler/cache |
-| `src/weapons.js` | Direct Steam listing adapter and ranked checks |
-| `src/recipe.js`, `src/inventory.js` | Selected-card recipe and own robot-part inventory |
-| `src/money.js`, `src/multibuy.js`, `src/kit-orders.js` | Money parsing, checkout quote validation and kit estimates |
-| `src/database-settings.js` | Ranking validation/download and settings |
-| `src/controls.js`, `src/controller.js`, `src/bootstrap.js` | UI, selection lifecycle and observation |
-| `src/config.js`, `src/diagnostics.js` | Trusted allowlist, constants and diagnostics |
-| `updater/` | Headless AUD price publication |
+| No buttons on an item | Select a supported Killstreak Kit Fabricator in the **TF2** inventory, then reload the page. |
+| Owned robot parts not deducted | Confirm you're looking at your **own** inventory. Use **Refresh** and make sure Steam's inventory response is available. |
+| Price database unavailable | Open the [public JSON](./data/killstreak-prices.json), try refreshing the database from Settings, or use cached ranking data. |
+| Weapon search takes a long time | Use **Fast** or **Balanced**. Deeper searches involve many Market requests and may be rate-limited. |
+| Weapon can't be added to Multi-Buy | Use the separate weapon listing links alongside the robot-parts Multi-Buy link. |
+| Prices differ at checkout | Steam listings may have changed; the AUD ranking is historical and checkout uses your Steam wallet currency. |
+| An error button appears | Open **Error Report**, copy the diagnostic log, and share it when [opening an issue](https://github.com/Maidehnless/TF2-Fabricator-Smart-Buyer/issues). Remove any personal details first. |
 
-## Hosted price updates
+### Known maintenance items
 
-The included `.github/workflows/update-prices.yml` runs approximately every six hours.
-Enable GitHub Actions and allow the workflow's `contents: write` permission. Under
-**Actions → Refresh Killstreak Prices → Run workflow**, use `test` first (six entries),
-then `incremental` (60), or an optional `full` (550).
+- The currently published **v2.8.0** userscript's `@downloadURL` and `@updateURL` metadata point to a **hyphenated filename**, while the repository's installable file is named `TF2_Fabricator_Smart_Buyer.user.js` (underscores). The metadata should be corrected in the script before relying on automatic userscript updates.
+- The v2.8.0 startup mode validation does not include `long`, although the settings dropdown offers it. Long mode may revert to Balanced on reload until the stored-value validation is updated.
+- Steam's Market and inventory interfaces are not guaranteed stable. This script may need maintenance when response formats, listing fields, or page layouts change.
 
-No Steam credentials or GitHub PAT are required. The job uses GitHub's built-in token to
-commit only valid incremental data. Zero verified new prices leave the previous file
-unchanged; unavailable items retain the last successful price/date. `lastAttemptAtUTC`
-and `lastResult` record more recent attempt outcomes when a partially successful run
-publishes. A publication date is not a freshness guarantee for every weapon.
+## Privacy and safety
 
-## Validation and limits
+The script reads the current Steam inventory and public Market data as needed to calculate missing parts and purchase options. The GitHub JSON is a shared **price ranking**, not a service where users upload their inventories. You do not need to supply a Steam password, Steam API key, or GitHub access token.
 
-See `docs/TEST_REPORT.md` and `docs/PRICING_REFINEMENT.md` for the audit and evidence.
-The release has automated unit, DOM-fixture and mocked integration coverage. Steam
-Markup examples from the earlier supplied captures informed the adapter; bundled fixtures include synthetic markup and a reduced public Steam listing response. No real Firefox/Chromium Tampermonkey session, live Steam purchase flow,
-or hosted GitHub Actions execution was verified here. Public Market endpoints are
-undocumented and can be unavailable or change response shape.
+The script generates links and estimates; **purchases remain manual**. Check all item names, quantities, prices, and Steam fees before confirming a transaction. Be mindful of Steam's terms and Market request limits.
 
-Strict Multi-Buy validation requires identifiable listing links and matching quantity
-fields. If Steam changes that markup, checkout links and separate weapon links remain,
-but a combined quote may be unavailable. Historical rankings can miss newly cheap items
-outside Fast/Balanced budgets. Offers can sell or change before checkout; always confirm
-Steam's quantities and prices. Do not enable the previous and new userscripts together.
+## Feedback, contributions, and license
 
-This release is provided as files; it has not been pushed to the live repository.
+Found a bug, incorrect recipe, or a Steam Market pricing issue? [Open a GitHub issue](https://github.com/Maidehnless/TF2-Fabricator-Smart-Buyer/issues) with the script version, reproduction steps, and a redacted diagnostic report. You can also contact [Maidehnless on Discord](https://discord.com/users/268722078633558019).
+
+Contributions and improvements are welcome through issues and pull requests. Licensed under the **[MIT License](./LICENSE)**.
+
+---
+
+<sub>Team Fortress 2 and Steam are trademarks of Valve Corporation. This project is an independent community utility.</sub>
