@@ -4,8 +4,8 @@
 // @author       Maidehnless
 // @icon         https://avatars.akamai.steamstatic.com/2d1c9b05adb94b479e8671f9133e3d9189fcd23a_full.jpg
 // @license      MIT
-// @version      1.0.1
-// @description  Adds cheapest eligible Killstreak weapons plus owned robot-part deductions to fabricator Multi-Buy calculations and kit insta-sell estimates.
+// @version      1.1.0
+// @description  Checks ranked individual Killstreak weapon offers, subtracts owned robot parts and builds manual fabricator purchase links and kit sale estimates.
 // @match        https://steamcommunity.com/*/inventory*
 // @match        https://steamcommunity.com/market/multibuy*
 // @grant        GM_xmlhttpRequest
@@ -13,15 +13,124 @@
 // @connect      raw.githubusercontent.com
 // @grant        GM_getValue
 // @grant        GM_setValue
-// @downloadURL  https://raw.githubusercontent.com/Maidehnless/TF2-Fabricator-Smart-Buyer/main/TF2-Fabricator-Smart-Buyer.user.js
-// @updateURL    https://raw.githubusercontent.com/Maidehnless/TF2-Fabricator-Smart-Buyer/main/TF2-Fabricator-Smart-Buyer.user.js
+// @downloadURL  https://raw.githubusercontent.com/Maidehnless/TF2-Fabricator-Smart-Buyer/main/TF2_Fabricator_Smart_Buyer.user.js
+// @updateURL    https://raw.githubusercontent.com/Maidehnless/TF2-Fabricator-Smart-Buyer/main/TF2_Fabricator_Smart_Buyer.user.js
 // @run-at       document-idle
 
 // ==/UserScript==
 
 (function () {
     'use strict';
+// Source: src/pricing.js
+// Pure pricing logic and a session-local request scheduler. No Steam or DOM globals.
+const SmartPricing = (() => {
+    const abort = signal => {
+        if (signal?.aborted) throw new DOMException('Selection changed', 'AbortError');
+    };
+    const throttled = error => /429|403|401|rate.limit|cooldown/i.test(String(error?.message || error));
+    function selectOffers(offers, quantity) {
+        const seen = new Set();
+        const valid = offers.filter(o => {
+            if (!o.fromDetail || !Number.isSafeInteger(o.price) || o.price <= 0 || !o.currency ||
+                !o.listingID || seen.has(o.listingID)) return false;
+            seen.add(o.listingID);
+            return true;
+        });
+        if (new Set(valid.map(o => o.currency)).size > 1) throw new Error('Inconsistent wallet currency');
+        return valid.sort((a,b) => a.price - b.price || a.name.localeCompare(b.name)).slice(0,quantity);
+    }
+    async function scan({names, quantity, limit, read, signal, onProgress = () => {}}) {
+        const unique = [...new Set(names)];
+        const offers = [];
+        let checked=0, failures=0, attempted=0, stopped=false;
+        const snapshot = () => ({offers:selectOffers(offers,quantity), checked, failures, attempted,
+            total:unique.length, budget:Math.min(limit,unique.length), stopped,
+            complete:checked===unique.length && failures===0});
+        for (const name of unique.slice(0,limit)) {
+            abort(signal);
+            attempted++;
+            try {
+                const next = await read(name, signal);
+                abort(signal);
+                // Reject this whole response if it cannot be compared with previous offers.
+                selectOffers([...offers,...next],quantity);
+                offers.push(...next);
+                checked++;
+            } catch (error) {
+                if (error.name === 'AbortError') throw error;
+                failures++;
+                if (throttled(error) || failures >= 3) stopped=true;
+            }
+            onProgress(snapshot());
+            if (stopped) break;
+        }
+        return {...snapshot(),candidateOffers:offers};
+    }
+    async function refreshSelection({offers,quantity,read,signal,now=Date.now,maxAge=60000,maxChecks=10}) {
+        let pool=[...offers], attempts=0, failures=0, stopped=false;
+        const fresh=o=>Number.isFinite(o.verifiedAt) && now()-o.verifiedAt<maxAge;
+        while(attempts<maxChecks) {
+            abort(signal);
+            const stale=selectOffers(pool,quantity).find(o=>!fresh(o));
+            if(!stale) break;
+            pool=pool.filter(o=>o.name!==stale.name);
+            attempts++;
+            try {
+                const next=await read(stale.name,signal);
+                abort(signal);
+                selectOffers([...pool,...next],quantity);
+                pool.push(...next);
+            } catch(error) {
+                if(error.name==='AbortError') throw error;
+                failures++;
+                if(throttled(error) || failures>=3) {stopped=true;break;}
+            }
+        }
+        return {offers:selectOffers(pool.filter(fresh),quantity),failures,stopped};
+    }
+    function createClient({now=Date.now, wait=ms=>new Promise(r=>setTimeout(r,ms)),
+        interval=3400, ttl=30000, cooldown=60000, capacity=600}={}) {
+        const cache=new Map(), pending=new Map();
+        let queue=Promise.resolve(), lastStart=-Infinity, blockedUntil=0;
+        function get(key, read, {signal, cacheMs=ttl}={}) {
+            try { abort(signal); } catch(e) { return Promise.reject(e); }
+            const cached=cache.get(key);
+            if(cached && now()-cached.at < cacheMs) return Promise.resolve(cached.value);
+            if(pending.has(key)) return pending.get(key).then(value=>{abort(signal);return value;}).catch(error=>{
+                abort(signal);
+                // A new selection must not inherit cancellation from a superseded queued owner.
+                if(error.name === 'AbortError') return get(key,read,{signal,cacheMs});
+                throw error;
+            });
+            const task=queue.catch(()=>{}).then(async()=>{
+                abort(signal);
+                if(now()<blockedUntil) throw Error('Steam cooldown active; try again shortly');
+                const remaining=interval-(now()-lastStart);
+                if(remaining>0) await wait(remaining);
+                abort(signal);
+                lastStart=now();
+                try {
+                    const value=await read();
+                    cache.delete(key);
+                    cache.set(key,{at:now(),value});
+                    if(cache.size>capacity) cache.delete(cache.keys().next().value);
+                    return value;
+                } catch(e) {
+                    if(throttled(e)) blockedUntil=now()+cooldown;
+                    throw e;
+                }
+            });
+            queue=task.then(()=>{},()=>{});
+            const result=task.finally(()=>pending.delete(key));
+            pending.set(key,result);
+            return result.then(value=>{abort(signal);return value;});
+        }
+        return {get,clear:()=>cache.clear()};
+    }
+    return {selectOffers,scan,refreshSelection,createClient};
+})();
 
+// Source: src/config.js
     const BUTTON_ID = 'tf2-fabricator-multibuy-button';
     const KIT_BUTTON_ID = 'tf2-fabricator-kit-buyorder-button';
     const ERROR_BUTTON_ID = 'tf2-fabricator-error-report-button';
@@ -29,7 +138,7 @@
     const BUTTON_SPACER_ID = 'tf2-fabricator-button-spacer';
     const ERROR_DIALOG_ID = 'tf2-fabricator-error-report-dialog';
     const ERROR_LOG_ID = 'tf2-fabricator-error-report-log';
-    const SCRIPT_VERSION = '2.8.0';
+    const SCRIPT_VERSION = '1.1.0';
     const PRICE_DB_URL = 'https://raw.githubusercontent.com/Maidehnless/TF2-Fabricator-Smart-Buyer/main/data/killstreak-prices.json';
     const PRICE_DB_CACHE_KEY = 'tf2-fabricator-remote-price-db-v1';
     const MODE_STORAGE_KEY = 'tf2-fabricator-verify-mode-v1';
@@ -42,17 +151,13 @@
     const OWNED_PARTS_STATUS_ID = 'tf2-fabricator-owned-robot-parts';
     const INVENTORY_PAGE_SIZE = 2000;
     const INVENTORY_CACHE_MS = 5 * 60 * 1000;
-    const WEAPON_SEARCH_CACHE_MS = 10 * 60 * 1000;
-    const WEAPON_MAX_SEARCH_PAGES = 8;
-    const WEAPON_CANDIDATE_LIMIT = 10;
-    const WEAPON_DEPTH_PAGE_SIZE = 10;
-    // Steam Market's legacy search endpoint may limit results to 10 per page.
-    // Pacing avoids producing a burst of requests when many pages are needed.
+    const WEAPON_SEARCH_CACHE_MS = 60 * 1000;
     const WEAPON_SEARCH_DELAY_MS = 3400;
-    // If legacy Steam search ignores or scrambles price sorting, inspect
-    // a few additional pages rather than failing the entire lookup.
-    const WEAPON_UNSORTED_EXTRA_PAGES = 3;
-
+    const marketClient = SmartPricing.createClient({interval: WEAPON_SEARCH_DELAY_MS, ttl: 30000});
+    let weaponScanController = null;
+    let priceDatabaseInFlight = null;
+    let recipeRoot = null;
+    const quoteReceivedAt = new WeakMap();
     // Buy-order results are cached briefly to reduce Steam Market requests
     // while clicking between inventory items.
     const BUY_ORDER_CACHE_TIME = 30 * 1000;
@@ -62,9 +167,6 @@
 
     const buyOrderCache = new Map();
     const weaponSearchCache = new Map();
-    const weaponSearchInFlight = new Map();
-    let weaponMarketRequestQueue = Promise.resolve();
-    let lastWeaponMarketRequestAt = 0;
     let lastLoggedFinishedKitName = null;
     const ownedRobotInventory = {
         status: 'idle', // idle, loading, ready, unavailable, error
@@ -668,11 +770,11 @@
             console.error.bind(console)
     };
 
-
     // ============================================================
     // BASIC HELPERS
     // ============================================================
 
+// Source: src/diagnostics.js
     function redactDiagnosticText(text) {
 
         return String(text)
@@ -682,12 +784,10 @@
             );
     }
 
-
     function stringifyDiagnosticValue(value) {
 
         if (typeof value === 'string')
             return redactDiagnosticText(value);
-
 
         if (
             value === null ||
@@ -698,7 +798,6 @@
         ) {
             return String(value);
         }
-
 
         if (
             value instanceof Error ||
@@ -717,12 +816,10 @@
             );
         }
 
-
         try {
 
             const seen =
                 new WeakSet();
-
 
             const json =
                 JSON.stringify(
@@ -737,10 +834,8 @@
                             if (seen.has(nestedValue))
                                 return '[Circular]';
 
-
                             seen.add(nestedValue);
                         }
-
 
                         if (nestedValue instanceof Error) {
                             return {
@@ -753,12 +848,10 @@
                             };
                         }
 
-
                         return nestedValue;
                     },
                     2
                 );
-
 
             if (typeof json === 'string')
                 return redactDiagnosticText(json);
@@ -767,14 +860,12 @@
             // Fall through to String(value).
         }
 
-
         try {
             return redactDiagnosticText(String(value));
         } catch (error) {
             return '[Unprintable value]';
         }
     }
-
 
     function buildErrorReportText() {
 
@@ -783,12 +874,10 @@
                 ? navigator.userAgent
                 : 'Unavailable';
 
-
         const language =
             typeof navigator !== 'undefined'
                 ? navigator.language
                 : 'Unavailable';
-
 
         const lines = [
             'Steam TF2 Fabricator Robot Parts Multi-Buy error report',
@@ -802,7 +891,6 @@
             ''
         ];
 
-
         return lines
             .concat(
                 diagnosticEntries.length > 0
@@ -812,14 +900,12 @@
             .join('\n');
     }
 
-
     function refreshErrorReportUI() {
 
         const button =
             document.getElementById(
                 ERROR_BUTTON_ID
             );
-
 
         if (button) {
             button.textContent =
@@ -828,12 +914,10 @@
                 ')';
         }
 
-
         const logArea =
             document.getElementById(
                 ERROR_LOG_ID
             );
-
 
         if (logArea) {
             logArea.textContent =
@@ -844,16 +928,13 @@
         }
     }
 
-
     function writeDiagnostic(level, ...values) {
 
         const consoleMethod =
             nativeConsole[level] ||
             nativeConsole.log;
 
-
         consoleMethod(...values);
-
 
         const entry =
             '[' +
@@ -865,9 +946,7 @@
                 .map(stringifyDiagnosticValue)
                 .join(' ');
 
-
         diagnosticEntries.push(entry);
-
 
         if (level === 'error') {
 
@@ -879,45 +958,36 @@
             );
         }
 
-
         refreshErrorReportUI();
     }
-
 
     function ensureErrorReportButton() {
 
         if (diagnosticErrorCount <= 0)
             return null;
 
-
         const container =
             document.getElementById(
                 BUTTON_CONTAINER_ID
             );
 
-
         if (!container)
             return null;
-
 
         let button =
             document.getElementById(
                 ERROR_BUTTON_ID
             );
 
-
         if (!button) {
 
             button =
                 createErrorReportButton();
 
-
             container.appendChild(button);
         }
 
-
         refreshErrorReportUI();
-
 
         requestAnimationFrame(
             () =>
@@ -927,10 +997,8 @@
                 )
         );
 
-
         return button;
     }
-
 
     async function copyTextToClipboard(text) {
 
@@ -942,32 +1010,25 @@
             return;
         }
 
-
         const textArea =
             document.createElement('textarea');
-
 
         textArea.value = text;
         textArea.setAttribute('readonly', '');
         textArea.style.position = 'fixed';
         textArea.style.opacity = '0';
 
-
         document.body.appendChild(textArea);
         textArea.select();
-
 
         const copied =
             document.execCommand('copy');
 
-
         textArea.remove();
-
 
         if (!copied)
             throw new Error('The browser rejected the clipboard request.');
     }
-
 
     function styleDialogButton(button, primary = false) {
 
@@ -983,7 +1044,6 @@
         button.style.cursor = 'pointer';
     }
 
-
     function closeErrorReportDialog() {
 
         const overlay =
@@ -991,10 +1051,8 @@
                 ERROR_DIALOG_ID
             );
 
-
         if (!overlay)
             return;
-
 
         if (overlay.escapeHandler) {
             window.removeEventListener(
@@ -1003,10 +1061,8 @@
             );
         }
 
-
         overlay.remove();
     }
-
 
     function openErrorReportDialog() {
 
@@ -1015,16 +1071,13 @@
                 ERROR_DIALOG_ID
             );
 
-
         if (existing) {
             refreshErrorReportUI();
             return;
         }
 
-
         const overlay =
             document.createElement('div');
-
 
         overlay.id = ERROR_DIALOG_ID;
         overlay.setAttribute('role', 'dialog');
@@ -1040,10 +1093,8 @@
         overlay.style.boxSizing = 'border-box';
         overlay.style.background = 'rgba(0, 0, 0, 0.72)';
 
-
         const dialog =
             document.createElement('div');
-
 
         dialog.style.width = 'min(760px, 96vw)';
         dialog.style.maxHeight = '90vh';
@@ -1059,29 +1110,23 @@
         dialog.style.boxShadow = '0 12px 45px rgba(0, 0, 0, 0.7)';
         dialog.style.fontFamily = 'Arial, Helvetica, sans-serif';
 
-
         const headingRow =
             document.createElement('div');
-
 
         headingRow.style.display = 'flex';
         headingRow.style.alignItems = 'center';
         headingRow.style.justifyContent = 'space-between';
         headingRow.style.gap = '12px';
 
-
         const heading =
             document.createElement('strong');
-
 
         heading.textContent = 'TF2 Multi-Buy Error Report';
         heading.style.fontSize = '18px';
         heading.style.color = '#ffffff';
 
-
         const topCloseButton =
             document.createElement('button');
-
 
         topCloseButton.type = 'button';
         topCloseButton.textContent = 'Close';
@@ -1091,14 +1136,11 @@
             closeErrorReportDialog
         );
 
-
         headingRow.appendChild(heading);
         headingRow.appendChild(topCloseButton);
 
-
         const logArea =
             document.createElement('pre');
-
 
         logArea.id = ERROR_LOG_ID;
         logArea.textContent = buildErrorReportText();
@@ -1119,14 +1161,11 @@
         logArea.style.lineHeight = '1.45';
         logArea.style.userSelect = 'text';
 
-
         const reportMessage =
             document.createElement('div');
 
-
         reportMessage.style.fontSize = '14px';
         reportMessage.style.lineHeight = '1.5';
-
 
         reportMessage.appendChild(
             document.createTextNode(
@@ -1134,10 +1173,8 @@
             )
         );
 
-
         const discordLink =
             document.createElement('a');
-
 
         discordLink.href =
             'https://discord.com/users/268722078633558019';
@@ -1147,30 +1184,24 @@
         discordLink.style.color = '#66c0f4';
         discordLink.style.textDecoration = 'underline';
 
-
         reportMessage.appendChild(discordLink);
         reportMessage.appendChild(
             document.createTextNode(' on discord')
         );
 
-
         const actionRow =
             document.createElement('div');
-
 
         actionRow.style.display = 'flex';
         actionRow.style.justifyContent = 'flex-end';
         actionRow.style.gap = '8px';
 
-
         const copyButton =
             document.createElement('button');
-
 
         copyButton.type = 'button';
         copyButton.textContent = 'Copy all logs';
         styleDialogButton(copyButton, true);
-
 
         copyButton.addEventListener(
             'click',
@@ -1179,13 +1210,11 @@
                 const originalText =
                     copyButton.textContent;
 
-
                 try {
 
                     await copyTextToClipboard(
                         buildErrorReportText()
                     );
-
 
                     copyButton.textContent = 'Copied!';
 
@@ -1196,10 +1225,8 @@
                         error
                     );
 
-
                     copyButton.textContent = 'Copy failed';
                 }
-
 
                 setTimeout(
                     () => {
@@ -1210,10 +1237,8 @@
             }
         );
 
-
         const bottomCloseButton =
             document.createElement('button');
-
 
         bottomCloseButton.type = 'button';
         bottomCloseButton.textContent = 'Close';
@@ -1223,17 +1248,14 @@
             closeErrorReportDialog
         );
 
-
         actionRow.appendChild(copyButton);
         actionRow.appendChild(bottomCloseButton);
-
 
         dialog.appendChild(headingRow);
         dialog.appendChild(logArea);
         dialog.appendChild(reportMessage);
         dialog.appendChild(actionRow);
         overlay.appendChild(dialog);
-
 
         overlay.addEventListener(
             'click',
@@ -1243,29 +1265,26 @@
             }
         );
 
-
         overlay.escapeHandler =
             event => {
                 if (event.key === 'Escape')
                     closeErrorReportDialog();
             };
 
-
         window.addEventListener(
             'keydown',
             overlay.escapeHandler
         );
-
 
         document.body.appendChild(overlay);
         logArea.scrollTop = logArea.scrollHeight;
         topCloseButton.focus();
     }
 
+// Source: src/inventory.js
     function escapeRegex(text) {
         return text.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
     }
-
 
     function isVisible(element) {
         if (!element)
@@ -1279,8 +1298,6 @@
             element.getClientRects().length > 0
         );
     }
-
-
 
     // ============================================================
     // OWN ROBOT PARTS: STEAM TF2 INVENTORY SNAPSHOT
@@ -1537,6 +1554,7 @@
     // READ FABRICATOR ITEM CARD
     // ============================================================
 
+// Source: src/recipe.js
     function normalizeMarketName(name) {
         return String(name || '')
             .normalize('NFC')
@@ -1607,13 +1625,33 @@
         return null;
     }
 
+    function selectedItemRoot() {
+        const roots = [...document.querySelectorAll('[data-featuretarget="iteminfo"], #iteminfo0, #iteminfo1, .inventory_iteminfo')]
+            .filter(isVisible);
+        // Nested adapters can describe the same card. Keep the outer visible root.
+        const distinct = roots.filter(root => !roots.some(other => other !== root && other.contains(root)));
+        const fabricators = distinct.filter(root => /(?:Specialized|Professional)\s+Killstreak\s+.+?\s+Kit\s+Fabricator/i.test(root.textContent));
+        if (fabricators.length) return fabricators.length === 1 ? fabricators[0] : null;
+        // Some Steam card captures/layouts omit the legacy wrapper. Anchor at a visible
+        // Fabricator heading and stop at the nearest ancestor containing its recipe.
+        const candidates = [...document.querySelectorAll('h1')].filter(h => isVisible(h) &&
+            /^(?:Specialized|Professional)\s+Killstreak\s+.+?\s+Kit\s+Fabricator/i.test(h.textContent.trim()));
+        if (candidates.length !== 1) return null;
+        for (let root=candidates[0].parentElement; root && root !== document.body; root=root.parentElement) {
+            if (/The following are the inputs that must be fulfilled/.test(root.textContent)) return root;
+        }
+        return null;
+    }
 
     function findFabricatorParts() {
+        recipeRoot = selectedItemRoot();
+        if (!recipeRoot) return null;
+
 
         const groups = new Map();
 
         const elements =
-            document.querySelectorAll('div, span');
+            recipeRoot.querySelectorAll('div, span');
 
         for (const element of elements) {
 
@@ -1665,7 +1703,6 @@
         return chosen;
     }
 
-
     // Read the fabricator's displayed ingredients in their *actual* order.
     // The market/multibuy URL order also controls Steam's displayed row order.
     // Use the visible recipe instead of the complete eight-part master list.
@@ -1712,7 +1749,6 @@
         return ingredients;
     }
 
-
     // ============================================================
     // FIND FINISHED KILLSTREAK KIT
     // ============================================================
@@ -1731,10 +1767,7 @@
          * Steam layouts/extensions can duplicate adjacent heading text.
          */
         const elements =
-            document.querySelectorAll(
-                'div, span'
-            );
-
+            (recipeRoot || selectedItemRoot() || document.createElement('div')).querySelectorAll('div, span');
 
         for (const element of elements) {
 
@@ -1745,13 +1778,11 @@
                 continue;
             }
 
-
             const text =
                 element.textContent
                     .replace(/\u00A0/g, ' ')
                     .replace(/\s+/g, ' ')
                     .trim();
-
 
             /*
              * Fabricator outputs are Specialized or Professional
@@ -1774,7 +1805,6 @@
             }
         }
 
-
         /*
          * Fallback:
          *
@@ -1792,14 +1822,12 @@
          * Professional Killstreak Apoco-Fists Kit
          */
         const headings =
-            document.querySelectorAll('h1');
-
+            (recipeRoot || selectedItemRoot() || document.createElement('div')).querySelectorAll('h1');
 
         for (const heading of headings) {
 
             if (!isVisible(heading))
                 continue;
-
 
             const title =
                 heading.textContent
@@ -1807,12 +1835,10 @@
                     .replace(/\s+/g, ' ')
                     .trim();
 
-
             const match =
                 title.match(
                     /((?:Specialized|Professional)\s+Killstreak\s+.+?\s+Kit)\s+Fabricator\b/i
                 );
-
 
             if (match) {
 
@@ -1821,7 +1847,6 @@
                         .replace(/\s+/g, ' ')
                         .trim();
 
-
                 if (lastLoggedFinishedKitName !== kitName) {
                     lastLoggedFinishedKitName = kitName;
                     writeDiagnostic('log',
@@ -1829,20 +1854,16 @@
                         {rawHeading: title, kitName});
                 }
 
-
                 return kitName;
             }
         }
-
 
         writeDiagnostic('warn',
             '[TF2 Kit BuyOrder] Could not identify finished Killstreak Kit.'
         );
 
-
         return null;
     }
-
 
     function buildFinishedKitMarketURL(kitName) {
 
@@ -1861,19 +1882,16 @@
                     /((?:Specialized|Professional)\s+Killstreak\s+.+?\s+Kit)(?:\s+Fabricator\b)?/i
                 );
 
-
         const safeKitName =
             match
                 ? match[1].trim()
                 : String(kitName || '').trim();
-
 
         return (
             'https://steamcommunity.com/market/listings/440/' +
             encodeURIComponent(safeKitName)
         );
     }
-
 
     // ============================================================
     // BUILD MULTIBUY URL
@@ -1961,25 +1979,23 @@
      * A$0.05 -> 5
      * A$1.25 -> 125
      */
+
+// Source: src/money.js
     function parseSteamPrice(priceText) {
 
         if (!priceText)
             return null;
-
 
         const raw =
             String(priceText)
                 .replace(/\u00A0/g, ' ')
                 .trim();
 
-
         const firstDigit =
             raw.search(/\d/);
 
-
         if (firstDigit === -1)
             return null;
-
 
         let lastDigit = -1;
 
@@ -1994,10 +2010,8 @@
             }
         }
 
-
         if (lastDigit === -1)
             return null;
-
 
         /*
          * Preserve whatever currency Steam returned rather than
@@ -2015,12 +2029,10 @@
                 .substring(0, firstDigit)
                 .replace(/\s+/g, '');
 
-
         const suffix =
             raw
                 .substring(lastDigit + 1)
                 .replace(/\s+/g, '');
-
 
         const numericText =
             raw
@@ -2030,16 +2042,13 @@
                 )
                 .replace(/\s+/g, '');
 
-
         const lastDot =
             numericText.lastIndexOf('.');
 
         const lastComma =
             numericText.lastIndexOf(',');
 
-
         let decimalSeparator = null;
-
 
         if (
             lastDot !== -1 &&
@@ -2069,7 +2078,6 @@
                             : null
                     );
 
-
             if (separator) {
 
                 const separatorIndex =
@@ -2077,12 +2085,10 @@
                         separator
                     );
 
-
                 const digitsAfter =
                     numericText.length -
                     separatorIndex -
                     1;
-
 
                 /*
                  * Steam currencies normally use 0, 2, or in a few
@@ -2102,11 +2108,9 @@
             }
         }
 
-
         let decimals = 0;
         let wholeText = numericText;
         let fractionText = '';
-
 
         if (decimalSeparator) {
 
@@ -2115,12 +2119,10 @@
                     decimalSeparator
                 );
 
-
             decimals =
                 numericText.length -
                 decimalIndex -
                 1;
-
 
             wholeText =
                 numericText
@@ -2129,7 +2131,6 @@
                         decimalIndex
                     )
                     .replace(/[.,]/g, '');
-
 
             fractionText =
                 numericText
@@ -2145,10 +2146,8 @@
                     .replace(/[.,]/g, '');
         }
 
-
         if (!wholeText)
             wholeText = '0';
-
 
         const whole =
             parseInt(
@@ -2156,10 +2155,8 @@
                 10
             );
 
-
         if (!Number.isFinite(whole))
             return null;
-
 
         const scale =
             Math.pow(
@@ -2167,9 +2164,7 @@
                 decimals
             );
 
-
         let fraction = 0;
-
 
         if (decimals > 0) {
 
@@ -2187,16 +2182,13 @@
                     10
                 );
 
-
             if (!Number.isFinite(fraction))
                 fraction = 0;
         }
 
-
         const minorUnits =
             (whole * scale) +
             fraction;
-
 
         const format = {
             prefix,
@@ -2205,7 +2197,6 @@
                 decimalSeparator || '.',
             decimals
         };
-
 
         return {
             minorUnits,
@@ -2217,7 +2208,6 @@
                 )
         };
     }
-
 
     function formatSteamCurrency(
         minorUnits,
@@ -2231,18 +2221,15 @@
             return String(minorUnits);
         }
 
-
         const decimals =
             Number.isFinite(format.decimals)
                 ? format.decimals
                 : 2;
 
-
         const minorUnitDecimals =
             Number.isFinite(format.minorUnitDecimals)
                 ? format.minorUnitDecimals
                 : decimals;
-
 
         const minorUnitScale =
             Math.pow(
@@ -2250,19 +2237,16 @@
                 minorUnitDecimals
             );
 
-
         const displayScale =
             Math.pow(
                 10,
                 decimals
             );
 
-
         const absoluteUnits =
             Math.abs(
                 Math.round(minorUnits)
             );
-
 
         const displayUnits =
             Math.round(
@@ -2271,12 +2255,10 @@
                 minorUnitScale
             );
 
-
         const whole =
             Math.floor(
                 displayUnits / displayScale
             );
-
 
         const fraction =
             decimals > 0
@@ -2287,7 +2269,6 @@
                     '0'
                 )
                 : '';
-
 
         const numberText =
             (
@@ -2305,14 +2286,12 @@
                     : ''
             );
 
-
         return (
             (format.prefix || '') +
             numberText +
             (format.suffix || '')
         );
     }
-
 
     /*
      * Compatibility helper for any debugging code that still wants
@@ -2327,17 +2306,14 @@
                 priceText
             );
 
-
         if (!parsed)
             return null;
-
 
         const scale =
             Math.pow(
                 10,
                 parsed.format.decimals
             );
-
 
         return Math.round(
             (
@@ -2348,12 +2324,19 @@
         );
     }
 
-
     // ============================================================
     // TAMPERMONKEY REQUEST
     // ============================================================
 
-    function requestHTML(url) {
+// Source: src/transport.js
+    // All Market adapters share pacing, deduplication, short caching and a cooldown.
+    function requestHTML(url, options = {}) {
+        return marketClient.get('html:' + url, () => requestHTMLUncached(url), options);
+    }
+    function requestJSON(url, referer = null, options = {}) {
+        return marketClient.get('json:' + url, async () => { const data = await requestJSONUncached(url, referer); if(data && typeof data === 'object') quoteReceivedAt.set(data,Date.now()); return data; }, options);
+    }
+    function requestHTMLUncached(url) {
 
         return new Promise(
             (resolve, reject) => {
@@ -2373,14 +2356,12 @@
 
                     anonymous: false,
 
-
                     onload: function (response) {
 
                         writeDiagnostic('log',
                             '[TF2 MultiBuy] HTTP status:',
                             response.status
                         );
-
 
                         if (
                             response.status < 200 ||
@@ -2397,7 +2378,6 @@
                             return;
                         }
 
-
                         if (!response.responseText) {
 
                             reject(
@@ -2409,12 +2389,10 @@
                             return;
                         }
 
-
                         resolve(
                             response.responseText
                         );
                     },
-
 
                     onerror: function (error) {
 
@@ -2429,7 +2407,6 @@
                             )
                         );
                     },
-
 
                     ontimeout: function () {
 
@@ -2446,8 +2423,7 @@
         );
     }
 
-
-    function requestJSON(url, referer = null) {
+    function requestJSONUncached(url, referer = null) {
 
         return new Promise(
             (resolve, reject) => {
@@ -2473,7 +2449,6 @@
                     headers: headers,
 
                     anonymous: false,
-
 
                     onload: function (response) {
 
@@ -2519,7 +2494,6 @@
                         }
                     },
 
-
                     onerror: function (error) {
 
                         writeDiagnostic('warn',
@@ -2533,7 +2507,6 @@
                             )
                         );
                     },
-
 
                     ontimeout: function () {
 
@@ -2549,22 +2522,20 @@
         );
     }
 
-
     // ============================================================
     // READ STEAM MULTIBUY PAGE
     // ============================================================
 
-    async function getMultiBuyTotal(url, expectedPositiveRows = null) {
+// Source: src/multibuy.js
+    async function getMultiBuyTotal(url, expectedPositiveRows = null, options = {}) {
 
         writeDiagnostic('log',
             '[TF2 MultiBuy] Fetching:',
             url
         );
 
-
         const html =
-            await requestHTML(url);
-
+            await requestHTML(url, options);
 
         writeDiagnostic('log',
             '[TF2 MultiBuy] Received HTML:',
@@ -2572,17 +2543,14 @@
             'characters'
         );
 
-
         const parser =
             new DOMParser();
-
 
         const doc =
             parser.parseFromString(
                 html,
                 'text/html'
             );
-
 
         /*
          * These are the same price inputs Steam's
@@ -2595,12 +2563,10 @@
                 )
             ];
 
-
         writeDiagnostic('log',
             '[TF2 MultiBuy] Price inputs found:',
             priceInputs.length
         );
-
 
         if (priceInputs.length === 0) {
 
@@ -2612,7 +2578,6 @@
                 '[TF2 MultiBuy] Page title:',
                 doc.title
             );
-
 
             writeDiagnostic('log',
                 '[TF2 MultiBuy] Page summary:',
@@ -2626,17 +2591,19 @@
                 }
             );
 
-
             throw new Error(
                 'Steam multibuy page contained no price fields.'
             );
         }
 
-
+        const requested = new URL(url).searchParams;
+        const expectedNames = requested.getAll('items[]');
+        const expectedQty = requested.getAll('qty[]');
+        const expected = new Map(expectedNames.map((name,i) => [normalizeMarketName(name), Number(expectedQty[i])]));
+        const matched = new Set();
         let totalMinorUnits = 0;
         let priceFormat = null;
         let pricedItems = 0;
-
 
         for (const priceInput of priceInputs) {
 
@@ -2645,9 +2612,7 @@
                     'data-nameid'
                 );
 
-
             let quantityInput = null;
-
 
             /*
              * This mirrors Steam's own selector:
@@ -2663,7 +2628,6 @@
                         '_qty'
                     );
             }
-
 
             /*
              * Fallback in case Steam changes
@@ -2683,17 +2647,14 @@
                 }
             }
 
-
             if (!quantityInput)
                 continue;
-
 
             const quantity =
                 parseInt(
                     quantityInput.value,
                     10
                 );
-
 
             if (
                 !Number.isFinite(quantity) ||
@@ -2702,16 +2663,24 @@
                 continue;
             }
 
+            const row = priceInput.closest('.market_multi_buy_row, .market_listing_row, tr') ||
+                doc.getElementById('buy_' + nameID);
+            const names = [...(row?.querySelectorAll('a[href*="/market/listings/440/"]') || [])].map(a => {
+                try { return normalizeMarketName(decodeURIComponent(new URL(a.getAttribute('href'), 'https://steamcommunity.com').pathname.split('/market/listings/440/')[1])); }
+                catch (_) { return ''; }
+            });
+            const name = names.find(n => expected.has(n));
+            if (!name || matched.has(name) || expected.get(name) !== quantity)
+                throw Error('Steam Multi-Buy row identity or quantity does not match the requested recipe.');
+            matched.add(name);
 
             const priceText =
                 priceInput.value;
-
 
             const parsedPrice =
                 parseSteamPrice(
                     priceText
                 );
-
 
             writeDiagnostic('log',
                 '[TF2 MultiBuy] Row:',
@@ -2722,7 +2691,6 @@
                     quantity
                 }
             );
-
 
             if (
                 !parsedPrice ||
@@ -2735,7 +2703,6 @@
                     '".'
                 );
             }
-
 
             if (!priceFormat) {
 
@@ -2756,7 +2723,6 @@
                 );
             }
 
-
             /*
              * Same formula Steam uses:
              *
@@ -2766,13 +2732,11 @@
                 parsedPrice.minorUnits *
                 quantity;
 
-
             totalMinorUnits +=
                 rowTotal;
 
             pricedItems++;
         }
-
 
         if (pricedItems === 0) {
 
@@ -2783,7 +2747,7 @@
 
         // Never show a misleading "complete" cost if a weapon (or a
         // robot part) was silently omitted by Steam's Multi-Buy page.
-        if (expectedPositiveRows !== null && pricedItems !== expectedPositiveRows) {
+        if (matched.size !== expected.size || (expectedPositiveRows !== null && pricedItems !== expectedPositiveRows)) {
             throw new Error(
                 'Steam Multi-Buy priced ' + pricedItems + ' of ' +
                 expectedPositiveRows + ' required item types. ' +
@@ -2797,12 +2761,10 @@
                 priceFormat
             );
 
-
         writeDiagnostic('log',
             '[TF2 MultiBuy] Final total:',
             formattedTotal
         );
-
 
         return {
             minorUnits:
@@ -2816,11 +2778,11 @@
         };
     }
 
-
     // ============================================================
     // FINISHED KIT BUY ORDER
     // ============================================================
 
+// Source: src/kit-orders.js
     function extractListingOrderContext(html) {
 
         const itemNameIDPatterns = [
@@ -2829,15 +2791,12 @@
             /\bitem_nameid\b\s*[:=]\s*["']?(\d+)["']?/i
         ];
 
-
         let itemNameID = null;
-
 
         for (const pattern of itemNameIDPatterns) {
 
             const match =
                 String(html || '').match(pattern);
-
 
             if (match) {
                 itemNameID = match[1];
@@ -2845,12 +2804,10 @@
             }
         }
 
-
         const countryMatch =
             String(html || '').match(
                 /\bg_strCountryCode\s*=\s*["']([A-Za-z]{2})["']/i
             );
-
 
         const currencyMatch =
             String(html || '').match(
@@ -2859,7 +2816,6 @@
             String(html || '').match(
                 /\bwallet_currency\b\s*[:=]\s*(\d+)/i
             );
-
 
         return {
             itemNameID,
@@ -2873,7 +2829,6 @@
                     : '1'
         };
     }
-
 
     function buildOrderHistogramURL(context) {
 
@@ -2893,13 +2848,11 @@
                     '1'
             });
 
-
         return (
             'https://steamcommunity.com/market/itemordershistogram?' +
             parameters.toString()
         );
     }
-
 
     function inferHistogramDecimals(
         histogram,
@@ -2912,7 +2865,6 @@
             Array.isArray(histogram.buy_order_graph[0])
                 ? Number(histogram.buy_order_graph[0][0])
                 : NaN;
-
 
         if (
             Number.isFinite(graphPrice) &&
@@ -2927,17 +2879,14 @@
                         Math.pow(10, decimals)
                     );
 
-
                 if (scaledGraphPrice === highestBuyOrder) {
                     return decimals;
                 }
             }
         }
 
-
         return fallbackDecimals;
     }
-
 
     function extractHighestBuyOrderFromHistogram(
         histogram,
@@ -2958,13 +2907,11 @@
             );
         }
 
-
         const highestBuyOrder =
             Number.parseInt(
                 histogram.highest_buy_order,
                 10
             );
-
 
         if (
             !Number.isFinite(highestBuyOrder) ||
@@ -2976,18 +2923,15 @@
                     'There are currently no buy orders for this kit.'
                 );
 
-
             error.noBuyOrders = true;
 
             throw error;
         }
 
-
         let priceText =
             typeof histogram.buy_order_price === 'string'
                 ? histogram.buy_order_price.trim()
                 : '';
-
 
         if (
             !priceText &&
@@ -2999,7 +2943,6 @@
                     histogram.buy_order_summary,
                     'text/html'
                 );
-
 
             const summaryText =
                 (
@@ -3014,17 +2957,14 @@
                     .replace(/\s+/g, ' ')
                     .trim();
 
-
             const summaryMatch =
                 summaryText.match(
                     /\brequests?\s+to\s+buy\s+at\s+(.{1,40}?)\s+or\s+lower\b/i
                 );
 
-
             if (summaryMatch)
                 priceText = summaryMatch[1].trim();
         }
-
 
         if (
             !priceText &&
@@ -3038,15 +2978,12 @@
                     /\bat\s+(.{1,40}?)\s+or\s+higher\b/i
                 );
 
-
             if (graphMatch)
                 priceText = graphMatch[1].trim();
         }
 
-
         const parsedPrice =
             parseSteamPrice(priceText);
-
 
         let format =
             parsedPrice
@@ -3066,7 +3003,6 @@
                         2
                 };
 
-
         format = {
             ...format,
             minorUnitDecimals:
@@ -3077,7 +3013,6 @@
                 )
         };
 
-
         const formattedPrice =
             priceText ||
             formatSteamCurrency(
@@ -3085,13 +3020,11 @@
                 format
             );
 
-
         writeDiagnostic('log',
             '[TF2 Kit BuyOrder] Order-book buy order:',
             kitName,
             formattedPrice
         );
-
 
         return {
             minorUnits:
@@ -3110,13 +3043,11 @@
         const parser =
             new DOMParser();
 
-
         const doc =
             parser.parseFromString(
                 html,
                 'text/html'
             );
-
 
         const bodyText =
             (
@@ -3130,7 +3061,6 @@
                 .replace(/\u00A0/g, ' ')
                 .replace(/\s+/g, ' ')
                 .trim();
-
 
         /*
          * Legacy fallback for Steam responses that still render the
@@ -3146,7 +3076,6 @@
                 /\brequests?\s+to\s+buy\s+at\s+(.{1,40}?)\s+or\s+lower\b/i
             );
 
-
         if (!buyOrderMatch) {
 
             if (
@@ -3160,7 +3089,6 @@
                 );
             }
 
-
             writeDiagnostic('log',
                 '[TF2 Kit BuyOrder] Listing page summary:',
                 {
@@ -3173,23 +3101,19 @@
                 }
             );
 
-
             throw new Error(
                 'Could not find the buy-order price on the Steam listing page for ' +
                 kitName
             );
         }
 
-
         const priceText =
             buyOrderMatch[1].trim();
-
 
         const parsedPrice =
             parseSteamPrice(
                 priceText
             );
-
 
         if (
             !parsedPrice ||
@@ -3204,20 +3128,17 @@
             );
         }
 
-
         writeDiagnostic('log',
             '[TF2 Kit BuyOrder] Listing-page buy order:',
             kitName,
             parsedPrice.formatted
         );
 
-
         return parsedPrice;
     }
 
-
     async function getFinishedKitHighestBuyOrder(
-        kitName
+        kitName, options = {}
     ) {
 
         const cleanMatch =
@@ -3229,16 +3150,13 @@
                     /((?:Specialized|Professional)\s+Killstreak\s+.+?\s+Kit)(?:\s+Fabricator\b)?/i
                 );
 
-
         if (cleanMatch) {
             kitName =
                 cleanMatch[1].trim();
         }
 
-
         const cached =
             buyOrderCache.get(kitName);
-
 
         if (
             cached &&
@@ -3248,12 +3166,10 @@
             return cached.result;
         }
 
-
         const listingURL =
             buildFinishedKitMarketURL(
                 kitName
             );
-
 
         /*
          * Force English for the background lookup so the parser can
@@ -3265,32 +3181,26 @@
             (listingURL.includes('?') ? '&' : '?') +
             'l=english';
 
-
         writeDiagnostic('log',
             '[TF2 Kit BuyOrder] Loading finished-kit listing:',
             listingFetchURL
         );
 
-
         const html =
             await requestHTML(
-                listingFetchURL
+                listingFetchURL, options
             );
-
 
         const orderContext =
             extractListingOrderContext(html);
 
-
         let highestBuyOrder;
-
 
         if (!orderContext.itemNameID) {
 
             writeDiagnostic('warn',
                 '[TF2 Kit BuyOrder] Listing did not expose item_nameid; using legacy page-text fallback.'
             );
-
 
             highestBuyOrder =
                 extractHighestBuyOrderFromListingHTML(
@@ -3305,7 +3215,6 @@
                     orderContext
                 );
 
-
             writeDiagnostic('log',
                 '[TF2 Kit BuyOrder] Loading order book:',
                 {
@@ -3318,15 +3227,13 @@
                 }
             );
 
-
             try {
 
                 const histogram =
                     await requestJSON(
                         histogramURL,
-                        listingURL
+                        listingURL, options
                     );
-
 
                 highestBuyOrder =
                     extractHighestBuyOrderFromHistogram(
@@ -3336,15 +3243,14 @@
 
             } catch (histogramError) {
 
+                if (histogramError.name === 'AbortError' || options.signal?.aborted) throw histogramError;
                 if (histogramError.noBuyOrders)
                     throw histogramError;
-
 
                 writeDiagnostic('warn',
                     '[TF2 Kit BuyOrder] Structured order-book lookup failed; trying legacy page-text fallback:',
                     histogramError
                 );
-
 
                 try {
 
@@ -3365,7 +3271,6 @@
             }
         }
 
-
         /*
          * The listing page gives us the current highest buy order.
          * For the button, show the amount remaining after a flat
@@ -3378,7 +3283,6 @@
                 highestBuyOrder.minorUnits *
                 (1 - STEAM_SELL_TAX_RATE)
             );
-
 
         const result = {
             grossMinorUnits:
@@ -3403,7 +3307,6 @@
                 listingURL
         };
 
-
         buyOrderCache.set(
             kitName,
             {
@@ -3411,7 +3314,6 @@
                 result: result
             }
         );
-
 
         writeDiagnostic('log',
             '[TF2 Kit BuyOrder] Highest buy order:',
@@ -3421,15 +3323,14 @@
             result.formattedPrice
         );
 
-
         return result;
     }
-
 
     // ============================================================
     // PUBLISHED PRICE PRIORITY + STEAM INVENTORY SETTINGS
     // ============================================================
 
+// Source: src/database-settings.js
     function validatePublishedPriceDatabase(data) {
         if (!data || data.schema !== 'maidehnless.tf2.killstreak_priority.v1' ||
             data.currency !== 'AUD' || !Array.isArray(data.prices) || data.prices.length !== 550 ||
@@ -3442,6 +3343,15 @@
             if (names.length !== 275 || new Set(names).size !== 275 ||
                 names.some(name => !ELIGIBLE_INPUT_WEAPONS[tier].has(name)))
                 throw new Error('Invalid published ' + tier + ' priority array.');
+        }
+        const seen = new Set();
+        for (const row of data.prices) {
+            if (!row || !ELIGIBLE_INPUT_WEAPONS[row.tier]?.has(row.name) || seen.has(row.name) ||
+                !['priced', 'unavailable'].includes(row.status) ||
+                (row.status === 'priced' && (!Number.isFinite(row.price) || row.price <= 0 ||
+                    !Number.isFinite(Date.parse(row.checkedAtUTC)))))
+                throw new Error('Invalid or duplicate published price row.');
+            seen.add(row.name);
         }
         if (!data.generatedAtUTC || !Number.isFinite(Date.parse(data.generatedAtUTC)))
             throw new Error('Price database does not have a valid publication timestamp.');
@@ -3457,13 +3367,18 @@
         priceDatabase.error = '';
         priceDatabase.loadedAt = Date.now();
         if (previous !== priceDatabase.generatedAt) {
-            weaponSearchCache.clear();
             currentFingerprint = '';
         }
         updatePriceDatabaseSettingsUI();
     }
 
     function loadPublishedPriceDatabase(force = false) {
+        if (priceDatabaseInFlight) return priceDatabaseInFlight;
+        priceDatabaseInFlight = fetchPublishedPriceDatabase(force).finally(() => { priceDatabaseInFlight = null; });
+        return priceDatabaseInFlight;
+    }
+
+    function fetchPublishedPriceDatabase(force = false) {
         if (!force && priceDatabase.status === 'ready' &&
             Date.now() - priceDatabase.loadedAt < PRICE_DB_REFRESH_MS) return Promise.resolve();
         priceDatabase.status = priceDatabase.priority ? 'ready' : 'loading';
@@ -3551,8 +3466,8 @@
         label.style.cssText = 'display:block;font-weight:bold;margin-bottom:4px;';
         const select = document.createElement('select');
         select.style.cssText = 'width:100%;padding:5px;background:#101822;color:#fff;border:1px solid #526477;';
-        for (const [value, text] of [['fast', 'Fast — top 10 weapons'],
-            ['balanced', 'Balanced — top 25 weapons'],
+        for (const [value, text] of [['fast', 'Fast — 4 ranked names'],
+            ['balanced', 'Balanced — 10 ranked names'],
             ['exhaustive', 'Exhaustive — all eligible weapons']]) {
             const option = document.createElement('option');
             option.value = value;
@@ -3563,7 +3478,6 @@
         select.addEventListener('change', () => {
             weaponVerificationMode = select.value;
             GM_setValue(MODE_STORAGE_KEY, weaponVerificationMode);
-            weaponSearchCache.clear();
             currentFingerprint = '';
             runUpdateSafely();
         });
@@ -3574,6 +3488,18 @@
             'The GitHub AUD prices determine search priority only, never a guaranteed checkout price.';
         note.style.cssText = 'color:#a8b9c7;font-size:11px;margin:8px 0 14px;';
         popup.appendChild(note);
+        const refreshPrices = document.createElement('button');
+        refreshPrices.type = 'button';
+        refreshPrices.textContent = 'Refresh live prices';
+        refreshPrices.style.cssText = 'padding:5px 8px;margin-bottom:12px;cursor:pointer;';
+        refreshPrices.addEventListener('click', () => {
+            marketClient.clear();
+            weaponSearchCache.clear();
+            buyOrderCache.clear();
+            currentFingerprint = '';
+            runUpdateSafely();
+        });
+        popup.appendChild(refreshPrices);
         const updated = document.createElement('div');
         updated.textContent = 'Latest price database:';
         popup.appendChild(updated);
@@ -3615,409 +3541,120 @@
         updatePriceDatabaseSettingsUI();
     }
 
-    async function scanPublishedPriorityCandidates(tier) {
-        const names = priceDatabase.priority && priceDatabase.priority[tier];
-        const allowed = ELIGIBLE_INPUT_WEAPON_KEYS[tier];
-        if (!names || !allowed) throw new Error('No published ranking for ' + tier);
-        const limit = weaponVerificationMode === 'fast' ? 10 :
-            weaponVerificationMode === 'balanced' ? 25 : names.length;
-        const candidateMap = new Map();
-        let checked = 0;
-        let failures = 0;
-        const active = names.filter(name => {
-            const row = priceDatabase.rows && priceDatabase.rows.get(name);
-            return row && (row.status === 'priced' || weaponVerificationMode === 'exhaustive');
-        });
-        const pick = active.slice(0, limit);
-        for (const name of pick) {
-            try {
-                const response = await requestWeaponMarketSearch(buildWeaponMarketSearchURL(tier, 0, name));
-                if (!response || !(response.success === true || response.success === 1 || response.success === '1'))
-                    throw new Error('Steam Market search response was unsuccessful');
-                for (const item of extractWeaponSearchRows(response)) {
-                    const candidate = readWeaponMarketCandidate(item, allowed);
-                    if (!candidate || normalizeMarketName(candidate.name) !== normalizeMarketName(name)) continue;
-                    const key = normalizeMarketName(candidate.name);
-                    if (!candidateMap.has(key) || candidate.unitPrice < candidateMap.get(key).unitPrice)
-                        candidateMap.set(key, candidate);
-                }
-                checked++;
-            } catch (error) {
-                failures++;
-                if (/429|403|rate.limit/i.test(String(error.message || error))) {
-                    writeDiagnostic('warn', '[TF2 Price Database] Steam throttled verification. Stopping:', error.message);
-                    break;
-                }
-                if (failures >= 5) break;
+// Source: src/weapons.js
+    function walletContext() {
+        let currency = null;
+        try { currency = window.g_rgWalletInfo?.wallet_currency; } catch (_) { /* isolation */ }
+        if (!currency) {
+            for (const script of document.querySelectorAll('script:not([src])')) {
+                const match = script.textContent.match(/["']wallet_currency["']\s*:\s*(\d+)/);
+                if (match) { currency = match[1]; break; }
             }
         }
-        const candidates = [...candidateMap.values()].sort((a,b) =>
-            a.unitPrice - b.unitPrice || a.name.localeCompare(b.name));
-        if (!candidates.length) throw new Error('Could not verify any of the published top ' + pick.length + ' weapon names');
+        return /^\d+$/.test(String(currency || '')) ? Number(currency) : null;
+    }
+
+    function buildWeaponMarketSearchURL(tier, start = 0) {
+        const params = new URLSearchParams({appid:'440',
+            q:tier === 'specialized' ? 'Specialized Killstreak' : 'Killstreak',
+            start:String(start), sort_column:'price', sort_dir:'asc'});
+        for (const type of ['tag_primary','tag_secondary','tag_melee']) params.append('category_440_Type[]',type);
+        params.append('category_440_Quality[]','tag_unique');
+        return 'https://steamcommunity.com/market/search?' + params;
+    }
+
+    function buildWeaponListingDepthURL(name, currency, quantity = 2) {
+        const params = new URLSearchParams({query:'',start:'0',count:String(Math.max(10,quantity)),language:'english'});
+        if (currency) params.set('currency',String(currency));
+        return 'https://steamcommunity.com/market/listings/440/' + encodeURIComponent(name) + '/render/?' + params;
+    }
+
+    // Only use localized buyer prices. Raw seller currency must never stand in for wallet currency.
+    function extractIndividualOffers(data, name, quantity, requestedCurrency) {
+        if (!data || ![true,1,'1'].includes(data.success)) throw Error('Steam listing response unsuccessful');
+        if (!data.listinginfo || typeof data.listinginfo !== 'object') throw Error('Missing listing information');
+        if (!Object.keys(data.listinginfo).length) {
+            if (Number(data.total_count) === 0) return [];
+            throw Error('Steam omitted listing prices');
+        }
+        const doc = new DOMParser().parseFromString(data.results_html || '', 'text/html');
+        const localized = new Map();
+        for (const row of doc.querySelectorAll('.market_listing_row')) {
+            const id = (row.id || '').match(/^listing_(\d+)$/)?.[1];
+            const parsed = parseSteamPrice(row.querySelector('.market_listing_price_with_fee')?.textContent);
+            if (id && parsed && (parsed.format.prefix || parsed.format.suffix)) localized.set(id,parsed);
+        }
         const offers = [];
-        let depthComplete = true;
-        for (const candidate of candidates) {
-            const bestTwo = [...offers].sort((a,b) => a.price - b.price).slice(0,2);
-            if (bestTwo.length >= 2 && candidate.unitPrice > bestTwo[1].price) break;
-            try {
-                offers.push(...await readIndividualWeaponOffers(candidate));
-            } catch (error) {
-                depthComplete = false;
-                offers.push({name: candidate.name, price: candidate.unitPrice,
-                    priceText: candidate.unitPriceText, url: candidate.url,
-                    listingID: 'group:' + candidate.name, fromDetail: false});
-            }
-        }
-        const selected = offers.sort((a,b) => a.price - b.price || a.name.localeCompare(b.name)).slice(0,2);
-        const fullyChecked = checked === pick.length && failures === 0 && pick.length === active.length;
-        const verifiedMinimum = weaponVerificationMode === 'exhaustive' && fullyChecked && depthComplete &&
-            selected.length === 2 &&
-            (candidates.length === 0 || candidates.every(c => c.unitPrice >= selected[selected.length-1].price ||
-                offers.some(o => o.name === c.name)));
-        writeDiagnostic('log', '[TF2 Input Weapon] Published priority search:',
-            {tier, mode:weaponVerificationMode, checked, failures, candidates:candidates.length,
-                selected:selected.map(x => [x.name, x.priceText]), verifiedMinimum});
-        return {tier, offers:selected, verifiedMinimum,
-            searchComplete:fullyChecked, pagesScanned:checked, usedTargetedFallback:false};
-    }
-
-    // ============================================================
-    // CHEAPEST RECIPE WEAPON VIA STEAM MARKET SEARCH
-    // ============================================================
-
-    function sleepWeaponSearch(milliseconds) {
-        return new Promise(resolve => setTimeout(resolve, milliseconds));
-    }
-
-    // Shared queue: two simultaneous tier searches must not double the
-    // Market search rate when the player switches fabricators rapidly.
-    function requestWeaponMarketSearch(url) {
-        // Sequential, paced requests. A single HTTP 429 causes a graceful
-        // error, rather than hammering Steam with immediate retries.
-        const run = weaponMarketRequestQueue
-            .catch(() => {})
-            .then(async () => {
-                const wait = Math.max(0, WEAPON_SEARCH_DELAY_MS -
-                    (Date.now() - lastWeaponMarketRequestAt));
-                if (wait) await sleepWeaponSearch(wait);
-                lastWeaponMarketRequestAt = Date.now();
-                return requestJSON(url, 'https://steamcommunity.com/market/search?appid=440');
-            });
-        weaponMarketRequestQueue = run.then(() => undefined, () => undefined);
-        return run;
-    }
-
-    function buildWeaponMarketSearchURL(tier, start, targetName = null) {
-        // Critical: broad searches are dominated by dirt-cheap Fabricators,
-        // which appear before actual weapons when sorted by price.
-        // Use the TF2 weapon-type filters and Unique quality filter to
-        // restrict results to items that can satisfy the fabricator recipe.
-        const params = new URLSearchParams({
-            appid: '440',
-            query: targetName || (tier === 'specialized' ? 'Specialized Killstreak' : 'Killstreak'),
-            search_descriptions: '0',
-            start: String(start),
-            count: '10',
-            sort_column: 'price',
-            sort_dir: 'asc',
-            norender: '1',
-            l: 'english'
-        });
-        if (!targetName) {
-            for (const type of ['tag_primary', 'tag_secondary', 'tag_melee'])
-                params.append('category_440_Type[]', type);
-            params.append('category_440_Quality[]', 'tag_unique');
-        }
-        return 'https://steamcommunity.com/market/search/render/?' + params.toString();
-    }
-
-    function extractWeaponSearchRows(data) {
-        // The legacy endpoint supplies results[] with names/prices in many
-        // environments, and results_html in some others.
-        if (Array.isArray(data && data.results) && data.results.length) return data.results;
-        if (data && typeof data.results_html === 'string') {
-            const doc = new DOMParser().parseFromString(data.results_html, 'text/html');
-            return [...doc.querySelectorAll('.market_listing_searchresult')].map(row => {
-                const a = row.querySelector('a.market_listing_row_link');
-                const nameNode = row.querySelector('.market_listing_item_name');
-                const priceNode = row.querySelector('.market_listing_their_price span span') ||
-                    row.querySelector('.market_listing_their_price');
-                const name = nameNode ? nameNode.textContent.trim() : '';
-                const priceText = priceNode ? priceNode.textContent.trim() : '';
-                const parsed = parseSteamPrice(priceText);
-                return {name, hash_name: name,
-                    sell_price: parsed ? parsed.minorUnits : null,
-                    sell_price_text: priceText,
-                    sell_listings: 1,
-                    market_url: a ? a.href : null};
-            });
-        }
-        if (Array.isArray(data && data.results)) return data.results;
-        throw new Error('Steam search response contains neither results[] nor results_html.');
-    }
-
-    function parseSearchMinorUnits(item) {
-        const value = Number(item.sell_price);
-        if (item.sell_price !== null && item.sell_price !== '' &&
-            Number.isFinite(value) && value > 0) return value;
-        const parsed = parseSteamPrice(item.sell_price_text || '');
-        return parsed ? parsed.minorUnits : null;
-    }
-
-    function readWeaponMarketCandidate(item, allowed) {
-        const name = String(item.hash_name || item.name ||
-            (item.asset_description && item.asset_description.market_hash_name) || '').trim();
-        const price = parseSearchMinorUnits(item);
-        const listings = Number(item.sell_listings);
-        if (!allowed.has(normalizeMarketName(name)) || !Number.isFinite(price) || price <= 0 ||
-            (Number.isFinite(listings) && listings <= 0)) return null;
-        const priceText = String(item.sell_price_text || '').trim();
-        return {
-            name, unitPrice: price, unitPriceText: priceText || 'See Steam Market',
-            availableListings: Number.isFinite(listings) ? listings : null,
-            url: 'https://steamcommunity.com/market/listings/440/' + encodeURIComponent(name)
-        };
-    }
-
-    function buildWeaponListingDepthURL(name) {
-        const params = new URLSearchParams({
-            query: '', start: '0', count: String(WEAPON_DEPTH_PAGE_SIZE),
-            language: 'english'
-        });
-        return 'https://steamcommunity.com/market/listings/440/' +
-            encodeURIComponent(name) + '/render/?' + params;
-    }
-
-    // Search results are GROUPS of weapons, not individual sale offers.
-    // A sell_listings count of 2 does NOT establish that two are available
-    // at sell_price. Read individual listing IDs and their buyer fees.
-    async function readIndividualWeaponOffers(candidate) {
-        const data = await requestWeaponMarketSearch(buildWeaponListingDepthURL(candidate.name));
-        if (!data || !(data.success === true || data.success === 1 || data.success === '1'))
-            throw new Error('Steam did not return an individual-listings response for ' + candidate.name);
-        const listingInfo = data.listinginfo;
-        if (!listingInfo || typeof listingInfo !== 'object' || !Object.keys(listingInfo).length)
-            throw new Error('No individual listing prices supplied for ' + candidate.name);
-
-        const expectedFormat = parseSteamPrice(candidate.unitPriceText);
-        const listedPrices = new Map();
-        let htmlHasOtherCurrency = false;
-        if (typeof data.results_html === 'string' && data.results_html) {
-            const doc = new DOMParser().parseFromString(data.results_html, 'text/html');
-            for (const row of doc.querySelectorAll('.market_listing_row')) {
-                const listingID = (row.id || '').match(/listing_(\d+)/);
-                if (!listingID) continue;
-                const priceNode = row.querySelector('.market_listing_price_with_fee');
-                if (!priceNode) continue;
-                const parsed = parseSteamPrice(priceNode.textContent.trim());
-                if (!parsed) continue;
-                if (expectedFormat && (parsed.format.prefix !== expectedFormat.format.prefix ||
-                    parsed.format.suffix !== expectedFormat.format.suffix ||
-                    parsed.format.decimals !== expectedFormat.format.decimals)) {
-                    htmlHasOtherCurrency = true;
-                    continue;
-                }
-                listedPrices.set(listingID[1], parsed.minorUnits);
-            }
-        }
-        if (htmlHasOtherCurrency && listedPrices.size === 0)
-            throw new Error('Listing details returned a different wallet currency from the search results.');
-
-        const offers = [];
-        for (const [key, listing] of Object.entries(listingInfo)) {
+        for (const [key,listing] of Object.entries(data.listinginfo)) {
             if (!listing || typeof listing !== 'object') continue;
-            const listingID = String(listing.listingid || key);
-            // Prefer the user-localised price including Steam's buyer fees.
-            let price = listedPrices.get(listingID);
-            if (!Number.isFinite(price)) {
-                const base = Number(listing.converted_price ?? listing.price);
-                const fee = Number(listing.converted_fee ?? listing.fee);
-                if (!Number.isFinite(base) || !Number.isFinite(fee)) continue;
-                price = base + fee;
-            }
-            if (!Number.isFinite(price) || price <= 0) continue;
-
-            const asset = listing.asset || {};
-            const assetID = String(asset.id || '');
-            const context = String(asset.contextid || '2');
-            const assetDetails = (((data.assets || {})['440'] || {})[context] || {})[assetID];
-            if (assetDetails && assetDetails.market_hash_name &&
-                normalizeMarketName(assetDetails.market_hash_name) !== normalizeMarketName(candidate.name))
-                continue;
-
-            // Marketable TF2 weapons normally have amount 1, but support
-            // a genuine stack without assuming every listing has duplicates.
-            const amount = Number.parseInt(asset.amount || '1', 10);
-            const copies = Number.isSafeInteger(amount) && amount >= 1 ? Math.min(amount, 2) : 1;
-            for (let i = 0; i < copies; i++) {
-                offers.push({
-                    name: candidate.name,
-                    price, url: candidate.url,
-                    listingID: listingID + ':' + i,
-                    fromDetail: true,
-                    priceText: expectedFormat ? formatSteamCurrency(price, expectedFormat.format) :
-                        candidate.unitPriceText
-                });
-            }
+            const id = String(listing.listingid || key);
+            const asset=listing.asset;
+            if (!/^\d+$/.test(id) || !asset || String(asset.appid || '440') !== '440') continue;
+            const details = data.assets?.['440']?.[String(asset.contextid || '2')]?.[String(asset.id)];
+            if (details?.market_hash_name && normalizeMarketName(details.market_hash_name) !== normalizeMarketName(name)) continue;
+            const parsed = localized.get(id);
+            // Missing rendered prices are not evidence of the user's wallet price.
+            if (!parsed || !Number.isSafeInteger(parsed.minorUnits) || parsed.minorUnits <= 0) continue;
+            const convertedID = Number(listing.converted_currencyid);
+            if (!Number.isSafeInteger(convertedID) || convertedID <= 0) throw Error('Steam omitted wallet currency metadata');
+            const actualCurrency = convertedID >= 2000 ? convertedID - 2000 : convertedID;
+            if (requestedCurrency && actualCurrency !== requestedCurrency)
+                throw Error('Steam returned a different wallet currency');
+            const currency = JSON.stringify([actualCurrency,parsed.format.prefix,
+                parsed.format.suffix,parsed.format.decimals]);
+            const amount=Number(asset.amount ?? 1);
+            if (!Number.isSafeInteger(amount) || amount<=0) continue;
+            for(let i=0;i<Math.min(amount,quantity);i++) offers.push({name,price:parsed.minorUnits,
+                priceText:formatSteamCurrency(parsed.minorUnits,parsed.format),currency,
+                listingID:id+':'+i,fromDetail:true,
+                url:'https://steamcommunity.com/market/listings/440/'+encodeURIComponent(name)});
         }
-        offers.sort((a, b) => a.price - b.price);
-        if (!offers.length) throw new Error('No priced individual listings for ' + candidate.name);
-
-        // Guard against a region / wallet-currency mismatch on the undoc-
-        // umented endpoint, rather than comparing prices in different units.
-        if (candidate.unitPrice > 0 && (offers[0].price > candidate.unitPrice * 3 ||
-            offers[0].price < candidate.unitPrice / 3))
-            throw new Error('Steam detailed listing prices disagree with grouped search currency.');
-
-        return offers.slice(0, 2);
+        if (!offers.length) throw Error('No localized fee-inclusive individual listing prices');
+        return SmartPricing.selectOffers(offers,quantity);
     }
 
-    async function scanForCheapestInputWeapon(tier) {
-        if (priceDatabase.priority && priceDatabase.status === 'ready')
-            return scanPublishedPriorityCandidates(tier);
-        const allowed = ELIGIBLE_INPUT_WEAPON_KEYS[tier];
-        if (!allowed) throw new Error('Unsupported Killstreak tier: ' + tier);
-        let offset = 0;
-        let previousPrice = null;
-        let sorted = true;
-        let pagesScanned = 0;
-        let reachedEnd = false;
-        let inspected = 0;
-        let usedTargetedFallback = false;
-        const seenPages = new Set();
-        const candidateMap = new Map();
-        const examples = [];
+    async function readIndividualWeaponOffers(name, quantity, currency, signal) {
+        const url = buildWeaponListingDepthURL(name,currency,quantity);
+        const data = await requestJSON(url,'https://steamcommunity.com/market/listings/440/'+encodeURIComponent(name),
+            {signal,cacheMs:60000});
+        const receivedAt=quoteReceivedAt.get(data) || Date.now();
+        return extractIndividualOffers(data,name,quantity,currency).map(o=>({...o,verifiedAt:receivedAt}));
+    }
 
-        for (let page = 0; page < WEAPON_MAX_SEARCH_PAGES; page++) {
-            const data = await requestWeaponMarketSearch(buildWeaponMarketSearchURL(tier, offset));
-            if (!data || !(data.success === true || data.success === 1 || data.success === '1'))
-                throw new Error('Steam returned an unsuccessful weapon search response.');
-            const rows = extractWeaponSearchRows(data);
-            pagesScanned++;
-            if (!rows.length) {reachedEnd = true; break;}
-            if (page === 0) writeDiagnostic('log', '[TF2 Input Weapon] First filtered page names:',
-                rows.slice(0, 10).map(item => item.hash_name || item.name || ''));
-            const signature = rows.map(row => String(row.hash_name || row.name || '')).join('|');
-            if (seenPages.has(signature)) break;
-            seenPages.add(signature);
-
-            for (const item of rows) {
-                inspected++;
-                const name = String(item.hash_name || item.name || '').trim();
-                if (examples.length < 8) examples.push(name);
-                const price = parseSearchMinorUnits(item);
-                if (!Number.isFinite(price) || price <= 0) {sorted = false; continue;}
-                if (previousPrice !== null && price < previousPrice) sorted = false;
-                previousPrice = price;
-                const candidate = readWeaponMarketCandidate(item, allowed);
-                if (!candidate) continue;
-                const key = normalizeMarketName(candidate.name);
-                if (!candidateMap.has(key) || candidate.unitPrice < candidateMap.get(key).unitPrice)
-                    candidateMap.set(key, candidate);
-            }
-
-            offset += rows.length;
-            const totalCount = Number(data.total_count);
-            if (Number.isFinite(totalCount) && offset >= totalCount) reachedEnd = true;
-            writeDiagnostic('log', '[TF2 Input Weapon] Filtered search progress:',
-                {tier, pagesScanned, checked: inspected, candidates: candidateMap.size});
-            const recipes = rows.filter(item =>
-                /\b(?:Kit\s+Fabricator|Fabricator)$/i.test(String(item.hash_name || item.name || ''))).length;
-            if (!candidateMap.size && recipes >= Math.ceil(rows.length / 2)) {
-                writeDiagnostic('warn', '[TF2 Input Weapon] Steam ignored weapon filters, trying exact-name candidates.');
-                break;
-            }
-            if (reachedEnd || (sorted && candidateMap.size >= WEAPON_CANDIDATE_LIMIT)) break;
+    async function getCheapestInputWeapon(tier, quantity = 2, {signal,onProgress} = {}) {
+        const names = priceDatabase.priority?.[tier] || [...(ELIGIBLE_INPUT_WEAPONS[tier] || [])];
+        if (!names.length) throw Error('Unsupported weapon tier');
+        const currency = walletContext();
+        const key=[tier,quantity,weaponVerificationMode,currency,priceDatabase.generatedAt].join('|');
+        const cached=weaponSearchCache.get(key);
+        if(cached && Date.now()-cached.time<WEAPON_SEARCH_CACHE_MS) {
+            if(signal?.aborted) throw new DOMException('Selection changed','AbortError');
+            onProgress?.(cached.result);
+            return cached.result;
         }
-
-        if (candidateMap.size < 2) {
-            // Bounded fallback. Each distinct market name guarantees at
-            // least one separate listing, even if detail lookup is blocked.
-            const bases = ['Bat', 'Bottle', 'Wrench', 'Fire Axe', 'Shovel',
-                'Fists', 'Pistol', 'Syringe Gun'];
-            const prefix = tier === 'specialized' ? 'Specialized Killstreak ' : 'Killstreak ';
-            usedTargetedFallback = true;
-            for (const base of bases) {
-                const name = prefix + base;
-                if (candidateMap.has(normalizeMarketName(name))) continue;
-                const data = await requestWeaponMarketSearch(buildWeaponMarketSearchURL(tier, 0, name));
-                if (!data || !(data.success === true || data.success === 1 || data.success === '1'))
-                    continue;
-                for (const item of extractWeaponSearchRows(data)) {
-                    const candidate = readWeaponMarketCandidate(item, allowed);
-                    if (candidate && normalizeMarketName(candidate.name) === normalizeMarketName(name))
-                        candidateMap.set(normalizeMarketName(name), candidate);
-                }
-            }
-        }
-
-        const candidates = [...candidateMap.values()].sort((a, b) =>
-            a.unitPrice - b.unitPrice || a.name.localeCompare(b.name));
-        if (!candidates.length) throw new Error('No eligible ' + tier +
-            ' weapon found in ' + pagesScanned + ' pages. Examples: ' + examples.join(' | '));
-
-        // Fetch enough INDIVIDUAL listings to establish the cheapest TWO
-        // available offers, not just the cheapest weapon name. A candidate
-        // with one A$0.05 listing and an A$0.20 second copy must compete
-        // against other weapons at e.g. A$0.07.
-        const allOffers = [];
-        let depthComplete = true;
-        for (let i = 0; i < candidates.length; i++) {
-            const candidate = candidates[i];
-            const currentTwo = [...allOffers].sort((a, b) => a.price - b.price).slice(0, 2);
-            if (sorted && currentTwo.length >= 2 &&
-                candidate.unitPrice > currentTwo[1].price) break;
-            try {
-                const detailed = await readIndividualWeaponOffers(candidate);
-                allOffers.push(...detailed);
-            } catch (error) {
-                depthComplete = false;
-                writeDiagnostic('warn', '[TF2 Input Weapon] Could not verify listing depth for ' +
-                    candidate.name + ':', error.message || error);
-                // A grouped Steam Market result confirms a LOWEST listing,
-                // not two at that price. Record precisely ONE backup offer.
-                allOffers.push({
-                    name: candidate.name, price: candidate.unitPrice,
-                    priceText: candidate.unitPriceText, url: candidate.url,
-                    listingID: 'group:' + candidate.name,
-                    fromDetail: false
-                });
-            }
-        }
-        const offers = allOffers.sort((a, b) => a.price - b.price ||
-            a.name.localeCompare(b.name)).slice(0, 2);
-        if (!offers.length) throw new Error('Could not determine any individual listing prices.');
-        const verifiedMinimum = sorted && !usedTargetedFallback && depthComplete &&
-            offers.length >= 2 && (reachedEnd || (Number.isFinite(previousPrice) &&
-                previousPrice > offers[1].price));
-        const result = {tier, offers, verifiedMinimum, sorted,
-            pagesScanned, searchComplete: reachedEnd, usedTargetedFallback};
-        writeDiagnostic('log', '[TF2 Input Weapon] Cheapest individual offers:',
-            {tier, offers: offers.map(o => ({name: o.name, price: o.priceText,
-                listingID: o.listingID})), verifiedMinimum});
+        const limit=weaponVerificationMode==='fast'?4:weaponVerificationMode==='balanced'?10:names.length;
+        const result=await SmartPricing.scan({names,quantity,limit,signal,onProgress,
+            read:(name,signal)=>readIndividualWeaponOffers(name,quantity,currency,signal)});
+        // Exhaustive runs can outlive the quote TTL. Reprice old winners and then
+        // reconsider the pool; never silently present a fifteen-minute-old quote as fresh.
+        const refreshed=await SmartPricing.refreshSelection({offers:result.candidateOffers,quantity,signal,
+            read:(name)=>readIndividualWeaponOffers(name,quantity,currency,signal)});
+        result.offers=refreshed.offers;
+        result.failures+=refreshed.failures;
+        result.stopped ||= refreshed.stopped;
+        delete result.candidateOffers;
+        result.tier=tier;
+        // Listing pages have bounded depth and undocumented ordering; do not claim global minimum.
+        result.verifiedMinimum=false;
+        if(result.offers.length && !result.failures) weaponSearchCache.set(key,{time:Math.min(...result.offers.map(o=>o.verifiedAt)),result});
+        writeDiagnostic('log','[TF2 Pricing] Scan coverage:',{tier,checked:result.checked,total:result.total,
+            failures:result.failures,offers:result.offers.map(o=>[o.name,o.priceText])});
+        if(!result.offers.length) throw Error(result.stopped?'Steam verification stopped or throttled; try again shortly':
+            'No individual offers verified in '+result.attempted+' checked names; try a deeper mode or Steam Market search');
         return result;
     }
 
-    function getCheapestInputWeapon(tier) {
-        const searchKey = tier + '|' + weaponVerificationMode + '|' + priceDatabase.generatedAt;
-        const cached = weaponSearchCache.get(searchKey);
-        if (cached && Date.now() - cached.time < WEAPON_SEARCH_CACHE_MS)
-            return Promise.resolve(cached.result);
-
-        if (weaponSearchInFlight.has(searchKey))
-            return weaponSearchInFlight.get(searchKey);
-
-        const promise = scanForCheapestInputWeapon(tier)
-            .then(result => {
-                weaponSearchCache.set(searchKey, { time: Date.now(), result });
-                return result;
-            })
-            .finally(() => weaponSearchInFlight.delete(searchKey));
-
-        weaponSearchInFlight.set(searchKey, promise);
-        return promise;
-    }
-
+// Source: src/controls.js
     function createWeaponInputRow() {
         const container = document.createElement('div');
         container.id = WEAPON_INPUT_ID;
@@ -4049,8 +3686,8 @@
         if (!container) return;
         container.replaceChildren();
         const summary = document.createElement('div');
-        summary.textContent = (verified ? 'Cheapest available weapon offers' :
-            'Lowest weapon offers found (unverified)') +
+        summary.textContent = (verified ? 'Lowest verified among checked listings' :
+            'Lowest verified offers among checked listings') +
             (estimate ? ' — estimated material total ' + estimate : '');
         summary.style.color = '#c7d5e0';
         container.appendChild(summary);
@@ -4078,18 +3715,14 @@
         const button =
             document.createElement('a');
 
-
         button.id =
             BUTTON_ID;
-
 
         button.target =
             '_blank';
 
-
         button.rel =
             'noopener noreferrer';
-
 
         /*
          * Steam applies typography/layout rules to inventory links.
@@ -4192,7 +3825,6 @@
             'important'
         );
 
-
         button.style.background =
             'linear-gradient(to bottom, #799905 5%, #536904 95%)';
 
@@ -4208,7 +3840,6 @@
         button.style.cursor =
             'pointer';
 
-
         button.addEventListener(
             'mouseenter',
             function () {
@@ -4220,7 +3851,6 @@
                     '#ffffff';
             }
         );
-
 
         button.addEventListener(
             'mouseleave',
@@ -4234,30 +3864,24 @@
             }
         );
 
-
         return button;
     }
-
 
     function createKitButton() {
 
         const button =
             createButton();
 
-
         button.id =
             KIT_BUTTON_ID;
 
-
         return button;
     }
-
 
     function createErrorReportButton() {
 
         const button =
             createButton();
-
 
         button.id =
             ERROR_BUTTON_ID;
@@ -4280,7 +3904,6 @@
             'important'
         );
 
-
         button.addEventListener(
             'mouseenter',
             function () {
@@ -4288,14 +3911,12 @@
             }
         );
 
-
         button.addEventListener(
             'mouseleave',
             function () {
                 this.style.color = '#ffd9d9';
             }
         );
-
 
         button.addEventListener(
             'click',
@@ -4305,20 +3926,16 @@
             }
         );
 
-
         return button;
     }
-
 
     function createButtonSpacer(referenceElement) {
 
         const spacer =
             document.createElement('div');
 
-
         spacer.id =
             BUTTON_SPACER_ID;
-
 
         /*
          * Match Steam's own blank-line rows in the item description.
@@ -4332,16 +3949,13 @@
 
         }
 
-
         spacer.innerHTML =
             '&nbsp;';
-
 
         spacer.style.setProperty(
             '--white-space',
             'pre-line'
         );
-
 
         spacer.style.setProperty(
             'min-height',
@@ -4349,20 +3963,16 @@
             'important'
         );
 
-
         return spacer;
     }
-
 
     function createButtonContainer() {
 
         const container =
             document.createElement('div');
 
-
         container.id =
             BUTTON_CONTAINER_ID;
-
 
         /*
          * Both buttons live inside this one flex row.
@@ -4459,10 +4069,8 @@
             'important'
         );
 
-
         return container;
     }
-
 
     function fitButtonsToContainer(
         container,
@@ -4471,7 +4079,6 @@
 
         if (!container || buttons.length === 0)
             return;
-
 
         /*
          * Start at the requested 15px. If Steam's item-card column is
@@ -4482,7 +4089,6 @@
         let fontSize = 15;
         const minimumFontSize = 11;
 
-
         for (const button of buttons) {
             button.style.setProperty(
                 'font-size',
@@ -4490,7 +4096,6 @@
                 'important'
             );
         }
-
 
         const fits = () => {
 
@@ -4504,13 +4109,11 @@
                 ) +
                 gap * (buttons.length - 1);
 
-
             return (
                 requiredWidth <=
                 container.clientWidth
             );
         };
-
 
         while (
             !fits() &&
@@ -4527,7 +4130,6 @@
                 );
             }
         }
-
 
         /*
          * If an unusually narrow inventory layout still cannot fit
@@ -4549,11 +4151,11 @@
         }
     }
 
-
     // ============================================================
     // UPDATE SELECTED INVENTORY ITEM
     // ============================================================
 
+// Source: src/controller.js
     async function updateMultiBuyButton() {
         const fabricator = findFabricatorParts();
         const kitName = fabricator ? findFinishedKitName() : null;
@@ -4567,6 +4169,7 @@
         let ownedInfo = document.getElementById(OWNED_PARTS_STATUS_ID);
 
         if (!fabricator) {
+            weaponScanController?.abort();
             currentFingerprint = '';
             lookupID++;
             if (buttonContainer)
@@ -4597,6 +4200,9 @@
         }
 
         currentFingerprint = fingerprint;
+        weaponScanController?.abort();
+        weaponScanController = new AbortController();
+        const signal = weaponScanController.signal;
         const thisLookupID = ++lookupID;
         const partsToBuy = missingRobotParts(fabricator.parts);
         const robotURL = buildMultiBuyURL(partsToBuy, [], fabricator.orderedInputs);
@@ -4606,7 +4212,7 @@
         let robotTotalFormatted = null;
 
         if (!button) button = createButton();
-        if (robotRowCount) button.href = robotURL;
+        if (robotRowCount && !['idle','loading'].includes(ownedRobotInventory.status)) button.href = robotURL;
         else button.removeAttribute('href');
         button.textContent = ownedRobotInventory.status === 'loading'
             ? 'Checking owned parts…' : robotRowCount ? partsButtonLabel + ' (...)' :
@@ -4687,7 +4293,7 @@
         // the search is working. Never include an unpriced item in that total.
         const partsPricePromise = robotRowCount === 0
             ? Promise.resolve()
-            : getMultiBuyTotal(robotURL, robotRowCount)
+            : getMultiBuyTotal(robotURL, robotRowCount, {signal})
                 .then(result => {
                     if (thisLookupID !== lookupID) return;
                     robotTotalFormatted = result.formatted;
@@ -4707,7 +4313,17 @@
         // Let the original robot-price request finish before updating
         // the combined label so it cannot overwrite the new total.
         const weaponPricePromise = weaponRequirement
-            ? getCheapestInputWeapon(weaponRequirement.tier)
+            ? getCheapestInputWeapon(weaponRequirement.tier, weaponRequirement.quantity, {signal,
+                onProgress: progress => {
+                    if (thisLookupID !== lookupID || signal.aborted) return;
+                    if (progress.offers.length) showSelectedWeaponOffers(weaponInfo, progress.offers, false);
+                    else weaponInfo.replaceChildren();
+                    const status = document.createElement('div');
+                    status.textContent = 'Checking ranked names: ' + progress.attempted + '/' + progress.budget +
+                        ' · ' + progress.offers.length + '/' + weaponRequirement.quantity + ' offers available so far';
+                    status.style.color = '#a8b9c7';
+                    weaponInfo.appendChild(status);
+                }})
                 .then(async selection => {
                     if (thisLookupID !== lookupID) return;
                     await partsPricePromise;
@@ -4715,9 +4331,12 @@
 
                     const selected = selection.offers.slice(0, weaponRequirement.quantity);
                     if (selected.length < weaponRequirement.quantity) {
-                        setWeaponInputStatus(weaponInfo,
+                        showSelectedWeaponOffers(weaponInfo, selected, false);
+                        const incomplete = document.createElement('div');
+                        incomplete.textContent =
                             'Only ' + selected.length + ' weapon offer(s) found; need ' +
-                            weaponRequirement.quantity + '. Check Steam Market.');
+                            weaponRequirement.quantity + '. Checked ' + selection.checked + '/' + selection.total + ' names; try a deeper mode or Steam Market.';
+                        weaponInfo.appendChild(incomplete);
                         return;
                     }
                     const companionParams = buildWeaponCompanionQuery(selected);
@@ -4737,7 +4356,13 @@
                             selected.reduce((total, offer) => total + offer.price, 0), format);
                     })();
                     showSelectedWeaponOffers(weaponInfo, selected,
-                        selection.verifiedMinimum, estimate);
+                        false, estimate);
+                    const coverage = document.createElement('div');
+                    coverage.textContent = selection.checked + '/' + selection.total + ' eligible names checked · ' +
+                        selection.failures + ' failed' + (selection.stopped ? ' · verification stopped early' : '') +
+                        ' · offers checked ' + new Date(Math.min(...selected.map(o => o.verifiedAt))).toLocaleTimeString();
+                    coverage.style.color = '#a8b9c7';
+                    weaponInfo.appendChild(coverage);
                     const combinedWithNotes = combinedURL + '&' + companionParams;
                     button.href = combinedWithNotes;
                     button.textContent = 'Buy All (Checking...)';
@@ -4751,7 +4376,7 @@
                         // share one row with qty 2.
                         const uniqueWeaponCount = new Set(selected.map(offer => offer.name)).size;
                         const total = await getMultiBuyTotal(combinedURL,
-                            robotRowCount + uniqueWeaponCount);
+                            robotRowCount + uniqueWeaponCount, {signal});
                         if (thisLookupID !== lookupID) return;
                         // Individual offers may have different prices, so a
                         // Multi-Buy quantity×minimum total can be misleading.
@@ -4782,7 +4407,7 @@
                     refit();
                 })
                 .catch(error => {
-                    if (thisLookupID !== lookupID) return;
+                    if (thisLookupID !== lookupID || error.name === 'AbortError') return;
                     setWeaponInputStatus(weaponInfo,
                         'Automatic weapon search unavailable — open Steam Market search',
                         buildWeaponMarketSearchURL(weaponRequirement.tier, 0), error.message);
@@ -4791,7 +4416,7 @@
             : Promise.resolve();
 
         const kitPricePromise = kitName
-            ? getFinishedKitHighestBuyOrder(kitName)
+            ? getFinishedKitHighestBuyOrder(kitName, {signal})
                 .then(result => {
                     if (thisLookupID !== lookupID) return;
                     kitButton.href = result.listingURL;
@@ -4811,7 +4436,6 @@
 
         await Promise.allSettled([partsPricePromise, weaponPricePromise, kitPricePromise]);
     }
-
 
     // ============================================================
     // COMPANION NOTE ON STEAM'S MULTI-BUY PAGE
@@ -4886,69 +4510,39 @@
         }
     }
 
-    // Cached public snapshot is available immediately while GitHub refreshes.
+// Source: src/bootstrap.js
+    // A stored ranking is an ordering hint. Always check publication freshness at startup.
     try {
-        const previousDatabase = GM_getValue(PRICE_DB_CACHE_KEY, null);
-        if (previousDatabase) applyPublishedPriceDatabase(validatePublishedPriceDatabase(previousDatabase));
-    } catch (error) {
-        writeDiagnostic('warn', '[TF2 Price Database] Discarding invalid stored snapshot:', error.message);
+        const previous = GM_getValue(PRICE_DB_CACHE_KEY,null);
+        if(previous) applyPublishedPriceDatabase(validatePublishedPriceDatabase(previous));
+    } catch(error) {
+        writeDiagnostic('warn','[TF2 Price Database] Invalid stored snapshot:',error.message);
+    }
+    const isOwnUI = node => {
+        const el = node?.nodeType === 1 ? node : node?.parentElement;
+        return Boolean(el?.closest('[id^="tf2-fabricator-"], [id^="tf2-price-db-"]'));
+    };
+    function scheduleUpdate(records) {
+        if(records && records.every(r => isOwnUI(r.target) ||
+            (r.type === 'childList' && [...r.addedNodes,...r.removedNodes].length &&
+                [...r.addedNodes,...r.removedNodes].every(isOwnUI)))) return;
+        clearTimeout(updateTimer);
+        updateTimer=setTimeout(() => {
+            createInventoryPriceSettings();
+            runUpdateSafely();
+        },200);
     }
     createInventoryPriceSettings();
-    const settingsObserver = new MutationObserver(() => createInventoryPriceSettings());
-    settingsObserver.observe(document.body, {childList:true, subtree:true});
-    loadPublishedPriceDatabase().then(() => {
-        currentFingerprint = '';
+    const observer=new MutationObserver(scheduleUpdate);
+    observer.observe(document.body,{childList:true,subtree:true,characterData:true,
+        attributes:true,attributeFilter:['style','class','hidden','data-props']});
+    loadPublishedPriceDatabase(true).then(()=>{
+        currentFingerprint='';
         runUpdateSafely();
     });
-    setInterval(() => loadPublishedPriceDatabase().catch(() => {}), PRICE_DB_REFRESH_MS);
-
-    const observer =
-        new MutationObserver(
-            function () {
-
-                clearTimeout(
-                    updateTimer
-                );
-
-
-                updateTimer =
-                    setTimeout(
-                        runUpdateSafely,
-                        200
-                    );
-            }
-        );
-
-
-    observer.observe(
-        document.body,
-        {
-            childList: true,
-            subtree: true,
-            characterData: true
-        }
-    );
-
-
-    // A single snapshot is reused for all recipes. Refresh manually after
-    // purchasing/using materials; no automatic continuous inventory polling.
-    refreshOwnedRobotInventory().catch(error =>
-        writeDiagnostic('warn', '[TF2 Owned Robot Parts] Unexpected scan error:', error));
+    setInterval(()=>loadPublishedPriceDatabase().then(scheduleUpdate).catch(()=>{}),PRICE_DB_REFRESH_MS);
+    refreshOwnedRobotInventory().catch(error=>writeDiagnostic('warn','[TF2 Inventory]',error));
     runUpdateSafely();
-
-    // Start independently of the currently selected item. Use one scan per
-    // tier and share results across all fabricators for ten minutes.
-    // Background errors are logged as warnings; selecting a relevant recipe
-    // still shows an actionable link rather than blocking existing buttons.
-    setTimeout(async () => {
-        if (priceDatabase.status === 'loading') await loadPublishedPriceDatabase();
-        writeDiagnostic('log', '[TF2 Input Weapon] Background prefetch starting for both tiers.');
-        for (const tier of ['regular', 'specialized']) {
-            getCheapestInputWeapon(tier).catch(error => {
-                writeDiagnostic('warn', '[TF2 Input Weapon] Background prefetch ' + tier +
-                    ' unavailable:', error);
-            });
-        }
-    }, 1000);
+    // Weapon checks start only for the current recipe. No speculative scans of either tier.
 
 })();
