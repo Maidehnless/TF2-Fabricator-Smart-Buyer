@@ -4,7 +4,7 @@
 // @author       Maidehnless
 // @icon         https://avatars.akamai.steamstatic.com/2d1c9b05adb94b479e8671f9133e3d9189fcd23a_full.jpg
 // @license      MIT
-// @version      1.1.1
+// @version      1.1.2
 // @description  Checks ranked individual Killstreak weapon offers, subtracts owned robot parts and builds manual fabricator purchase links and kit sale estimates.
 // @match        https://steamcommunity.com/*/inventory*
 // @match        https://steamcommunity.com/market/multibuy*
@@ -144,7 +144,7 @@ const SmartPricing = (() => {
     const BUTTON_SPACER_ID = 'tf2-fabricator-button-spacer';
     const ERROR_DIALOG_ID = 'tf2-fabricator-error-report-dialog';
     const ERROR_LOG_ID = 'tf2-fabricator-error-report-log';
-    const SCRIPT_VERSION = '1.1.1';
+    const SCRIPT_VERSION = '1.1.2';
     const PRICE_DB_URL = 'https://raw.githubusercontent.com/Maidehnless/TF2-Fabricator-Smart-Buyer/main/data/killstreak-prices.json';
     const PRICE_DB_CACHE_KEY = 'tf2-fabricator-remote-price-db-v1';
     const MODE_STORAGE_KEY = 'tf2-fabricator-verify-mode-v1';
@@ -1904,7 +1904,7 @@ const SmartPricing = (() => {
     // ============================================================
 
     function buildMultiBuyURL(parts, weapons = [], orderedInputs = null) {
-        let url = 'https://steamcommunity.com/market/multibuy?appid=440';
+        let url = 'https://steamcommunity.com/market/multibuy?appid=440&maidehn=less';
 
         // Each named weapon occupies one Steam row. Two listings for the same
         // weapon become quantity 2; two different weapons remain separate rows.
@@ -3505,11 +3505,6 @@ const SmartPricing = (() => {
         });
         label.appendChild(select);
         popup.appendChild(label);
-        const note = document.createElement('div');
-        note.textContent = 'Live checks use your own Steam wallet currency. ' +
-            'The GitHub AUD prices determine search priority only, never a guaranteed checkout price.';
-        note.style.cssText = 'color:#a8b9c7;font-size:11px;margin:8px 0 14px;';
-        popup.appendChild(note);
         const refreshPrices = document.createElement('button');
         refreshPrices.type = 'button';
         refreshPrices.textContent = 'Refresh live prices';
@@ -4293,6 +4288,8 @@ const SmartPricing = (() => {
         let robotTotalFormatted = null;
 
         if (!button) button = createButton();
+        button.onclick = null;
+        button.onauxclick = null;
         if (robotRowCount && !['idle','loading'].includes(ownedRobotInventory.status)) button.href = robotURL;
         else button.removeAttribute('href');
         button.textContent = ownedRobotInventory.status === 'loading'
@@ -4363,6 +4360,38 @@ const SmartPricing = (() => {
             return;
         }
 
+        let searchInProgress = Boolean(weaponRequirement);
+        let lastProgress = null;
+        const updateProvisionalCheckout = progress => {
+            lastProgress = progress;
+            const selected = progress.offers.slice(0,weaponRequirement.quantity);
+            if (!selected.length) return;
+            button.href = buildMultiBuyURL(partsToBuy,selected,fabricator.orderedInputs) + '&' +
+                buildWeaponCompanionQuery(selected);
+            const complete = selected.length === weaponRequirement.quantity;
+            button.textContent = (complete ? 'Buy All' : 'Buy Found Items') + ' (' +
+                selected.length + '/' + weaponRequirement.quantity + ' weapons' +
+                (searchInProgress ? ' · searching…' : '') + ')';
+            button.title = 'Open Multi-Buy with the lowest-priced weapon offers found so far.';
+            refit();
+        };
+        const confirmSearchProgress = event => {
+            if (event.type === 'auxclick' && event.button !== 1) return;
+            if (thisLookupID !== lookupID || signal.aborted) { event.preventDefault(); return; }
+            if (!searchInProgress || !button.hasAttribute('href')) return;
+            const found = lastProgress?.offers.slice(0,weaponRequirement.quantity) || [];
+            const progress = lastProgress ? lastProgress.attempted + '/' + lastProgress.budget : '0';
+            const message = 'Weapon price search is still running.\n\n' +
+                'Ranked names checked: ' + progress + '\n' +
+                'Weapon offers found: ' + found.length + '/' + weaponRequirement.quantity + '\n\n' +
+                (found.length ? found.map(o => o.name + ' — ' + o.priceText).join('\n') + '\n\n' : '') +
+                (found.length < weaponRequirement.quantity ? 'This link does not yet include every required weapon.\n\n' : '') +
+                'You can open Multi-Buy now with the items found so far. The search will continue on this inventory tab and may find cheaper offers.\n\nOpen Multi-Buy now?';
+            if (!window.confirm(message)) event.preventDefault();
+        };
+        button.onclick = confirmSearchProgress;
+        button.onauxclick = confirmSearchProgress;
+
         writeDiagnostic('log', '[TF2 MultiBuy] Required robot parts:', Object.fromEntries(fabricator.parts));
         writeDiagnostic('log', '[TF2 MultiBuy] Missing robot parts:', Object.fromEntries(partsToBuy));
         writeDiagnostic('log', '[TF2 MultiBuy] Recipe URL order:', fabricator.orderedInputs.map(item =>
@@ -4381,6 +4410,7 @@ const SmartPricing = (() => {
                     button.textContent = partsButtonLabel + ' (' + result.formatted + ')';
                     button.title = 'Price of missing robot parts only. Weapon search may update this link.';
                     refit();
+                    if (lastProgress?.offers.length) updateProvisionalCheckout(lastProgress);
                     writeDiagnostic('log', '[TF2 MultiBuy] Missing robot-parts total:', result.formatted);
                 })
                 .catch(error => {
@@ -4388,6 +4418,7 @@ const SmartPricing = (() => {
                     writeDiagnostic('error', '[TF2 MultiBuy] ROBOT PRICE ERROR:', error);
                     button.textContent = partsButtonLabel + ' (Price unavailable)';
                     button.title = error.message;
+                    if (lastProgress?.offers.length) updateProvisionalCheckout(lastProgress);
                     refit();
                 });
 
@@ -4404,22 +4435,18 @@ const SmartPricing = (() => {
                         ' · ' + progress.offers.length + '/' + weaponRequirement.quantity + ' offers available so far';
                     status.style.color = '#a8b9c7';
                     weaponInfo.appendChild(status);
+                    updateProvisionalCheckout(progress);
                 }})
                 .then(async selection => {
                     if (thisLookupID !== lookupID) return;
+                    searchInProgress = false;
                     await partsPricePromise;
                     if (thisLookupID !== lookupID) return;
 
                     const selected = selection.offers.slice(0, weaponRequirement.quantity);
-                    if (selected.length < weaponRequirement.quantity) {
-                        showSelectedWeaponOffers(weaponInfo, selected, false);
-                        const incomplete = document.createElement('div');
-                        incomplete.textContent =
-                            'Only ' + selected.length + ' weapon offer(s) found; need ' +
-                            weaponRequirement.quantity + '. Checked ' + selection.checked + '/' + selection.total + ' names; try a deeper mode or Steam Market.';
-                        weaponInfo.appendChild(incomplete);
-                        return;
-                    }
+                    const partial = selected.length < weaponRequirement.quantity;
+                    const purchaseLabel = partial ? 'Buy Found Items (' + selected.length + '/' +
+                        weaponRequirement.quantity + ' weapons)' : 'Buy All';
                     const companionParams = buildWeaponCompanionQuery(selected);
                     const combinedURL = buildMultiBuyURL(partsToBuy, selected, fabricator.orderedInputs);
                     const estimate = (() => {
@@ -4438,6 +4465,12 @@ const SmartPricing = (() => {
                     })();
                     showSelectedWeaponOffers(weaponInfo, selected,
                         false, estimate);
+                    if (partial) {
+                        const incomplete = document.createElement('div');
+                        incomplete.textContent = 'Only ' + selected.length + ' weapon offer(s) found; need ' +
+                            weaponRequirement.quantity + '. This checkout includes only the found quantity.';
+                        weaponInfo.appendChild(incomplete);
+                    }
                     const coverage = document.createElement('div');
                     coverage.textContent = selection.checked + '/' + selection.total + ' eligible names checked · ' +
                         selection.failures + ' failed' + (selection.stopped ? ' · verification stopped early' : '') +
@@ -4446,7 +4479,7 @@ const SmartPricing = (() => {
                     weaponInfo.appendChild(coverage);
                     const combinedWithNotes = combinedURL + '&' + companionParams;
                     button.href = combinedWithNotes;
-                    button.textContent = 'Buy All (Checking...)';
+                    button.textContent = purchaseLabel + ' (Checking...)';
                     button.title = 'Robot parts plus ' + selected.length +
                         ' individually priced Killstreak weapon offers. Confirm market availability.';
                     refit();
@@ -4461,7 +4494,7 @@ const SmartPricing = (() => {
                         if (thisLookupID !== lookupID) return;
                         // Individual offers may have different prices, so a
                         // Multi-Buy quantity×minimum total can be misleading.
-                        button.textContent = 'Buy All (' + (estimate || total.formatted) +
+                        button.textContent = purchaseLabel + ' (' + (estimate || total.formatted) +
                             (estimate ? ' est.' : '') + ')';
                         button.title = 'Robot parts + selected weapon listings. ' +
                             (estimate ? 'Estimate uses individual listing prices; ' : '') +
@@ -4492,8 +4525,12 @@ const SmartPricing = (() => {
                     setWeaponInputStatus(weaponInfo,
                         'Automatic weapon search unavailable — open Steam Market search',
                         buildWeaponMarketSearchURL(weaponRequirement.tier, 0), error.message);
+                    if (robotRowCount) button.href = robotURL;
+                    else button.removeAttribute('href');
+                    button.textContent = robotRowCount ? partsButtonLabel + (robotTotalFormatted ? ' (' + robotTotalFormatted + ')' : '') : 'Robot Parts (Already owned)';
                     writeDiagnostic('error', '[TF2 Input Weapon] SEARCH ERROR:', error);
                 })
+                .finally(() => { searchInProgress = false; })
             : Promise.resolve();
 
         const kitPricePromise = kitName
@@ -4567,8 +4604,36 @@ const SmartPricing = (() => {
         document.body.appendChild(panel);
     }
 
+    function initMultiBuySupportMessage() {
+        const params = new URLSearchParams(window.location.search);
+        if (!window.location.pathname.startsWith('/market/multibuy') ||
+            params.get('appid') !== '440' || params.get('maidehn') !== 'less') return false;
+        if (document.getElementById('tf2-fabricator-support')) return true;
+        const header = document.querySelector('.market_header_bg');
+        if (!header) return false;
+        const message = document.createElement('div');
+        message.id = 'tf2-fabricator-support';
+        message.style.cssText = 'clear:both;padding:8px 12px;text-align:center;color:#c7d5e0;font:12px/1.5 Arial,sans-serif;';
+        const link = document.createElement('a');
+        link.href = 'https://steamcommunity.com/tradeoffer/new/?partner=360423137&token=fnw5189U';
+        link.target = '_blank';
+        link.rel = 'noopener noreferrer';
+        link.style.cssText = 'color:#66c0f4;text-decoration:underline;';
+        link.textContent = 'Making profit from this helpful script? Feel free to throw me a dollar to show support!';
+        message.appendChild(link);
+        header.appendChild(message);
+        return true;
+    }
+
     if (window.location.pathname.startsWith('/market/multibuy')) {
         initMultiBuyWeaponPanel();
+        const params = new URLSearchParams(window.location.search);
+        if (params.get('appid') === '440' && params.get('maidehn') === 'less' && !initMultiBuySupportMessage()) {
+            const headerObserver = new MutationObserver(() => {
+                if (initMultiBuySupportMessage()) headerObserver.disconnect();
+            });
+            headerObserver.observe(document.body,{childList:true,subtree:true});
+        }
         return;
     }
 
