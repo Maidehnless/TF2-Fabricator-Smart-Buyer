@@ -4,7 +4,7 @@
 // @author       Maidehnless
 // @icon         https://avatars.akamai.steamstatic.com/2d1c9b05adb94b479e8671f9133e3d9189fcd23a_full.jpg
 // @license      MIT
-// @version      2.8.0
+// @version      1.0.1
 // @description  Adds cheapest eligible Killstreak weapons plus owned robot-part deductions to fabricator Multi-Buy calculations and kit insta-sell estimates.
 // @match        https://steamcommunity.com/*/inventory*
 // @match        https://steamcommunity.com/market/multibuy*
