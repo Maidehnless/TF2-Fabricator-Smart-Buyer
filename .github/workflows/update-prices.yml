@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       scan_mode:
-        description: "How many Steam Market entries to check"
+        description: "Choose how many weapon prices to refresh"
         required: true
         type: choice
         default: test
@@ -12,8 +12,11 @@ on:
           - test
           - incremental
           - full
+
   schedule:
-    - cron: '17 */6 * * *'
+    # Every six hours.
+    # Perth: approximately 2:17am, 8:17am, 2:17pm, 8:17pm.
+    - cron: "17 */6 * * *"
 
 permissions:
   contents: write
@@ -26,6 +29,11 @@ jobs:
   update-prices:
     runs-on: ubuntu-latest
     timeout-minutes: 90
+
+    defaults:
+      run:
+        shell: bash
+
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
@@ -35,41 +43,66 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.12'
+          python-version: "3.12"
 
-      - name: Check database integrity
+      - name: Validate existing database
         run: python updater/update_prices.py --validate
 
-      - name: Refresh prices
+      - name: Refresh Steam prices
         env:
+          # Scheduled runs use incremental mode.
           SCAN_MODE: ${{ inputs.scan_mode || 'incremental' }}
-        shell: bash
         run: |
+          set -euo pipefail
+
           case "$SCAN_MODE" in
             test)
-              python updater/update_prices.py --limit 6 --leading 2 --delay 4
+              # Six items, including two leading candidates per tier.
+              python updater/update_prices.py \
+                --limit 6 \
+                --leading 2 \
+                --delay 4
               ;;
+
             incremental)
-              python updater/update_prices.py --limit 60 --leading 8 --delay 4
+              # Sixty items, including eight leading candidates per tier.
+              python updater/update_prices.py \
+                --limit 60 \
+                --leading 8 \
+                --delay 4
               ;;
+
             full)
-              python updater/update_prices.py --limit 550 --leading 8 --delay 4
+              # All 550 names. Use occasionally or when seeding data.
+              python updater/update_prices.py \
+                --limit 550 \
+                --leading 8 \
+                --delay 4
               ;;
+
             *)
               echo "Unknown scan mode: $SCAN_MODE" >&2
               exit 1
               ;;
           esac
 
-      - name: Commit updated price database
-        shell: bash
+      - name: Validate refreshed database
+        run: python updater/update_prices.py --validate
+
+      - name: Commit updated prices
         run: |
+          set -euo pipefail
+
           git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add data/killstreak-prices.json
+          git config user.email \
+            "41898282+github-actions[bot]@users.noreply.github.com"
+
+          git add -- data/killstreak-prices.json
+
           if git diff --cached --quiet; then
             echo "No verified price changes to publish."
             exit 0
           fi
+
           git commit -m "Update TF2 Killstreak price database"
           git push
