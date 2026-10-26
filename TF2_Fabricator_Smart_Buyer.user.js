@@ -1,5 +1,5 @@
 // ==UserScript==
-// @name         Steam Team Fortress 2 Fabricator Robot Parts Multi-Buy
+// @name         TF2 Fabricator Smart Buyer
 // @namespace    https://maidehnless.com/
 // @author       Maidehnless
 // @icon         https://avatars.akamai.steamstatic.com/2d1c9b05adb94b479e8671f9133e3d9189fcd23a_full.jpg
