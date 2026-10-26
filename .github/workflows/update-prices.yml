@@ -7,7 +7,7 @@ on:
         description: "Choose how many weapon prices to refresh"
         required: true
         type: choice
-        default: test
+        default: incremental
         options:
           - test
           - incremental
