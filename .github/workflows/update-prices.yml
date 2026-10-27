@@ -15,7 +15,8 @@ on:
           - full
   schedule:
     # Cheap due-time checks. Steam is contacted only when the saved state is due.
-    # New cycles: 5 hours after completion. Interrupted cycles: >=30 minute cooldown.
+    # New cycles: 5h after completion. Batch continuation: 30m.
+    # Steam rejections: 6h, then 12h, then 24h; test-force overrides manually.
     - cron: "7,17,27,37,47,57 * * * *"
 
 permissions:
@@ -71,6 +72,7 @@ jobs:
             --delay 10
             --interval-hours 5
             --retry-minutes 30
+            --rate-limit-retry-minutes 360
             --max-requests 60
             --max-runtime-seconds 1200
           )
