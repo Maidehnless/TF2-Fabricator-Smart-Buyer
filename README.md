@@ -6,7 +6,7 @@
 
 Find eligible Killstreak weapon inputs, account for robot parts you already own, and build Steam Community Market Multi-Buy links without adding up every ingredient by hand.
 
-[![Version](https://img.shields.io/badge/userscript-v2.8.0-1b2838)](./TF2_Fabricator_Smart_Buyer.user.js)
+[![Version](https://img.shields.io/badge/userscript-v3.0.0-1b2838)](./TF2_Fabricator_Smart_Buyer.user.js)
 [![Platform](https://img.shields.io/badge/platform-Steam%20Community%20Market-1b2838)](https://steamcommunity.com/market/)
 [![License: MIT](https://img.shields.io/badge/license-MIT-green)](./LICENSE)
 
