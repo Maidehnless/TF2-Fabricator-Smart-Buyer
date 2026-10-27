@@ -4,7 +4,7 @@ import path from 'node:path';
 const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
 export const modules=['pricing.js','config.js','diagnostics.js','inventory.js','recipe.js',
   'money.js','transport.js','multibuy.js','kit-orders.js','database-settings.js',
-  'weapons.js','controls.js','controller.js','bootstrap.js'];
+  'database-stats.js','weapons.js','controls.js','controller.js','bootstrap.js'];
 export async function bundle({bootstrap=true}={}) {
   const contents=await Promise.all(modules.filter(n=>bootstrap || n!=='bootstrap.js').map(async n=>
     '// Source: src/'+n+'\n'+(await readFile(path.join(root,'src',n),'utf8')).replace(/^export /gm,'')));

@@ -249,6 +249,13 @@
             runUpdateSafely();
         });
         popup.appendChild(refresh);
+        const stats = document.createElement('button');
+        stats.id = 'tf2-price-db-stats-button';
+        stats.type = 'button';
+        stats.textContent = 'DB Stats';
+        stats.style.cssText = refresh.style.cssText + 'display:block;margin-top:8px;';
+        stats.addEventListener('click', () => showDatabaseStats(trigger));
+        popup.appendChild(stats);
         wrap.appendChild(popup);
         trigger.addEventListener('click', () => {
             popup.hidden = !popup.hidden;
