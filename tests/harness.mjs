@@ -22,7 +22,7 @@ export async function loadApp(html='<html><head></head><body></body></html>', {v
     'findFinishedKitName','buildMultiBuyURL','extractIndividualOffers','parseRobotPartInventoryPage',
     'missingRobotParts','isViewedInventoryOwn','getMultiBuyTotal','validatePublishedPriceDatabase',
     'redactDiagnosticText','ownedRobotInventory','createInventoryPriceSettings','updateMultiBuyButton',
-    'runUpdateSafely','ensureOwnedRobotInventory','initMultiBuySupportMessage','decodeSteamMarketResponse','getCheapestInputWeapon','priceDatabase','loadPriceUpdateSchedule','priceUpdateSchedule','updatePriceDatabaseSettingsUI','SmartPricing','walletContext'];
+    'runUpdateSafely','ensureOwnedRobotInventory','initMultiBuySupportMessage','decodeSteamMarketResponse','getCheapestInputWeapon','priceDatabase','formatPublishedTimestamp','loadPriceUpdateSchedule','priceUpdateSchedule','updatePriceDatabaseSettingsUI','SmartPricing','walletContext'];
   const source=await bundle({bootstrap:false});
   const declaration=(source.includes('function ensureOwnedRobotInventory(')?'':'const ensureOwnedRobotInventory=undefined;')+(source.includes('function decodeSteamMarketResponse(')?'':'const decodeSteamMarketResponse=undefined;')+(source.includes('function initMultiBuySupportMessage(')?'':'const initMultiBuySupportMessage=undefined;');
   const code=source.replace(/\n\}\)\(\);\s*$/,`\n${declaration}\nglobalThis.app={${exports.join(',')},setWeaponSearch:fn=>getCheapestInputWeapon=fn,setHTML:fn=>requestHTML=fn,setJSON:fn=>requestJSON=fn,setInventory:fn=>requestInventoryJSON=fn,refreshOwnedRobotInventory};\n})();`);

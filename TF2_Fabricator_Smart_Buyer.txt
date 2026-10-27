@@ -4,7 +4,7 @@
 // @author       Maidehnless
 // @icon         https://avatars.akamai.steamstatic.com/2d1c9b05adb94b479e8671f9133e3d9189fcd23a_full.jpg
 // @license      MIT
-// @version      3.0.2
+// @version      3.0.3
 // @description  Checks ranked individual Killstreak weapon offers, subtracts owned robot parts and builds manual fabricator purchase links and kit sale estimates.
 // @match        https://steamcommunity.com/*/inventory*
 // @match        https://steamcommunity.com/market/multibuy*
@@ -144,7 +144,7 @@ const SmartPricing = (() => {
     const BUTTON_SPACER_ID = 'tf2-fabricator-button-spacer';
     const ERROR_DIALOG_ID = 'tf2-fabricator-error-report-dialog';
     const ERROR_LOG_ID = 'tf2-fabricator-error-report-log';
-    const SCRIPT_VERSION = '3.0.2';
+    const SCRIPT_VERSION = '3.0.3';
     const PRICE_DB_URL = 'https://raw.githubusercontent.com/Maidehnless/TF2-Fabricator-Smart-Buyer/main/data/killstreak-prices.json';
     const PRICE_DB_CACHE_KEY = 'tf2-fabricator-remote-price-db-v1';
     const MODE_STORAGE_KEY = 'tf2-fabricator-verify-mode-v1';
@@ -3449,9 +3449,7 @@ const SmartPricing = (() => {
         }
         const data = priceUpdateSchedule.data;
         const retry = data.status === 'retrying';
-        const date = new Date(retry ? data.nextAttemptAtUTC : data.nextCycleAtUTC);
-        const minutes = Math.max(0, Math.ceil((date.getTime() - Date.now()) / 60000));
-        next.textContent = 'Next Update: ' + minutes + (minutes === 1 ? ' minute' : ' minutes');
+        next.textContent = formatLocalDatabaseTimestamp(retry ? data.nextAttemptAtUTC : data.nextCycleAtUTC);
         detail.textContent = 'GitHub scheduling and Steam limits can delay completion.\n' +
             'Previous issue: ' + (data.lastError ? String(data.lastError).slice(0, 300) : 'None reported.');
     }
@@ -3547,10 +3545,20 @@ const SmartPricing = (() => {
         });
     }
 
+    // UTC remains the storage format. Date getters apply the viewer's local zone only for display.
+    function formatLocalDatabaseTimestamp(value) {
+        if (!value) return 'Not loaded';
+        const date = new Date(value);
+        if (!Number.isFinite(date.getTime())) return 'Invalid timestamp';
+        const pad = number => String(number).padStart(2, '0');
+        const hours = date.getHours();
+        return pad(hours % 12 || 12) + ':' + pad(date.getMinutes()) +
+            (hours < 12 ? ' am, ' : ' pm, ') + pad(date.getDate()) + '/' +
+            pad(date.getMonth() + 1) + '/' + date.getFullYear();
+    }
+
     function formatPublishedTimestamp() {
-        if (!priceDatabase.generatedAt) return 'Not loaded';
-        const date = new Date(priceDatabase.generatedAt);
-        return Number.isFinite(date.getTime()) ? date.toLocaleString() : 'Invalid timestamp';
+        return formatLocalDatabaseTimestamp(priceDatabase.generatedAt);
     }
 
     function updatePriceDatabaseSettingsUI() {
@@ -3623,8 +3631,10 @@ const SmartPricing = (() => {
             runUpdateSafely();
         });
         popup.appendChild(refreshPrices);
-        const updated = document.createElement('div');
-        updated.textContent = 'Latest price database:';
+        const updated = document.createElement('strong');
+        updated.id = 'tf2-price-db-previous-label';
+        updated.textContent = 'Previous DB Update';
+        updated.style.cssText = 'display:block;color:white;';
         popup.appendChild(updated);
         const stamp = document.createElement('div');
         stamp.id = 'tf2-price-db-last-updated';
@@ -3634,6 +3644,11 @@ const SmartPricing = (() => {
         state.id = 'tf2-price-db-status';
         state.style.cssText = 'font-size:11px;color:#a8b9c7;margin:3px 0 10px;';
         popup.appendChild(state);
+        const nextLabel = document.createElement('strong');
+        nextLabel.id = 'tf2-price-db-next-label';
+        nextLabel.textContent = 'Next DB Update';
+        nextLabel.style.cssText = 'display:block;color:white;';
+        popup.appendChild(nextLabel);
         const next = document.createElement('div');
         next.id = 'tf2-price-db-next-update';
         next.style.cssText = 'color:white;font-weight:bold;';
@@ -4808,7 +4823,6 @@ const SmartPricing = (() => {
     observer.observe(document.body,{childList:true,subtree:true,characterData:true,
         attributes:true,attributeFilter:['style','class','hidden','data-props']});
     loadPriceUpdateSchedule(true);
-    setInterval(updatePriceScheduleUI, 15000);
     loadPublishedPriceDatabase(true).then(()=>{
         currentFingerprint='';
         runUpdateSafely();

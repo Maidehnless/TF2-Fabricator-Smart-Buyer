@@ -379,7 +379,7 @@ def run_resumable(args, db):
         rebuild_priority(db)
         db['generatedAtUTC'] = utc_now()
         db['latestPublishedUTC'] = db['generatedAtUTC']
-        db['updaterVersion'] = '1.2.2'
+        db['updaterVersion'] = '1.2.3'
         db['lastRun'] = {**state['lastRun'], 'remaining': len(state['pending']),
                          'completedUTC': stamp(ended), 'nextAttemptAtUTC': state['nextAttemptAtUTC']}
         temporary = path.with_name(path.name + '.tmp')
@@ -483,7 +483,7 @@ def main(argv=None):
         rebuild_priority(db)
         db['generatedAtUTC'] = stamp
         db['latestPublishedUTC'] = stamp
-        db['updaterVersion'] = '1.2.2'
+        db['updaterVersion'] = '1.2.3'
         db['lastRun'] = {'attempted': attempted, 'successful': okay,
                          'unlisted': unavailable, 'errors': errors,
                          'rateLimitedOrStopped': stopped, 'completedUTC': stamp}
@@ -498,5 +498,7 @@ def main(argv=None):
 
 
 if __name__ == '__main__':
-    logging.basicConfig(level=logging.INFO, format='%(asctime)s %(levelname)s %(message)s')
+    logging.Formatter.converter = time.gmtime
+    logging.basicConfig(level=logging.INFO, format='%(asctime)sZ %(levelname)s %(message)s',
+                        datefmt='%Y-%m-%dT%H:%M:%S')
     sys.exit(main())
