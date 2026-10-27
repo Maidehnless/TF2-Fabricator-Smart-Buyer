@@ -18,10 +18,11 @@ class TestCheckpoint(unittest.TestCase):
         write_fixture(self.db)
         self.base=dt.datetime(2026,10,27,0,0,tzinfo=dt.timezone.utc)
 
-    def run_at(self,minute,results,limit=3,max_requests=60,scheduled=False):
+    def run_at(self,minute,results,limit=3,max_requests=60,scheduled=False,rate_retry=30):
         stamp=(self.base+dt.timedelta(minutes=minute)).isoformat().replace('+00:00','Z')
         args=['--database',str(self.db),'--state-file',str(self.state),'--limit',str(limit),
-              '--leading','0','--delay','10','--max-requests',str(max_requests)]
+              '--leading','0','--delay','10','--max-requests',str(max_requests),
+              '--rate-limit-retry-minutes',str(rate_retry)]
         if scheduled:args.append('--scheduled')
         with patch.object(mod,'utc_now',return_value=stamp),patch.object(mod,'lookup',side_effect=results) as lookup,patch.object(mod.time,'sleep'):
             rc=mod.main(args)
@@ -61,7 +62,7 @@ class TestCheckpoint(unittest.TestCase):
         initial=self.saved()['pending']
         self.run_at(30,[mod.RateLimited('429')])
         self.assertEqual(initial,self.saved()['pending'])
-        self.run_at(60,[Decimal('0.07')]*3)
+        self.run_at(90,[Decimal('0.07')]*3)
         self.assertEqual('complete',self.saved()['status'])
 
     def test_budget_exhaustion_checkpoints_and_resumes_the_entire_selected_list(self):
@@ -179,11 +180,58 @@ class TestForcedTest(unittest.TestCase):
         lookup=self.force([mod.RateLimited('429')])
         self.assertEqual(1,lookup.call_count)
         self.assertEqual(before,self.db.read_bytes())
-        self.assertEqual('2026-10-27T00:31:00Z',self.saved()['nextAttemptAtUTC'])
+        self.assertEqual('2026-10-27T12:01:00Z',self.saved()['nextAttemptAtUTC'])
 
     def test_forced_test_rejects_scheduled_use(self):
         with self.assertRaises(SystemExit), patch.object(mod,'lookup') as lookup:
             mod.main(['--scheduled','--force-test','--state-file',str(self.state)])
         lookup.assert_not_called()
+
+class TestRateLimitRecovery(unittest.TestCase):
+    setUp = TestCheckpoint.setUp
+    run_at = TestCheckpoint.run_at
+    saved = TestCheckpoint.saved
+
+    def test_repeated_throttles_wait_six_then_twelve_then_twenty_four_hours(self):
+        before=self.db.read_bytes()
+        self.run_at(0,[mod.RateLimited('HTTP 429')],rate_retry=360)
+        self.assertEqual('2026-10-27T06:00:00Z',self.saved()['nextAttemptAtUTC'])
+        _,early=self.run_at(30,[AssertionError('should still be cooling down')],rate_retry=360)
+        self.assertEqual(0,early.call_count)
+        self.run_at(360,[mod.RateLimited('HTTP 429')],rate_retry=360)
+        self.assertEqual('2026-10-27T18:00:00Z',self.saved()['nextAttemptAtUTC'])
+        self.run_at(1080,[mod.RateLimited('HTTP 429')],rate_retry=360)
+        self.assertEqual('2026-10-28T18:00:00Z',self.saved()['nextAttemptAtUTC'])
+        self.assertEqual(3,self.saved()['consecutiveRejections'])
+        self.assertEqual(before,self.db.read_bytes())
+
+    def test_successful_response_resets_backoff_and_publishes_partial_prices(self):
+        self.run_at(0,[mod.RateLimited('HTTP 429')],rate_retry=360)
+        self.run_at(360,[Decimal('0.08'),mod.RateLimited('HTTP 429')],rate_retry=360)
+        state=self.saved()
+        self.assertEqual(1,state['consecutiveRejections'])
+        self.assertEqual('2026-10-27T12:00:00Z',state['nextAttemptAtUTC'])
+        self.assertEqual(1,state['cycle']['priced'])
+        self.assertEqual('2026-10-27T06:00:00Z',state['lastSuccessfulResponseAtUTC'])
+        self.assertEqual(1,state['lastRun']['verifiedResponses'])
+        self.assertEqual('USD',mod.read_db(self.db)['currency'])
+
+    def test_existing_throttled_checkpoint_gets_longer_cooldown_without_losing_pending_work(self):
+        self.run_at(0,[mod.RateLimited('HTTP 429')],rate_retry=30)
+        state=self.saved();state.pop('consecutiveRejections');self.state.write_text(json.dumps(state))
+        pending=state['pending']
+        _,lookup=self.run_at(30,[AssertionError('legacy cooldown must be extended')],rate_retry=360)
+        self.assertEqual(0,lookup.call_count)
+        self.assertEqual(pending,self.saved()['pending'])
+        self.assertEqual('2026-10-27T06:00:00Z',self.saved()['nextAttemptAtUTC'])
+
+    def test_server_retry_after_can_extend_backoff(self):
+        self.run_at(0,[mod.RateLimited('HTTP 429',retry_after=30*3600)],rate_retry=360)
+        self.assertEqual('2026-10-28T06:00:00Z',self.saved()['nextAttemptAtUTC'])
+
+    def test_item_errors_keep_short_retry_without_becoming_rate_rejections(self):
+        self.run_at(0,[ValueError('invalid JSON')]*3,rate_retry=360)
+        self.assertEqual('2026-10-27T00:30:00Z',self.saved()['nextAttemptAtUTC'])
+        self.assertEqual(0,self.saved().get('consecutiveRejections',0))
 
 if __name__=='__main__':unittest.main()

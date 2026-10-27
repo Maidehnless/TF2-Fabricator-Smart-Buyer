@@ -206,6 +206,9 @@ def read_checkpoint(path, db):
     state = json.loads(path.read_text(encoding='utf-8'))
     if not isinstance(state, dict) or state.get('schema') != STATE_SCHEMA:
         raise ValueError('Unexpected updater checkpoint schema')
+    rejections = state.get('consecutiveRejections', 0)
+    if type(rejections) is not int or rejections < 0:
+        raise ValueError('Invalid consecutive rejection count')
     pending = state.get('pending')
     cycle = state.get('cycle')
     names = {r['name'] for r in db['prices']}
@@ -237,6 +240,10 @@ def report_checkpoint(state, status=None, note=''):
     cycle = state['cycle']
     text = (f"Price updater: {status}; cycle progress {cycle['completed']}/{cycle['total']}; "
             f"{len(state['pending'])} Killstreak entries remaining. {note}")
+    last = state.get('lastRun')
+    if last:
+        text += (f" Last scan: {last['attempted']} requests, {last['updated']} new quotes, "
+                 f"{last['unlisted']} confirmed without active asks.")
     print(text)
     summary = os.environ.get('GITHUB_STEP_SUMMARY')
     if summary:
@@ -255,10 +262,17 @@ def run_resumable(args, db):
     checkpoint = Path(args.state_file)
     state = read_checkpoint(checkpoint, db)
     now = instant(utc_now())
+    # Upgrade older rejection checkpoints without immediately hitting Steam again.
+    if state and state['pending'] and state.get('lastRun', {}).get('reason') == 'rate_limited' and 'consecutiveRejections' not in state:
+        state['consecutiveRejections'] = 1
+        previous_attempt = state.get('updatedAtUTC') or state['cycle']['startedAtUTC']
+        deadline = instant(previous_attempt) + dt.timedelta(minutes=args.rate_limit_retry_minutes)
+        state['nextAttemptAtUTC'] = stamp(max(instant(state['nextAttemptAtUTC']), deadline))
+        atomic_json(checkpoint, state)
     if state:
         deadline = state.get('nextAttemptAtUTC') if state['pending'] else state.get('nextCycleAtUTC')
         if deadline and now < instant(deadline) and (state['pending'] or args.scheduled) and not args.force_test:
-            report_checkpoint(state, 'waiting', 'Not due; no Steam requests made.')
+            report_checkpoint(state, 'waiting', 'Not due; no Steam requests made. Eligible at ' + deadline)
             return 0
     if args.force_test:
         print('Forced test: bypassing the saved cooldown for at most six requests; Steam rejections still stop the batch.')
@@ -302,6 +316,9 @@ def run_resumable(args, db):
         try:
             price = lookup(row)
             checked = utc_now()
+            state['consecutiveRejections'] = 0
+            state['lastSuccessfulResponseAtUTC'] = checked
+            state['lastError'] = None
             row['lastAttemptAtUTC'] = checked
             row['lastResult'] = 'priced' if price is not None else 'no_active_listings'
             if price is None:
@@ -320,8 +337,15 @@ def run_resumable(args, db):
         except RateLimited as exc:
             reason = 'rate_limited'
             state['lastError'] = str(exc)[:300]
+            previous_rejections = state.get('consecutiveRejections', 0)
+            state['consecutiveRejections'] = previous_rejections + 1
+            # Start with the old workflow's six-hour spacing, then back off further.
+            retry_seconds = max(retry_seconds, min(24 * 3600,
+                args.rate_limit_retry_minutes * 60 * 2 ** min(previous_rejections, 10)))
             if exc.retry_after is not None:
                 retry_seconds = max(retry_seconds, exc.retry_after)
+            logging.warning('No more Steam requests this run. Rejection streak %s; cooldown %.0f minutes.',
+                            state['consecutiveRejections'], retry_seconds / 60)
             logging.warning('%s. Keeping %s pending; saving progress and pausing.', exc, name)
             break
         except (ValueError, urllib.error.URLError, TimeoutError, OSError) as exc:
@@ -335,7 +359,8 @@ def run_resumable(args, db):
     ended = instant(utc_now())
     state['updatedAtUTC'] = stamp(ended)
     state['lastRun'] = {'attempted': attempted, 'updated': okay, 'unlisted': unavailable,
-                        'errors': errors, 'reason': reason if state['pending'] else 'complete'}
+                        'errors': errors, 'verifiedResponses': okay + unavailable,
+                        'reason': reason if state['pending'] else 'complete'}
     if state['pending']:
         state['status'] = 'retrying'
         state['nextAttemptAtUTC'] = stamp(ended + dt.timedelta(seconds=retry_seconds))
@@ -349,7 +374,7 @@ def run_resumable(args, db):
         rebuild_priority(db)
         db['generatedAtUTC'] = utc_now()
         db['latestPublishedUTC'] = db['generatedAtUTC']
-        db['updaterVersion'] = '1.2.0'
+        db['updaterVersion'] = '1.2.1'
         db['lastRun'] = {**state['lastRun'], 'remaining': len(state['pending']),
                          'completedUTC': stamp(ended), 'nextAttemptAtUTC': state['nextAttemptAtUTC']}
         temporary = path.with_name(path.name + '.tmp')
@@ -374,6 +399,8 @@ def main(argv=None):
     ap.add_argument('--scheduled', action='store_true', help='Respect the five-hour new-cycle interval')
     ap.add_argument('--interval-hours', type=float, default=5)
     ap.add_argument('--retry-minutes', type=float, default=30)
+    ap.add_argument('--rate-limit-retry-minutes', type=float, default=360,
+                    help='First rejection cooldown; doubles after repeat rejections, up to 24h (server Retry-After can be longer)')
     ap.add_argument('--max-requests', type=int, default=60, help='Request budget per resumable invocation')
     ap.add_argument('--max-runtime-seconds', type=float, default=1200, help='Yield before the Actions job timeout')
     ap.add_argument('--validate', action='store_true', help='Validate database without contacting Steam')
@@ -381,7 +408,7 @@ def main(argv=None):
     if not (1 <= args.limit <= 550 and 0 <= args.leading <= args.limit//2 and args.delay >= 3):
         ap.error('Choose a limit 1..550, leading <= limit/2, and delay >= 3 seconds')
     if not (1 <= args.max_requests <= 550 and all(math.isfinite(x) and x > 0 for x in
-            (args.interval_hours, args.retry_minutes, args.max_runtime_seconds))):
+            (args.interval_hours, args.retry_minutes, args.rate_limit_retry_minutes, args.max_runtime_seconds))):
         ap.error('Interval, retry and runtime must be positive finite values; max-requests must be 1..550')
     if args.state_file and Path(args.state_file).resolve() == Path(args.database).resolve():
         ap.error('Checkpoint and price database must be different files')
