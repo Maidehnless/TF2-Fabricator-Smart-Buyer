@@ -49,19 +49,13 @@
     }
 
     function updatePriceScheduleUI() {
-        const next = document.getElementById('tf2-price-db-next-update');
         const detail = document.getElementById('tf2-price-db-schedule-status');
-        if (!next || !detail) return;
-        if (priceUpdateSchedule.status !== 'ready') {
-            next.textContent = priceUpdateSchedule.status === 'unavailable' ? 'Unavailable' : 'Loading schedule…';
-            detail.textContent = priceUpdateSchedule.error || 'Reading the public GitHub updater checkpoint.';
-            return;
-        }
-        const data = priceUpdateSchedule.data;
-        const retry = data.status === 'retrying';
-        next.textContent = formatLocalDatabaseTimestamp(retry ? data.nextAttemptAtUTC : data.nextCycleAtUTC);
+        if (!detail) return;
+        const issue = priceDatabase.error || priceUpdateSchedule.error ||
+            (priceUpdateSchedule.status === 'ready' ? priceUpdateSchedule.data.lastError || 'None reported.' :
+                priceUpdateSchedule.status === 'loading' ? 'Checking updater status…' : 'Updater status not loaded.');
         detail.textContent = 'GitHub scheduling and Steam limits can delay completion.\n' +
-            'Previous issue: ' + (data.lastError ? String(data.lastError).slice(0, 300) : 'None reported.');
+            'Previous issue: ' + String(issue).slice(0, 300);
     }
 
     function validatePublishedPriceDatabase(data) {
@@ -155,31 +149,17 @@
         });
     }
 
-    // UTC remains the storage format. Date getters apply the viewer's local zone only for display.
-    function formatLocalDatabaseTimestamp(value) {
-        if (!value) return 'Not loaded';
-        const date = new Date(value);
-        if (!Number.isFinite(date.getTime())) return 'Invalid timestamp';
-        const pad = number => String(number).padStart(2, '0');
-        const hours = date.getHours();
-        return pad(hours % 12 || 12) + ':' + pad(date.getMinutes()) +
-            (hours < 12 ? ' am, ' : ' pm, ') + pad(date.getDate()) + '/' +
-            pad(date.getMonth() + 1) + '/' + date.getFullYear();
-    }
-
     function formatPublishedTimestamp() {
-        return formatLocalDatabaseTimestamp(priceDatabase.generatedAt);
+        const timestamp = Date.parse(priceDatabase.generatedAt);
+        if (!Number.isFinite(timestamp)) return 'DB Last Updated: Not loaded';
+        const minutes = Math.max(0, Math.floor((Date.now() - timestamp) / 60000));
+        return 'DB Last Updated: ' + minutes + ' Mins Ago';
     }
 
     function updatePriceDatabaseSettingsUI() {
         updatePriceScheduleUI();
         const status = document.getElementById('tf2-price-db-last-updated');
         if (status) status.textContent = formatPublishedTimestamp();
-        const description = document.getElementById('tf2-price-db-status');
-        if (description) description.textContent = priceDatabase.error
-            ? ('Cached / offline: ' + priceDatabase.error)
-            : priceDatabase.status === 'ready' ? 'Published GitHub priority list loaded (' + priceDatabase.currency + (priceDatabase.currency === 'AUD' ? ' legacy ranking)' : ' snapshot)') :
-                priceDatabase.status === 'loading' ? 'Loading price list…' : 'No published price list available';
     }
 
     function createInventoryPriceSettings() {
@@ -241,28 +221,10 @@
             runUpdateSafely();
         });
         popup.appendChild(refreshPrices);
-        const updated = document.createElement('strong');
-        updated.id = 'tf2-price-db-previous-label';
-        updated.textContent = 'Previous DB Update';
-        updated.style.cssText = 'display:block;color:white;';
-        popup.appendChild(updated);
-        const stamp = document.createElement('div');
+        const stamp = document.createElement('strong');
         stamp.id = 'tf2-price-db-last-updated';
-        stamp.style.cssText = 'color:white;font-weight:bold;';
+        stamp.style.cssText = 'display:block;color:white;font-weight:bold;';
         popup.appendChild(stamp);
-        const state = document.createElement('div');
-        state.id = 'tf2-price-db-status';
-        state.style.cssText = 'font-size:11px;color:#a8b9c7;margin:3px 0 10px;';
-        popup.appendChild(state);
-        const nextLabel = document.createElement('strong');
-        nextLabel.id = 'tf2-price-db-next-label';
-        nextLabel.textContent = 'Next DB Update';
-        nextLabel.style.cssText = 'display:block;color:white;';
-        popup.appendChild(nextLabel);
-        const next = document.createElement('div');
-        next.id = 'tf2-price-db-next-update';
-        next.style.cssText = 'color:white;font-weight:bold;';
-        popup.appendChild(next);
         const schedule = document.createElement('div');
         schedule.id = 'tf2-price-db-schedule-status';
         schedule.style.cssText = 'white-space:pre-line;font-size:11px;color:#a8b9c7;margin:3px 0 10px;max-width:340px;';
