@@ -4,18 +4,20 @@ on:
   workflow_dispatch:
     inputs:
       scan_mode:
-        description: "Start this scan size, or resume the active saved cycle"
+        description: "Adaptive daily coverage, or choose a manual scan size"
         required: true
         type: choice
-        default: incremental
+        default: adaptive
         options:
+          - adaptive
           - test
           - test-force
           - incremental
           - full
   schedule:
     # Cheap due-time checks. Steam is contacted only when the saved state is due.
-    # New cycles: 5h after completion. Batch continuation: 30m.
+    # Adaptive: cheapest 8 per tier about hourly; entire catalog targeted within 24h.
+    # Price checks start when due; unfinished/error batches retain their checkpoint.
     # Steam rejections: 6h, then 12h, then 24h; test-force overrides manually.
     - cron: "7,17,27,37,47,57 * * * *"
 
@@ -53,11 +55,12 @@ jobs:
 
       - name: Refresh or resume due prices
         env:
-          SCAN_MODE: ${{ inputs.scan_mode || 'incremental' }}
+          SCAN_MODE: ${{ inputs.scan_mode || 'adaptive' }}
           SCHEDULED: ${{ github.event_name == 'schedule' }}
         run: |
           set -euo pipefail
           case "$SCAN_MODE" in
+            adaptive) limit=60; leading=8 ;;
             test|test-force) limit=6; leading=2 ;;
             incremental) limit=60; leading=8 ;;
             full) limit=550; leading=8 ;;
@@ -76,6 +79,9 @@ jobs:
             --max-requests 60
             --max-runtime-seconds 1200
           )
+          if [[ "$SCAN_MODE" == "adaptive" ]]; then
+            args+=(--adaptive --cheap-refresh-minutes 60 --daily-refresh-hours 24 --daily-headroom-hours 4)
+          fi
           if [[ "$SCAN_MODE" == "test-force" ]]; then
             args+=(--force-test)
           fi
@@ -97,7 +103,10 @@ jobs:
           set -euo pipefail
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add -- data/killstreak-prices.json data/update-prices-state.json
+          git add -- data/killstreak-prices.json
+          if [[ -f data/update-prices-state.json ]]; then
+            git add -- data/update-prices-state.json
+          fi
           if git diff --cached --quiet; then
             echo "Not due; no price or checkpoint changes to publish."
             exit 0
