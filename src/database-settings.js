@@ -248,14 +248,17 @@
             currentFingerprint = '';
             runUpdateSafely();
         });
-        popup.appendChild(refresh);
+        const actions = document.createElement('div');
+        actions.style.cssText = 'display:flex;gap:8px;align-items:center;flex-wrap:wrap;';
+        actions.appendChild(refresh);
+        popup.appendChild(actions);
         const stats = document.createElement('button');
         stats.id = 'tf2-price-db-stats-button';
         stats.type = 'button';
         stats.textContent = 'DB Stats';
-        stats.style.cssText = refresh.style.cssText + 'display:block;margin-top:8px;';
+        stats.style.cssText = refresh.style.cssText;
         stats.addEventListener('click', () => showDatabaseStats(trigger));
-        popup.appendChild(stats);
+        actions.appendChild(stats);
         wrap.appendChild(popup);
         trigger.addEventListener('click', () => {
             popup.hidden = !popup.hidden;

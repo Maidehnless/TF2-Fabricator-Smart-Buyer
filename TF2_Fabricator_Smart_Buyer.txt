@@ -4,7 +4,7 @@
 // @author       Maidehnless
 // @icon         https://avatars.akamai.steamstatic.com/2d1c9b05adb94b479e8671f9133e3d9189fcd23a_full.jpg
 // @license      MIT
-// @version      3.0.5
+// @version      3.0.6
 // @description  Checks ranked individual Killstreak weapon offers, subtracts owned robot parts and builds manual fabricator purchase links and kit sale estimates.
 // @match        https://steamcommunity.com/*/inventory*
 // @match        https://steamcommunity.com/market/multibuy*
@@ -144,7 +144,7 @@ const SmartPricing = (() => {
     const BUTTON_SPACER_ID = 'tf2-fabricator-button-spacer';
     const ERROR_DIALOG_ID = 'tf2-fabricator-error-report-dialog';
     const ERROR_LOG_ID = 'tf2-fabricator-error-report-log';
-    const SCRIPT_VERSION = '3.0.5';
+    const SCRIPT_VERSION = '3.0.6';
     const PRICE_DB_URL = 'https://raw.githubusercontent.com/Maidehnless/TF2-Fabricator-Smart-Buyer/main/data/killstreak-prices.json';
     const PRICE_DB_CACHE_KEY = 'tf2-fabricator-remote-price-db-v1';
     const MODE_STORAGE_KEY = 'tf2-fabricator-verify-mode-v1';
@@ -3638,14 +3638,17 @@ const SmartPricing = (() => {
             currentFingerprint = '';
             runUpdateSafely();
         });
-        popup.appendChild(refresh);
+        const actions = document.createElement('div');
+        actions.style.cssText = 'display:flex;gap:8px;align-items:center;flex-wrap:wrap;';
+        actions.appendChild(refresh);
+        popup.appendChild(actions);
         const stats = document.createElement('button');
         stats.id = 'tf2-price-db-stats-button';
         stats.type = 'button';
         stats.textContent = 'DB Stats';
-        stats.style.cssText = refresh.style.cssText + 'display:block;margin-top:8px;';
+        stats.style.cssText = refresh.style.cssText;
         stats.addEventListener('click', () => showDatabaseStats(trigger));
-        popup.appendChild(stats);
+        actions.appendChild(stats);
         wrap.appendChild(popup);
         trigger.addEventListener('click', () => {
             popup.hidden = !popup.hidden;
@@ -3779,7 +3782,12 @@ const SmartPricing = (() => {
             head.appendChild(labels);
             table.appendChild(head);
             const body = document.createElement('tbody');
-            for (const row of [...items].sort((a, b) => a.name.localeCompare(b.name))) {
+            const sorted = [...items].sort((a, b) => {
+                const aTime = Date.parse(a.checkedAtUTC), bTime = Date.parse(b.checkedAtUTC);
+                return (Number.isFinite(bTime) ? bTime : -Infinity) -
+                    (Number.isFinite(aTime) ? aTime : -Infinity) || a.name.localeCompare(b.name);
+            });
+            for (const row of sorted) {
                 const tr = document.createElement('tr');
                 const name = document.createElement('td');
                 name.textContent = row.name;

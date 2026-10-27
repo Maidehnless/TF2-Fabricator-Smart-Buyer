@@ -23,12 +23,16 @@ test('DB Stats button opens quote rows in newest-first local half-hour groups',a
  const {document,window}=await setup();
  const button=document.getElementById('tf2-price-db-stats-button');
  assert.equal(button.textContent,'DB Stats');
+ assert.equal(button.parentElement.style.display,'flex');
+ assert.equal(button.previousElementSibling.textContent,'Check GitHub for update');
  button.dispatchEvent(new window.Event('click',{bubbles:true}));
  const dialog=document.getElementById('tf2-price-db-stats-dialog');assert.ok(dialog);
  const buckets=[...dialog.querySelectorAll('[data-bucket-start]')];
  assert.deepEqual(buckets.map(e=>e.getAttribute('data-bucket-start')),[stamp(17,30),stamp(17,0)]);
  assert.equal(buckets[0].querySelectorAll('tbody tr').length,1);
  assert.equal(buckets[1].querySelectorAll('tbody tr').length,2);
+ assert.deepEqual([...buckets[1].querySelectorAll('tbody tr')].map(row=>row.firstElementChild.textContent),
+  ['Specialized Killstreak Bat','Killstreak SMG']);
  assert.match(dialog.textContent,/USD 0\.48/);
  assert.match(dialog.textContent,/No active listings at last check/);
  assert.match(dialog.textContent,/No verified price/);

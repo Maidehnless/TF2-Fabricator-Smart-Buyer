@@ -109,7 +109,12 @@
             head.appendChild(labels);
             table.appendChild(head);
             const body = document.createElement('tbody');
-            for (const row of [...items].sort((a, b) => a.name.localeCompare(b.name))) {
+            const sorted = [...items].sort((a, b) => {
+                const aTime = Date.parse(a.checkedAtUTC), bTime = Date.parse(b.checkedAtUTC);
+                return (Number.isFinite(bTime) ? bTime : -Infinity) -
+                    (Number.isFinite(aTime) ? aTime : -Infinity) || a.name.localeCompare(b.name);
+            });
+            for (const row of sorted) {
                 const tr = document.createElement('tr');
                 const name = document.createElement('td');
                 name.textContent = row.name;
