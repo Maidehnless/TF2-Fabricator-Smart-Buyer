@@ -198,6 +198,88 @@ def stamp(value):
     return value.astimezone(dt.timezone.utc).isoformat(timespec='seconds').replace('+00:00', 'Z')
 
 
+ADAPTIVE_POLICY = 'daily-and-cheap-v1'
+
+
+def plan_adaptive(db, history, deferred, now, limit, leading, cheap_minutes, daily_hours, headroom_hours):
+    """Plan accepted checks, not failed attempts; all deadlines remain UTC."""
+    rows = db['prices']
+    last_checks = {}
+    for row in rows:
+        candidates = []
+        if db['currency'] == 'USD' and row['status'] == 'priced' and row.get('checkedAtUTC'):
+            candidates.append(instant(row['checkedAtUTC']))
+        if db['currency'] == 'USD' and row.get('lastResult') in ('priced', 'no_active_listings') and valid_timestamp(row.get('lastAttemptAtUTC')):
+            candidates.append(instant(row['lastAttemptAtUTC']))
+        record = history.get(row['name'])
+        if record:
+            candidates.append(instant(record['atUTC']))
+        # A future timestamp is not evidence of a completed check.
+        last_checks[row['name']] = max((t for t in candidates if t <= now), default=None)
+    cheap = set()
+    for tier in ('regular', 'specialized'):
+        order = {name: i for i, name in enumerate(db['priority'][tier])}
+        candidates = [r for r in rows if r['tier'] == tier and r['status'] == 'priced']
+        candidates.sort(key=lambda r: (r['price'], order.get(r['name'], 9999)))
+        cheap.update(r['name'] for r in candidates[:leading])
+    cheap_interval = dt.timedelta(minutes=cheap_minutes)
+    daily_interval = dt.timedelta(hours=daily_hours-headroom_hours)
+    horizon = now-dt.timedelta(hours=24)
+    daily_horizon = now-dt.timedelta(hours=daily_hours)
+    cheap_due, daily_due, deadlines = [], [], []
+    for row in rows:
+        name = row['name']
+        checked = last_checks[name]
+        interval = cheap_interval if name in cheap else daily_interval
+        due = checked+interval if checked else now
+        if name in deferred:
+            due = max(due, instant(deferred[name]))
+        deadlines.append(due)
+        if due <= now:
+            if name in cheap:
+                cheap_due.append(row)
+            if checked is None or checked+daily_interval <= now:
+                daily_due.append(row)
+    hints = {name: i * 2 + tier_index for tier_index, tier in enumerate(('regular', 'specialized'))
+             for i, name in enumerate(db['priority'][tier])}
+    def oldest(row):
+        return (last_checks[row['name']] or dt.datetime.min.replace(tzinfo=dt.timezone.utc),
+                hints.get(row['name'], 9999), row['name'])
+    cheap_due.sort(key=oldest)
+    daily_due.sort(key=oldest)
+    # Reserve capacity for the broader catalog even when leading is configured high.
+    selected = cheap_due[:min(len(cheap_due), max(1, limit//2))]
+    seen = {r['name'] for r in selected}
+    for row in daily_due+cheap_due:
+        if len(selected) == limit:
+            break
+        if row['name'] not in seen:
+            selected.append(row)
+            seen.add(row['name'])
+    checks = list(last_checks.values())
+    return {'selected': selected, 'nextDueAtUTC': stamp(min(deadlines)),
+            'coverage': {'asOfUTC': stamp(now), 'total': len(rows), 'checkedLast24Hours': sum(t is not None and t >= horizon for t in checks),
+                         'neverChecked': sum(t is None for t in checks),
+                         'overdue': sum(t is not None and t < daily_horizon for t in checks),
+                         'cheapCandidates': len(cheap)}}
+
+
+def adaptive_settings(args, state=None):
+    if state and state.get('planningPolicy') == ADAPTIVE_POLICY and (not args.adaptive or args.force_test):
+        saved = state.get('adaptiveSettings')
+        if saved:
+            return saved
+    return {'leading': args.leading, 'cheapRefreshMinutes': args.cheap_refresh_minutes,
+            'dailyRefreshHours': args.daily_refresh_hours, 'dailyHeadroomHours': args.daily_headroom_hours}
+
+
+def adaptive_plan(args, db, state, now):
+    settings = adaptive_settings(args, state)
+    return plan_adaptive(db, (state or {}).get('attemptHistory', {}), (state or {}).get('deferredEntries', {}),
+                         now, args.limit, settings['leading'], settings['cheapRefreshMinutes'],
+                         settings['dailyRefreshHours'], settings['dailyHeadroomHours'])
+
+
 def atomic_json(path, value):
     path.parent.mkdir(parents=True, exist_ok=True)
     temporary = path.with_name(path.name + '.tmp')
@@ -219,6 +301,24 @@ def read_checkpoint(path, db):
     names = {r['name'] for r in db['prices']}
     if not isinstance(pending, list) or not all(isinstance(x, str) and x in names for x in pending) or len(set(pending)) != len(pending):
         raise ValueError('Invalid pending Killstreak entries in updater checkpoint')
+    settings = state.get('adaptiveSettings')
+    if settings is not None:
+        if (not isinstance(settings, dict) or type(settings.get('leading')) is not int or not 0 <= settings['leading'] <= 275 or
+            any(type(settings.get(k)) not in (int, float) or not math.isfinite(settings[k]) for k in
+                ('cheapRefreshMinutes', 'dailyRefreshHours', 'dailyHeadroomHours')) or
+            not 0 <= settings['dailyHeadroomHours'] < settings['dailyRefreshHours'] or
+            not 0 < settings['cheapRefreshMinutes'] <= (settings['dailyRefreshHours']-settings['dailyHeadroomHours'])*60):
+            raise ValueError('Invalid adaptive policy settings')
+    coverage = state.get('dailyCoverage')
+    if coverage is not None:
+        if not isinstance(coverage, dict) or coverage.get('total') != len(names) or not valid_timestamp(coverage.get('asOfUTC')):
+            raise ValueError('Invalid daily coverage metadata')
+        for key in ('checkedLast24Hours', 'neverChecked', 'overdue', 'cheapCandidates'):
+            if type(coverage.get(key)) is not int or not 0 <= coverage[key] <= len(names):
+                raise ValueError('Invalid daily coverage counter')
+    deferred = state.get('deferredEntries', {})
+    if not isinstance(deferred, dict) or any(name not in names or not valid_timestamp(value) for name, value in deferred.items()):
+        raise ValueError('Invalid adaptive deferred entries')
     history = state.get('attemptHistory', {})
     if not isinstance(history, dict) or len(history) > len(names):
         raise ValueError('Invalid checkpoint attempt history')
@@ -249,6 +349,10 @@ def report_checkpoint(state, status=None, note=''):
     if last:
         text += (f" Last scan: {last['attempted']} requests, {last['updated']} new quotes, "
                  f"{last['unlisted']} confirmed without active asks.")
+    coverage = state.get('dailyCoverage')
+    if coverage:
+        text += (f" Daily coverage: {coverage['checkedLast24Hours']}/{coverage['total']} checked in the last 24 hours; "
+                 f"{coverage['neverChecked']} never checked; {coverage['overdue']} overdue.")
     print(text)
     summary = os.environ.get('GITHUB_STEP_SUMMARY')
     if summary:
@@ -276,8 +380,11 @@ def run_resumable(args, db):
         atomic_json(checkpoint, state)
     if state:
         deadline = state.get('nextAttemptAtUTC') if state['pending'] else state.get('nextCycleAtUTC')
-        if deadline and now < instant(deadline) and (state['pending'] or args.scheduled) and not args.force_test:
-            report_checkpoint(state, 'waiting', 'Not due; no Steam requests made. Eligible at ' + deadline)
+        if deadline and now < instant(deadline) and (state['pending'] or args.scheduled) and not args.force_test and not (args.adaptive and not state['pending'] and (state.get('planningPolicy') != ADAPTIVE_POLICY or state.get('adaptiveSettings') != adaptive_settings(args))):
+            reporting = dict(state)
+            if args.adaptive:
+                reporting['dailyCoverage'] = adaptive_plan(args, db, state, now)['coverage']
+            report_checkpoint(reporting, 'waiting', 'Not due; no Steam requests made. Eligible at ' + deadline)
             return 0
     if args.force_test:
         print('Forced test: bypassing the saved cooldown for at most six requests; Steam rejections still stop the batch.')
@@ -290,12 +397,33 @@ def run_resumable(args, db):
             record = history[row['name']]
             row['lastAttemptAtUTC'] = record['atUTC']
             row['lastResult'] = record['result']
-    if not state or not state['pending']:
-        selected = [r['name'] for r in choose_rows(db, args.limit, args.leading)]
+    adaptive_cycle = args.adaptive and (not state or not state['pending'] or state.get('planningPolicy') == ADAPTIVE_POLICY)
+    plan = adaptive_plan(args, db, state, now) if adaptive_cycle else None
+    if plan is not None and not plan['selected']:
+        if state:
+            state['dailyCoverage'] = plan['coverage']
+            state['planningPolicy'] = ADAPTIVE_POLICY
+            state['adaptiveSettings'] = adaptive_settings(args, state)
+            state['nextAttemptAtUTC' if state['pending'] else 'nextCycleAtUTC'] = plan['nextDueAtUTC']
+            atomic_json(checkpoint, state)
+            report_checkpoint(state, 'waiting', 'No entries due. Eligible at ' + plan['nextDueAtUTC'])
+        else:
+            print('No entries due; no Steam requests made. Eligible at ' + plan['nextDueAtUTC'])
+        return 0
+    if adaptive_cycle or not state or not state['pending']:
+        selected = [r['name'] for r in (plan['selected'] if plan else choose_rows(db, args.limit, args.leading))]
+        previous = state or {}
         state = {'schema': STATE_SCHEMA, 'status': 'retrying', 'pending': selected, 'attemptHistory': history,
                  'cycle': {'total': len(selected), 'completed': 0, 'priced': 0, 'unlisted': 0,
                            'startedAtUTC': stamp(now)}, 'nextCycleAtUTC': None,
-                 'nextAttemptAtUTC': stamp(now), 'lastError': None}
+                 'nextAttemptAtUTC': stamp(now), 'lastError': previous.get('lastError'),
+                 'consecutiveRejections': previous.get('consecutiveRejections', 0)}
+        if args.adaptive:
+            state['planningPolicy'] = ADAPTIVE_POLICY
+            state['adaptiveSettings'] = adaptive_settings(args, previous)
+            state['deferredEntries'] = previous.get('deferredEntries', {})
+        if previous.get('lastSuccessfulResponseAtUTC'):
+            state['lastSuccessfulResponseAtUTC'] = previous['lastSuccessfulResponseAtUTC']
     elif state['cycle']['total'] != args.limit:
         print('Resuming the active saved cycle before starting a differently sized scan.')
     state.setdefault('attemptHistory', history)
@@ -324,6 +452,7 @@ def run_resumable(args, db):
             state['consecutiveRejections'] = 0
             state['lastSuccessfulResponseAtUTC'] = checked
             state['lastError'] = None
+            state.get('deferredEntries', {}).pop(name, None)
             row['lastAttemptAtUTC'] = checked
             row['lastResult'] = 'priced' if price is not None else 'no_active_listings'
             if price is None:
@@ -355,6 +484,8 @@ def run_resumable(args, db):
             break
         except (ValueError, urllib.error.URLError, TimeoutError, OSError) as exc:
             errors += 1
+            if args.adaptive:
+                state.setdefault('deferredEntries', {})[name] = stamp(instant(utc_now()) + dt.timedelta(minutes=max(args.retry_minutes * 2, args.cheap_refresh_minutes * 2)))
             state['lastError'] = f'{name}: {exc}'[:300]
             state['pending'].append(state['pending'].pop(0))
             logging.warning('Could not verify %s: %s. Entry remains pending.', name, exc)
@@ -366,20 +497,26 @@ def run_resumable(args, db):
     state['lastRun'] = {'attempted': attempted, 'updated': okay, 'unlisted': unavailable,
                         'errors': errors, 'verifiedResponses': okay + unavailable,
                         'reason': reason if state['pending'] else 'complete'}
+    next_plan = adaptive_plan(args, db, state, ended) if args.adaptive or state.get('planningPolicy') == ADAPTIVE_POLICY else None
+    if next_plan:
+        state['dailyCoverage'] = next_plan['coverage']
     if state['pending']:
         state['status'] = 'retrying'
         state['nextAttemptAtUTC'] = stamp(ended + dt.timedelta(seconds=retry_seconds))
     else:
         state['status'] = 'complete'
         state['nextAttemptAtUTC'] = None
-        state['nextCycleAtUTC'] = stamp(ended + dt.timedelta(hours=args.interval_hours))
+        state['nextCycleAtUTC'] = next_plan['nextDueAtUTC'] if next_plan else stamp(ended + dt.timedelta(hours=args.interval_hours))
+        if args.adaptive:
+            state['planningPolicy'] = ADAPTIVE_POLICY
+            state['adaptiveSettings'] = adaptive_settings(args, state)
         state['lastError'] = None
     # Persist the validated quote data BEFORE the checkpoint that marks those items done.
     if okay:
         rebuild_priority(db)
         db['generatedAtUTC'] = utc_now()
         db['latestPublishedUTC'] = db['generatedAtUTC']
-        db['updaterVersion'] = '1.2.3'
+        db['updaterVersion'] = '1.3.0'
         db['lastRun'] = {**state['lastRun'], 'remaining': len(state['pending']),
                          'completedUTC': stamp(ended), 'nextAttemptAtUTC': state['nextAttemptAtUTC']}
         temporary = path.with_name(path.name + '.tmp')
@@ -402,6 +539,10 @@ def main(argv=None):
     ap.add_argument('--state-file', help='Enable durable pending-entry checkpoints at this path')
     ap.add_argument('--force-test', action='store_true', help='Manual six-request test that bypasses saved cooldowns and preserves active progress')
     ap.add_argument('--scheduled', action='store_true', help='Respect the five-hour new-cycle interval')
+    ap.add_argument('--adaptive', action='store_true', help='Daily catalog coverage and frequent cheap-candidate checks; requires --state-file')
+    ap.add_argument('--cheap-refresh-minutes', type=float, default=60)
+    ap.add_argument('--daily-refresh-hours', type=float, default=24)
+    ap.add_argument('--daily-headroom-hours', type=float, default=4)
     ap.add_argument('--interval-hours', type=float, default=5)
     ap.add_argument('--retry-minutes', type=float, default=30)
     ap.add_argument('--rate-limit-retry-minutes', type=float, default=360,
@@ -415,6 +556,13 @@ def main(argv=None):
     if not (1 <= args.max_requests <= 550 and all(math.isfinite(x) and x > 0 for x in
             (args.interval_hours, args.retry_minutes, args.rate_limit_retry_minutes, args.max_runtime_seconds))):
         ap.error('Interval, retry and runtime must be positive finite values; max-requests must be 1..550')
+    if args.adaptive and not args.state_file:
+        ap.error('--adaptive requires --state-file')
+    if not (math.isfinite(args.cheap_refresh_minutes) and args.cheap_refresh_minutes > 0 and
+            math.isfinite(args.daily_refresh_hours) and math.isfinite(args.daily_headroom_hours) and
+            0 <= args.daily_headroom_hours < args.daily_refresh_hours and
+            args.cheap_refresh_minutes <= (args.daily_refresh_hours - args.daily_headroom_hours) * 60):
+        ap.error('Adaptive intervals must be finite and positive; cheap interval cannot exceed the daily refresh threshold')
     if args.state_file and Path(args.state_file).resolve() == Path(args.database).resolve():
         ap.error('Checkpoint and price database must be different files')
     if args.force_test:
@@ -483,7 +631,7 @@ def main(argv=None):
         rebuild_priority(db)
         db['generatedAtUTC'] = stamp
         db['latestPublishedUTC'] = stamp
-        db['updaterVersion'] = '1.2.3'
+        db['updaterVersion'] = '1.3.0'
         db['lastRun'] = {'attempted': attempted, 'successful': okay,
                          'unlisted': unavailable, 'errors': errors,
                          'rateLimitedOrStopped': stopped, 'completedUTC': stamp}
