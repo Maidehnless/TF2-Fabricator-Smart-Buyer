@@ -72,7 +72,7 @@
     "startedAtUTC": "2026-10-27T06:01:04Z"
   },
   "nextCycleAtUTC": null,
-  "nextAttemptAtUTC": "2026-10-27T09:02:14Z",
+  "nextAttemptAtUTC": "2026-10-27T14:32:14Z",
   "lastError": "Steam rejected requests (HTTP 429)",
   "updatedAtUTC": "2026-10-27T08:32:14Z",
   "lastRun": {
@@ -81,5 +81,6 @@
     "unlisted": 0,
     "errors": 0,
     "reason": "rate_limited"
-  }
+  },
+  "consecutiveRejections": 1
 }
