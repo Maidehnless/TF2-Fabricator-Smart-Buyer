@@ -10,6 +10,7 @@ on:
         default: incremental
         options:
           - test
+          - test-force
           - incremental
           - full
   schedule:
@@ -56,7 +57,7 @@ jobs:
         run: |
           set -euo pipefail
           case "$SCAN_MODE" in
-            test) limit=6; leading=2 ;;
+            test|test-force) limit=6; leading=2 ;;
             incremental) limit=60; leading=8 ;;
             full) limit=550; leading=8 ;;
             *) echo "Unknown scan mode: $SCAN_MODE" >&2; exit 1 ;;
@@ -73,6 +74,9 @@ jobs:
             --max-requests 60
             --max-runtime-seconds 1200
           )
+          if [[ "$SCAN_MODE" == "test-force" ]]; then
+            args+=(--force-test)
+          fi
           if [[ "$SCHEDULED" == "true" ]]; then
             args+=(--scheduled)
           fi
