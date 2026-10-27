@@ -23,6 +23,7 @@
     const observer=new MutationObserver(scheduleUpdate);
     observer.observe(document.body,{childList:true,subtree:true,characterData:true,
         attributes:true,attributeFilter:['style','class','hidden','data-props']});
+    loadPriceUpdateSchedule(true);
     loadPublishedPriceDatabase(true).then(()=>{
         currentFingerprint='';
         runUpdateSafely();

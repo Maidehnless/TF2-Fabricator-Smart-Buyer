@@ -1,3 +1,74 @@
+    const PRICE_UPDATE_STATE_URL = PRICE_DB_URL.replace('killstreak-prices.json', 'update-prices-state.json');
+    const priceUpdateSchedule = {status: 'idle', data: null, error: '', loadedAt: 0, inFlight: null};
+
+    function loadPriceUpdateSchedule(force = false) {
+        if (priceUpdateSchedule.inFlight) return priceUpdateSchedule.inFlight;
+        if (!force && Date.now() - priceUpdateSchedule.loadedAt < 60000) return Promise.resolve();
+        priceUpdateSchedule.status = 'loading';
+        updatePriceDatabaseSettingsUI();
+        // Only reads GitHub's public checkpoint; never contacts Steam.
+        priceUpdateSchedule.inFlight = new Promise(resolve => {
+            const fail = message => {
+                priceUpdateSchedule.status = 'unavailable';
+                priceUpdateSchedule.error = message;
+                resolve();
+            };
+            try {
+                GM_xmlhttpRequest({
+                    method: 'GET', url: PRICE_UPDATE_STATE_URL + '?t=' + Date.now(),
+                    timeout: 15000, anonymous: true, headers: {Accept: 'application/json'},
+                    onload: response => {
+                        try {
+                            if (response.status !== 200) throw new Error('GitHub HTTP ' + response.status);
+                            const data = JSON.parse(response.responseText);
+                            const date = data.status === 'retrying' ? data.nextAttemptAtUTC : data.nextCycleAtUTC;
+                            if (data.schema !== 'maidehnless.tf2.price-updater-state.v1' ||
+                                !['retrying', 'complete'].includes(data.status) ||
+                                typeof date !== 'string' || !/(?:Z|[+-]\d{2}:\d{2})$/.test(date) ||
+                                !Number.isFinite(Date.parse(date)) ||
+                                !Number.isInteger(data.cycle?.completed) || !Number.isInteger(data.cycle?.total) ||
+                                data.cycle.completed < 0 || data.cycle.completed > data.cycle.total ||
+                                data.cycle.total < 1 || data.cycle.total > 550)
+                                throw new Error('Invalid updater schedule');
+                            priceUpdateSchedule.data = data;
+                            priceUpdateSchedule.status = 'ready';
+                            priceUpdateSchedule.error = '';
+                            resolve();
+                        } catch (error) { fail(error.message); }
+                    },
+                    onerror: () => fail('Could not read GitHub updater status'),
+                    ontimeout: () => fail('GitHub status request timed out')
+                });
+            } catch (error) { fail(error.message); }
+        }).finally(() => {
+            priceUpdateSchedule.loadedAt = Date.now();
+            priceUpdateSchedule.inFlight = null;
+            updatePriceDatabaseSettingsUI();
+        });
+        return priceUpdateSchedule.inFlight;
+    }
+
+    function updatePriceScheduleUI() {
+        const next = document.getElementById('tf2-price-db-next-update');
+        const detail = document.getElementById('tf2-price-db-schedule-status');
+        if (!next || !detail) return;
+        if (priceUpdateSchedule.status !== 'ready') {
+            next.textContent = priceUpdateSchedule.status === 'unavailable' ? 'Unavailable' : 'Loading schedule…';
+            detail.textContent = priceUpdateSchedule.error || 'Reading the public GitHub updater checkpoint.';
+            return;
+        }
+        const data = priceUpdateSchedule.data;
+        const retry = data.status === 'retrying';
+        const date = new Date(retry ? data.nextAttemptAtUTC : data.nextCycleAtUTC);
+        next.textContent = (retry ? 'Next retry eligible: ' : 'Next update eligible: ') +
+            date.toLocaleString(undefined, {timeZoneName: 'short'});
+        const due = date.getTime() <= Date.now();
+        detail.textContent = data.cycle.completed + '/' + data.cycle.total + ' Killstreak entries checked. ' +
+            (due ? 'Eligible now; awaiting the next workflow attempt. ' : 'Shown in your local time. ') +
+            'GitHub scheduling and Steam limits can delay completion.' +
+            (retry && data.lastError ? ' Last issue: ' + String(data.lastError).slice(0, 300) : '');
+    }
+
     function validatePublishedPriceDatabase(data) {
         if (!data || data.schema !== 'maidehnless.tf2.killstreak_priority.v1' ||
             !['USD','AUD'].includes(data.currency) || !Array.isArray(data.prices) || data.prices.length !== 550 ||
@@ -96,6 +167,7 @@
     }
 
     function updatePriceDatabaseSettingsUI() {
+        updatePriceScheduleUI();
         const status = document.getElementById('tf2-price-db-last-updated');
         if (status) status.textContent = formatPublishedTimestamp();
         const description = document.getElementById('tf2-price-db-status');
@@ -175,6 +247,21 @@
         state.id = 'tf2-price-db-status';
         state.style.cssText = 'font-size:11px;color:#a8b9c7;margin:3px 0 10px;';
         popup.appendChild(state);
+        const next = document.createElement('div');
+        next.id = 'tf2-price-db-next-update';
+        next.style.cssText = 'color:white;font-weight:bold;';
+        popup.appendChild(next);
+        const schedule = document.createElement('div');
+        schedule.id = 'tf2-price-db-schedule-status';
+        schedule.style.cssText = 'font-size:11px;color:#a8b9c7;margin:3px 0 10px;max-width:340px;';
+        popup.appendChild(schedule);
+        const workflow = document.createElement('a');
+        workflow.href = 'https://github.com/Maidehnless/TF2-Fabricator-Smart-Buyer/actions/workflows/update-prices.yml';
+        workflow.target = '_blank';
+        workflow.rel = 'noopener noreferrer';
+        workflow.textContent = 'View updater runs on GitHub';
+        workflow.style.cssText = 'display:block;margin-bottom:10px;color:#67c1f5;';
+        popup.appendChild(workflow);
         const refresh = document.createElement('button');
         refresh.type = 'button';
         refresh.textContent = 'Check GitHub for update';
@@ -182,7 +269,7 @@
             'color:#fff;border-radius:3px;cursor:pointer;';
         refresh.addEventListener('click', async () => {
             refresh.disabled = true;
-            await loadPublishedPriceDatabase(true);
+            await Promise.all([loadPublishedPriceDatabase(true), loadPriceUpdateSchedule(true)]);
             refresh.disabled = false;
             currentFingerprint = '';
             runUpdateSafely();
@@ -192,6 +279,10 @@
         trigger.addEventListener('click', () => {
             popup.hidden = !popup.hidden;
             trigger.setAttribute('aria-expanded', String(!popup.hidden));
+            if (!popup.hidden) {
+                updatePriceScheduleUI();
+                loadPriceUpdateSchedule();
+            }
         });
         document.addEventListener('click', event => {
             if (!wrap.contains(event.target)) { popup.hidden = true; trigger.setAttribute('aria-expanded', 'false'); }
