@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       scan_mode:
-        description: "Choose how many weapon prices to refresh"
+        description: "Start this scan size, or resume the active saved cycle"
         required: true
         type: choice
         default: incremental
@@ -12,11 +12,10 @@ on:
           - test
           - incremental
           - full
-
   schedule:
-    # Every six hours.
-    # Perth: approximately 2:17am, 8:17am, 2:17pm, 8:17pm.
-    - cron: "17 */6 * * *"
+    # Cheap due-time checks. Steam is contacted only when the saved state is due.
+    # New cycles: 5 hours after completion. Interrupted cycles: >=30 minute cooldown.
+    - cron: "7,17,27,37,47,57 * * * *"
 
 permissions:
   contents: write
@@ -28,81 +27,75 @@ concurrency:
 jobs:
   update-prices:
     runs-on: ubuntu-latest
-    timeout-minutes: 90
-
+    timeout-minutes: 25
     defaults:
       run:
         shell: bash
-
     steps:
-      - name: Check out repository
-        uses: actions/checkout@v4
+      - name: Check out default branch
+        uses: actions/checkout@v6
         with:
+          ref: ${{ github.event.repository.default_branch }}
           persist-credentials: true
 
       - name: Set up Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version: "3.12"
 
-      - name: Validate existing database
-        run: python updater/update_prices.py --validate
+      - name: Validate database and existing checkpoint
+        run: >-
+          python updater/update_prices.py
+          --state-file data/update-prices-state.json
+          --validate
 
-      - name: Refresh Steam prices
+      - name: Refresh or resume due prices
         env:
-          # Scheduled runs use incremental mode.
           SCAN_MODE: ${{ inputs.scan_mode || 'incremental' }}
+          SCHEDULED: ${{ github.event_name == 'schedule' }}
         run: |
           set -euo pipefail
-
           case "$SCAN_MODE" in
-            test)
-              # Six items, including two leading candidates per tier.
-              python updater/update_prices.py \
-                --limit 6 \
-                --leading 2 \
-                --delay 4
-              ;;
-
-            incremental)
-              # Sixty items, including eight leading candidates per tier.
-              python updater/update_prices.py \
-                --limit 60 \
-                --leading 8 \
-                --delay 4
-              ;;
-
-            full)
-              # All 550 names. Use occasionally or when seeding data.
-              python updater/update_prices.py \
-                --limit 550 \
-                --leading 8 \
-                --delay 4
-              ;;
-
-            *)
-              echo "Unknown scan mode: $SCAN_MODE" >&2
-              exit 1
-              ;;
+            test) limit=6; leading=2 ;;
+            incremental) limit=60; leading=8 ;;
+            full) limit=550; leading=8 ;;
+            *) echo "Unknown scan mode: $SCAN_MODE" >&2; exit 1 ;;
           esac
 
-      - name: Validate refreshed database
-        run: python updater/update_prices.py --validate
+          args=(
+            --database data/killstreak-prices.json
+            --state-file data/update-prices-state.json
+            --limit "$limit"
+            --leading "$leading"
+            --delay 10
+            --interval-hours 5
+            --retry-minutes 30
+            --max-requests 60
+            --max-runtime-seconds 1200
+          )
+          if [[ "$SCHEDULED" == "true" ]]; then
+            args+=(--scheduled)
+          fi
+          python updater/update_prices.py "${args[@]}"
 
-      - name: Commit updated prices
+      - name: Validate resulting database and checkpoint
+        run: >-
+          python updater/update_prices.py
+          --state-file data/update-prices-state.json
+          --validate
+
+      - name: Save prices and retry checkpoint
+        env:
+          DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
         run: |
           set -euo pipefail
-
           git config user.name "github-actions[bot]"
-          git config user.email \
-            "41898282+github-actions[bot]@users.noreply.github.com"
-
-          git add -- data/killstreak-prices.json
-
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -- data/killstreak-prices.json data/update-prices-state.json
           if git diff --cached --quiet; then
-            echo "No verified price changes to publish."
+            echo "Not due; no price or checkpoint changes to publish."
             exit 0
           fi
-
-          git commit -m "Update TF2 Killstreak price database"
-          git push
+          git commit -m "Save TF2 price updates and retry progress"
+          git pull --rebase origin "$DEFAULT_BRANCH"
+          git push origin "HEAD:$DEFAULT_BRANCH"
