@@ -170,10 +170,12 @@
         wrap.style.cssText = 'display:inline-block;position:relative;vertical-align:middle;margin:0 8px;float:right;';
         const trigger = document.createElement('button');
         trigger.type = 'button';
-        trigger.className = 'trigger';
-        trigger.textContent = 'TF2 Multi-Buy Settings';
+        trigger.className = 'btn_darkblue_white_innerfade btn_medium';
+        const triggerLabel = document.createElement('span');
+        triggerLabel.textContent = 'TF2 Multi-Buy Settings';
+        trigger.appendChild(triggerLabel);
         trigger.setAttribute('aria-expanded', 'false');
-        trigger.style.cssText = 'cursor:pointer;white-space:nowrap;';
+        trigger.style.cssText = 'cursor:pointer;white-space:nowrap;vertical-align:top;font-family:inherit;';
         wrap.appendChild(trigger);
         const popup = document.createElement('div');
         popup.setAttribute('role', 'dialog');

@@ -4,7 +4,7 @@
 // @author       Maidehnless
 // @icon         https://avatars.akamai.steamstatic.com/2d1c9b05adb94b479e8671f9133e3d9189fcd23a_full.jpg
 // @license      MIT
-// @version      3.0.6
+// @version      3.0.7
 // @description  Checks ranked individual Killstreak weapon offers, subtracts owned robot parts and builds manual fabricator purchase links and kit sale estimates.
 // @match        https://steamcommunity.com/*/inventory*
 // @match        https://steamcommunity.com/market/multibuy*
@@ -144,7 +144,7 @@ const SmartPricing = (() => {
     const BUTTON_SPACER_ID = 'tf2-fabricator-button-spacer';
     const ERROR_DIALOG_ID = 'tf2-fabricator-error-report-dialog';
     const ERROR_LOG_ID = 'tf2-fabricator-error-report-log';
-    const SCRIPT_VERSION = '3.0.6';
+    const SCRIPT_VERSION = '3.0.7';
     const PRICE_DB_URL = 'https://raw.githubusercontent.com/Maidehnless/TF2-Fabricator-Smart-Buyer/main/data/killstreak-prices.json';
     const PRICE_DB_CACHE_KEY = 'tf2-fabricator-remote-price-db-v1';
     const MODE_STORAGE_KEY = 'tf2-fabricator-verify-mode-v1';
@@ -3560,10 +3560,12 @@ const SmartPricing = (() => {
         wrap.style.cssText = 'display:inline-block;position:relative;vertical-align:middle;margin:0 8px;float:right;';
         const trigger = document.createElement('button');
         trigger.type = 'button';
-        trigger.className = 'trigger';
-        trigger.textContent = 'TF2 Multi-Buy Settings';
+        trigger.className = 'btn_darkblue_white_innerfade btn_medium';
+        const triggerLabel = document.createElement('span');
+        triggerLabel.textContent = 'TF2 Multi-Buy Settings';
+        trigger.appendChild(triggerLabel);
         trigger.setAttribute('aria-expanded', 'false');
-        trigger.style.cssText = 'cursor:pointer;white-space:nowrap;';
+        trigger.style.cssText = 'cursor:pointer;white-space:nowrap;vertical-align:top;font-family:inherit;';
         wrap.appendChild(trigger);
         const popup = document.createElement('div');
         popup.setAttribute('role', 'dialog');
