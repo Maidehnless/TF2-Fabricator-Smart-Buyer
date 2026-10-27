@@ -1,62 +1,7 @@
 {
   "schema": "maidehnless.tf2.price-updater-state.v1",
-  "status": "retrying",
-  "pending": [
-    "Killstreak Enforcer",
-    "Specialized Killstreak Flying Guillotine",
-    "Killstreak Sandman",
-    "Specialized Killstreak Splendid Screen",
-    "Killstreak Ambassador",
-    "Specialized Killstreak Overdose",
-    "Killstreak Apoco-Fists",
-    "Specialized Killstreak Huntsman",
-    "Killstreak Back Scratcher",
-    "Specialized Killstreak Sydney Sleeper",
-    "Festivized Killstreak AWPer Hand",
-    "Festivized Killstreak Air Strike",
-    "Festivized Killstreak Ambassador",
-    "Festivized Killstreak Amputator",
-    "Festivized Killstreak Atomizer",
-    "Festivized Killstreak Axtinguisher",
-    "Festivized Killstreak Baby Face's Blaster",
-    "Festivized Killstreak Back Scatter",
-    "Festivized Killstreak Back Scratcher",
-    "Festivized Killstreak Backburner",
-    "Festivized Killstreak Bat Outta Hell",
-    "Festivized Killstreak Bazaar Bargain",
-    "Festivized Killstreak Beggar's Bazooka",
-    "Festivized Killstreak Big Earner",
-    "Festivized Killstreak Black Box",
-    "Festivized Killstreak Blutsauger",
-    "Festivized Killstreak Boston Basher",
-    "Festivized Killstreak Bottle",
-    "Festivized Killstreak Brass Beast",
-    "Festivized Killstreak Bushwacka",
-    "Festivized Killstreak Claidheamh Mòr",
-    "Festivized Killstreak Classic",
-    "Festivized Killstreak Cleaner's Carbine",
-    "Festivized Killstreak Conniver's Kunai",
-    "Festivized Killstreak Conscientious Objector",
-    "Festivized Killstreak Cow Mangler 5000",
-    "Festivized Killstreak Crusader's Crossbow",
-    "Festivized Killstreak Degreaser",
-    "Festivized Killstreak Detonator",
-    "Festivized Killstreak Diamondback",
-    "Festivized Killstreak Direct Hit",
-    "Festivized Killstreak Disciplinary Action",
-    "Festivized Killstreak Dragon's Fury",
-    "Festivized Killstreak Enforcer",
-    "Festivized Killstreak Escape Plan",
-    "Festivized Killstreak Eureka Effect",
-    "Festivized Killstreak Eyelander",
-    "Festivized Killstreak Family Business",
-    "Festivized Killstreak Fan O'War",
-    "Festivized Killstreak Fire Axe",
-    "Festivized Killstreak Fists of Steel",
-    "Festivized Killstreak Flame Thrower",
-    "Festivized Killstreak Flare Gun",
-    "Festivized Killstreak Flying Guillotine"
-  ],
+  "status": "complete",
+  "pending": [],
   "attemptHistory": {
     "Killstreak SMG": {
       "atUTC": "2026-10-27T09:08:44.875Z",
@@ -81,27 +26,243 @@
     "Specialized Killstreak Loch-n-Load": {
       "atUTC": "2026-10-27T09:09:37.987Z",
       "result": "priced"
+    },
+    "Killstreak Enforcer": {
+      "atUTC": "2026-10-27T09:57:22.198Z",
+      "result": "priced"
+    },
+    "Specialized Killstreak Flying Guillotine": {
+      "atUTC": "2026-10-27T09:57:33.215Z",
+      "result": "priced"
+    },
+    "Killstreak Sandman": {
+      "atUTC": "2026-10-27T09:57:43.603Z",
+      "result": "priced"
+    },
+    "Specialized Killstreak Splendid Screen": {
+      "atUTC": "2026-10-27T09:57:53.912Z",
+      "result": "priced"
+    },
+    "Killstreak Ambassador": {
+      "atUTC": "2026-10-27T09:58:04.900Z",
+      "result": "priced"
+    },
+    "Specialized Killstreak Overdose": {
+      "atUTC": "2026-10-27T09:58:15.801Z",
+      "result": "priced"
+    },
+    "Killstreak Apoco-Fists": {
+      "atUTC": "2026-10-27T09:58:26.863Z",
+      "result": "priced"
+    },
+    "Specialized Killstreak Huntsman": {
+      "atUTC": "2026-10-27T09:58:37.667Z",
+      "result": "priced"
+    },
+    "Killstreak Back Scratcher": {
+      "atUTC": "2026-10-27T09:58:48.370Z",
+      "result": "priced"
+    },
+    "Specialized Killstreak Sydney Sleeper": {
+      "atUTC": "2026-10-27T09:58:58.864Z",
+      "result": "priced"
+    },
+    "Festivized Killstreak AWPer Hand": {
+      "atUTC": "2026-10-27T09:59:09.306Z",
+      "result": "priced"
+    },
+    "Festivized Killstreak Air Strike": {
+      "atUTC": "2026-10-27T09:59:20.169Z",
+      "result": "priced"
+    },
+    "Festivized Killstreak Ambassador": {
+      "atUTC": "2026-10-27T09:59:30.537Z",
+      "result": "priced"
+    },
+    "Festivized Killstreak Amputator": {
+      "atUTC": "2026-10-27T09:59:41.791Z",
+      "result": "priced"
+    },
+    "Festivized Killstreak Atomizer": {
+      "atUTC": "2026-10-27T09:59:52.073Z",
+      "result": "no_active_listings"
+    },
+    "Festivized Killstreak Axtinguisher": {
+      "atUTC": "2026-10-27T10:00:03.059Z",
+      "result": "priced"
+    },
+    "Festivized Killstreak Baby Face's Blaster": {
+      "atUTC": "2026-10-27T10:00:13.547Z",
+      "result": "priced"
+    },
+    "Festivized Killstreak Back Scatter": {
+      "atUTC": "2026-10-27T10:00:24.355Z",
+      "result": "priced"
+    },
+    "Festivized Killstreak Back Scratcher": {
+      "atUTC": "2026-10-27T10:00:34.870Z",
+      "result": "priced"
+    },
+    "Festivized Killstreak Backburner": {
+      "atUTC": "2026-10-27T10:00:46.051Z",
+      "result": "priced"
+    },
+    "Festivized Killstreak Bat Outta Hell": {
+      "atUTC": "2026-10-27T10:00:56.323Z",
+      "result": "priced"
+    },
+    "Festivized Killstreak Bazaar Bargain": {
+      "atUTC": "2026-10-27T10:01:07.367Z",
+      "result": "priced"
+    },
+    "Festivized Killstreak Beggar's Bazooka": {
+      "atUTC": "2026-10-27T10:01:18.318Z",
+      "result": "priced"
+    },
+    "Festivized Killstreak Big Earner": {
+      "atUTC": "2026-10-27T10:01:29.327Z",
+      "result": "priced"
+    },
+    "Festivized Killstreak Black Box": {
+      "atUTC": "2026-10-27T10:01:40.524Z",
+      "result": "priced"
+    },
+    "Festivized Killstreak Blutsauger": {
+      "atUTC": "2026-10-27T10:01:51.432Z",
+      "result": "priced"
+    },
+    "Festivized Killstreak Boston Basher": {
+      "atUTC": "2026-10-27T10:02:02.124Z",
+      "result": "priced"
+    },
+    "Festivized Killstreak Bottle": {
+      "atUTC": "2026-10-27T10:02:12.459Z",
+      "result": "no_active_listings"
+    },
+    "Festivized Killstreak Brass Beast": {
+      "atUTC": "2026-10-27T10:02:23.437Z",
+      "result": "priced"
+    },
+    "Festivized Killstreak Bushwacka": {
+      "atUTC": "2026-10-27T10:02:34.396Z",
+      "result": "priced"
+    },
+    "Festivized Killstreak Claidheamh Mòr": {
+      "atUTC": "2026-10-27T10:02:45.484Z",
+      "result": "priced"
+    },
+    "Festivized Killstreak Classic": {
+      "atUTC": "2026-10-27T10:02:56.148Z",
+      "result": "priced"
+    },
+    "Festivized Killstreak Cleaner's Carbine": {
+      "atUTC": "2026-10-27T10:03:06.465Z",
+      "result": "priced"
+    },
+    "Festivized Killstreak Conniver's Kunai": {
+      "atUTC": "2026-10-27T10:03:16.784Z",
+      "result": "priced"
+    },
+    "Festivized Killstreak Conscientious Objector": {
+      "atUTC": "2026-10-27T10:03:27.295Z",
+      "result": "priced"
+    },
+    "Festivized Killstreak Cow Mangler 5000": {
+      "atUTC": "2026-10-27T10:03:37.741Z",
+      "result": "no_active_listings"
+    },
+    "Festivized Killstreak Crusader's Crossbow": {
+      "atUTC": "2026-10-27T10:03:48.260Z",
+      "result": "priced"
+    },
+    "Festivized Killstreak Degreaser": {
+      "atUTC": "2026-10-27T10:03:59.389Z",
+      "result": "priced"
+    },
+    "Festivized Killstreak Detonator": {
+      "atUTC": "2026-10-27T10:04:09.981Z",
+      "result": "priced"
+    },
+    "Festivized Killstreak Diamondback": {
+      "atUTC": "2026-10-27T10:04:21.124Z",
+      "result": "priced"
+    },
+    "Festivized Killstreak Direct Hit": {
+      "atUTC": "2026-10-27T10:04:31.518Z",
+      "result": "priced"
+    },
+    "Festivized Killstreak Disciplinary Action": {
+      "atUTC": "2026-10-27T10:04:42.465Z",
+      "result": "priced"
+    },
+    "Festivized Killstreak Dragon's Fury": {
+      "atUTC": "2026-10-27T10:04:53.116Z",
+      "result": "priced"
+    },
+    "Festivized Killstreak Enforcer": {
+      "atUTC": "2026-10-27T10:05:03.565Z",
+      "result": "priced"
+    },
+    "Festivized Killstreak Escape Plan": {
+      "atUTC": "2026-10-27T10:05:14.267Z",
+      "result": "priced"
+    },
+    "Festivized Killstreak Eureka Effect": {
+      "atUTC": "2026-10-27T10:05:24.767Z",
+      "result": "priced"
+    },
+    "Festivized Killstreak Eyelander": {
+      "atUTC": "2026-10-27T10:05:35.670Z",
+      "result": "priced"
+    },
+    "Festivized Killstreak Family Business": {
+      "atUTC": "2026-10-27T10:05:46.526Z",
+      "result": "priced"
+    },
+    "Festivized Killstreak Fan O'War": {
+      "atUTC": "2026-10-27T10:05:57.539Z",
+      "result": "no_active_listings"
+    },
+    "Festivized Killstreak Fire Axe": {
+      "atUTC": "2026-10-27T10:06:08.343Z",
+      "result": "priced"
+    },
+    "Festivized Killstreak Fists of Steel": {
+      "atUTC": "2026-10-27T10:06:19.130Z",
+      "result": "no_active_listings"
+    },
+    "Festivized Killstreak Flame Thrower": {
+      "atUTC": "2026-10-27T10:06:30.003Z",
+      "result": "priced"
+    },
+    "Festivized Killstreak Flare Gun": {
+      "atUTC": "2026-10-27T10:06:40.479Z",
+      "result": "no_active_listings"
+    },
+    "Festivized Killstreak Flying Guillotine": {
+      "atUTC": "2026-10-27T10:06:51.418Z",
+      "result": "no_active_listings"
     }
   },
   "cycle": {
     "total": 60,
-    "completed": 6,
-    "priced": 6,
-    "unlisted": 0,
+    "completed": 60,
+    "priced": 53,
+    "unlisted": 7,
     "startedAtUTC": "2026-10-27T06:01:04Z"
   },
-  "nextCycleAtUTC": null,
-  "nextAttemptAtUTC": "2026-10-27T09:39:37Z",
+  "nextCycleAtUTC": "2026-10-27T15:06:51Z",
+  "nextAttemptAtUTC": null,
   "lastError": null,
-  "updatedAtUTC": "2026-10-27T09:09:37Z",
+  "updatedAtUTC": "2026-10-27T10:06:51Z",
   "lastRun": {
-    "attempted": 6,
-    "updated": 6,
-    "unlisted": 0,
+    "attempted": 54,
+    "updated": 47,
+    "unlisted": 7,
     "errors": 0,
-    "verifiedResponses": 6,
-    "reason": "batch_limit"
+    "verifiedResponses": 54,
+    "reason": "complete"
   },
   "consecutiveRejections": 0,
-  "lastSuccessfulResponseAtUTC": "2026-10-27T09:09:37.987Z"
+  "lastSuccessfulResponseAtUTC": "2026-10-27T10:06:51.418Z"
 }
