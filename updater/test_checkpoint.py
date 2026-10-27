@@ -153,4 +153,37 @@ class TestCheckpoint(unittest.TestCase):
         self.run_at(30,[Decimal('0.08')]*2)
         self.assertEqual('no_active_listings',self.saved()['attemptHistory'][name]['result'])
 
+class TestForcedTest(unittest.TestCase):
+    setUp = TestCheckpoint.setUp
+    run_at = TestCheckpoint.run_at
+    saved = TestCheckpoint.saved
+    def force(self, results):
+        stamp=(self.base+dt.timedelta(minutes=1)).isoformat().replace('+00:00','Z')
+        with patch.object(mod,'utc_now',return_value=stamp), patch.object(mod,'lookup',side_effect=results) as lookup, patch.object(mod.time,'sleep'):
+            mod.main(['--database',str(self.db),'--state-file',str(self.state),
+                      '--limit','6','--leading','2','--force-test'])
+        return lookup
+
+    def test_forced_test_bypasses_cooldown_and_caps_existing_cycle_at_six(self):
+        self.run_at(0,[mod.RateLimited('429')],limit=10)
+        pending=self.saved()['pending']
+        lookup=self.force([Decimal('0.07')]*6)
+        self.assertEqual(6,lookup.call_count)
+        self.assertEqual(pending[6:],self.saved()['pending'])
+        self.assertEqual(10,self.saved()['cycle']['total'])
+        self.assertEqual(6,self.saved()['cycle']['completed'])
+
+    def test_forced_test_stops_on_real_throttle_and_preserves_quotes(self):
+        self.run_at(0,[mod.RateLimited('429')])
+        before=self.db.read_bytes()
+        lookup=self.force([mod.RateLimited('429')])
+        self.assertEqual(1,lookup.call_count)
+        self.assertEqual(before,self.db.read_bytes())
+        self.assertEqual('2026-10-27T00:31:00Z',self.saved()['nextAttemptAtUTC'])
+
+    def test_forced_test_rejects_scheduled_use(self):
+        with self.assertRaises(SystemExit), patch.object(mod,'lookup') as lookup:
+            mod.main(['--scheduled','--force-test','--state-file',str(self.state)])
+        lookup.assert_not_called()
+
 if __name__=='__main__':unittest.main()
