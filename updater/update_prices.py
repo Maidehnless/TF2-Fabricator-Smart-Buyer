@@ -257,9 +257,11 @@ def run_resumable(args, db):
     now = instant(utc_now())
     if state:
         deadline = state.get('nextAttemptAtUTC') if state['pending'] else state.get('nextCycleAtUTC')
-        if deadline and now < instant(deadline) and (state['pending'] or args.scheduled):
+        if deadline and now < instant(deadline) and (state['pending'] or args.scheduled) and not args.force_test:
             report_checkpoint(state, 'waiting', 'Not due; no Steam requests made.')
             return 0
+    if args.force_test:
+        print('Forced test: bypassing the saved cooldown for at most six requests; Steam rejections still stop the batch.')
     history = state.get('attemptHistory', {}) if state else {}
     migrate_to_usd(db)
     # Keep rotation fair even when earlier batches only confirmed unlisted items and
@@ -368,6 +370,7 @@ def main(argv=None):
     ap.add_argument('--leading', type=int, default=8, help='Cheap weapons per tier to recheck each run')
     ap.add_argument('--delay', type=float, default=4.0, help='Minimum delay between requests, seconds')
     ap.add_argument('--state-file', help='Enable durable pending-entry checkpoints at this path')
+    ap.add_argument('--force-test', action='store_true', help='Manual six-request test that bypasses saved cooldowns and preserves active progress')
     ap.add_argument('--scheduled', action='store_true', help='Respect the five-hour new-cycle interval')
     ap.add_argument('--interval-hours', type=float, default=5)
     ap.add_argument('--retry-minutes', type=float, default=30)
@@ -382,6 +385,12 @@ def main(argv=None):
         ap.error('Interval, retry and runtime must be positive finite values; max-requests must be 1..550')
     if args.state_file and Path(args.state_file).resolve() == Path(args.database).resolve():
         ap.error('Checkpoint and price database must be different files')
+    if args.force_test:
+        if args.scheduled or not args.state_file:
+            ap.error('--force-test requires --state-file and cannot be used with --scheduled')
+        args.limit = 6
+        args.leading = min(args.leading, 2)
+        args.max_requests = min(args.max_requests, 6)
     path = Path(args.database)
     db = read_db(path)
     if args.validate:
