@@ -22,7 +22,9 @@ from decimal import Decimal, InvalidOperation
 from pathlib import Path
 
 SCHEMA = 'maidehnless.tf2.killstreak_priority.v1'
-USER_AGENT = 'TF2-Fabricator-Price-Updater/1.0 (GitHub Actions; public price snapshots)'
+# This compatibility header succeeded in the user's controlled one-request test.
+# Override it with TF2_PRICE_USER_AGENT without changing quote currency or using login cookies.
+USER_AGENT = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:158.0) Gecko/20100101 Firefox/158.0'
 
 class RateLimited(Exception):
     def __init__(self, message, retry_after=None):
@@ -118,13 +120,16 @@ def migrate_to_usd(db):
 
 
 def lookup(item, timeout=18):
+    user_agent = os.environ.get('TF2_PRICE_USER_AGENT', USER_AGENT).strip()
+    if not user_agent or any(c in user_agent for c in ('\r', '\n')) or len(user_agent) > 512:
+        raise ValueError('TF2_PRICE_USER_AGENT must be a non-empty single-line header of at most 512 characters')
     params = urllib.parse.urlencode({
         'appid': 440, 'currency': 1, 'country': 'US',
         'market_hash_name': item['name']
     })
     url = 'https://steamcommunity.com/market/priceoverview/?' + params
     request = urllib.request.Request(url, headers={
-        'Accept': 'application/json', 'User-Agent': USER_AGENT,
+        'Accept': 'application/json', 'User-Agent': user_agent,
     })
     try:
         with urllib.request.urlopen(request, timeout=timeout) as response:
@@ -374,7 +379,7 @@ def run_resumable(args, db):
         rebuild_priority(db)
         db['generatedAtUTC'] = utc_now()
         db['latestPublishedUTC'] = db['generatedAtUTC']
-        db['updaterVersion'] = '1.2.1'
+        db['updaterVersion'] = '1.2.2'
         db['lastRun'] = {**state['lastRun'], 'remaining': len(state['pending']),
                          'completedUTC': stamp(ended), 'nextAttemptAtUTC': state['nextAttemptAtUTC']}
         temporary = path.with_name(path.name + '.tmp')
@@ -478,7 +483,7 @@ def main(argv=None):
         rebuild_priority(db)
         db['generatedAtUTC'] = stamp
         db['latestPublishedUTC'] = stamp
-        db['updaterVersion'] = '1.1.3'
+        db['updaterVersion'] = '1.2.2'
         db['lastRun'] = {'attempted': attempted, 'successful': okay,
                          'unlisted': unavailable, 'errors': errors,
                          'rateLimitedOrStopped': stopped, 'completedUTC': stamp}

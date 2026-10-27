@@ -144,3 +144,28 @@ class TestUsdMigration(unittest.TestCase):
             self.assertIsNone(other['price']);self.assertIsNone(other['checkedAtUTC'])
 
 if __name__=='__main__': unittest.main()
+
+
+class TestRequestUserAgent(unittest.TestCase):
+    def test_default_matches_successful_browser_header(self):
+        expected='Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:158.0) Gecko/20100101 Firefox/158.0'
+        self.assertEqual(expected,mod.USER_AGENT)
+
+    def test_environment_override_is_used_in_actual_request(self):
+        class Response:
+            def __enter__(self):return self
+            def __exit__(self,*args):pass
+            def read(self,n):return b'{"success":true,"lowest_price":"$0.48"}'
+        with patch.dict(mod.os.environ,{'TF2_PRICE_USER_AGENT':'Custom Browser Compatibility Header'}), \
+             patch.object(mod.urllib.request,'urlopen',return_value=Response()) as opened:
+            self.assertEqual(Decimal('0.48'),mod.lookup({'name':'Killstreak SMG'}))
+        request=opened.call_args.args[0]
+        self.assertEqual('Custom Browser Compatibility Header',request.get_header('User-agent'))
+        self.assertFalse(request.has_header('Cookie'))
+
+    def test_invalid_override_is_rejected_before_network_request(self):
+        for value in ['', 'Header\r\nInjected: value']:
+            with patch.dict(mod.os.environ,{'TF2_PRICE_USER_AGENT':value}), \
+                 patch.object(mod.urllib.request,'urlopen') as opened:
+                with self.assertRaises(ValueError):mod.lookup({'name':'Killstreak SMG'})
+                opened.assert_not_called()
