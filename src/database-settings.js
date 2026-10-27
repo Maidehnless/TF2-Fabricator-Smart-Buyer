@@ -1,6 +1,6 @@
     function validatePublishedPriceDatabase(data) {
         if (!data || data.schema !== 'maidehnless.tf2.killstreak_priority.v1' ||
-            data.currency !== 'AUD' || !Array.isArray(data.prices) || data.prices.length !== 550 ||
+            !['USD','AUD'].includes(data.currency) || !Array.isArray(data.prices) || data.prices.length !== 550 ||
             !data.priority || !Array.isArray(data.priority.regular) ||
             !Array.isArray(data.priority.specialized)) {
             throw new Error('GitHub price database has an unexpected format.');
@@ -27,6 +27,7 @@
 
     function applyPublishedPriceDatabase(data) {
         const previous = priceDatabase.generatedAt;
+        priceDatabase.currency = data.currency;
         priceDatabase.priority = data.priority;
         priceDatabase.rows = new Map(data.prices.map(item => [item.name, item]));
         priceDatabase.generatedAt = data.latestPublishedUTC || data.generatedAtUTC;
@@ -100,7 +101,7 @@
         const description = document.getElementById('tf2-price-db-status');
         if (description) description.textContent = priceDatabase.error
             ? ('Cached / offline: ' + priceDatabase.error)
-            : priceDatabase.status === 'ready' ? 'Published GitHub priority list loaded (AUD snapshot)' :
+            : priceDatabase.status === 'ready' ? 'Published GitHub priority list loaded (' + priceDatabase.currency + (priceDatabase.currency === 'AUD' ? ' legacy ranking)' : ' snapshot)') :
                 priceDatabase.status === 'loading' ? 'Loading price list…' : 'No published price list available';
     }
 
@@ -133,9 +134,10 @@
         label.style.cssText = 'display:block;font-weight:bold;margin-bottom:4px;';
         const select = document.createElement('select');
         select.style.cssText = 'width:100%;padding:5px;background:#101822;color:#fff;border:1px solid #526477;';
-        for (const [value, text] of [['fast', 'Fast — 4 ranked names'],
-            ['balanced', 'Balanced — 10 ranked names'],
-            ['exhaustive', 'Exhaustive — all eligible weapons']]) {
+        for (const [value, text] of [['fast', 'Fast — 10 Killstreak entries'],
+            ['balanced', 'Balanced — 25 Killstreak entries'],
+            ['long', 'Long — 50 Killstreak entries'],
+            ['exhaustive', 'Exhaustive — all Killstreak entries']]) {
             const option = document.createElement('option');
             option.value = value;
             option.textContent = text;
@@ -150,11 +152,6 @@
         });
         label.appendChild(select);
         popup.appendChild(label);
-        const note = document.createElement('div');
-        note.textContent = 'Live checks use your own Steam wallet currency. ' +
-            'The GitHub AUD prices determine search priority only, never a guaranteed checkout price.';
-        note.style.cssText = 'color:#a8b9c7;font-size:11px;margin:8px 0 14px;';
-        popup.appendChild(note);
         const refreshPrices = document.createElement('button');
         refreshPrices.type = 'button';
         refreshPrices.textContent = 'Refresh live prices';

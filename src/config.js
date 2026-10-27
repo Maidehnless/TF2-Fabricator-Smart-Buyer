@@ -5,13 +5,13 @@
     const BUTTON_SPACER_ID = 'tf2-fabricator-button-spacer';
     const ERROR_DIALOG_ID = 'tf2-fabricator-error-report-dialog';
     const ERROR_LOG_ID = 'tf2-fabricator-error-report-log';
-    const SCRIPT_VERSION = '1.1.1';
+    const SCRIPT_VERSION = '3.0.0';
     const PRICE_DB_URL = 'https://raw.githubusercontent.com/Maidehnless/TF2-Fabricator-Smart-Buyer/main/data/killstreak-prices.json';
     const PRICE_DB_CACHE_KEY = 'tf2-fabricator-remote-price-db-v1';
     const MODE_STORAGE_KEY = 'tf2-fabricator-verify-mode-v1';
     const PRICE_DB_REFRESH_MS = 15 * 60 * 1000;
-    const priceDatabase = { status: 'loading', generatedAt: '', priority: null, rows: null, error: '', loadedAt: 0 };
-    let weaponVerificationMode = ['fast', 'balanced', 'exhaustive'].includes(GM_getValue(MODE_STORAGE_KEY, 'balanced'))
+    const priceDatabase = { status: 'loading', generatedAt: '', priority: null, rows: null, error: '', loadedAt: 0, currency: 'USD' };
+    let weaponVerificationMode = ['fast', 'balanced', 'long', 'exhaustive'].includes(GM_getValue(MODE_STORAGE_KEY, 'balanced'))
         ? GM_getValue(MODE_STORAGE_KEY, 'balanced') : 'balanced';
     const MULTIBUY_WEAPON_PANEL_ID = 'tf2-fabricator-multibuy-weapon-panel';
     const WEAPON_INPUT_ID = 'tf2-fabricator-cheapest-weapon';

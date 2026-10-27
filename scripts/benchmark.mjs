@@ -2,7 +2,7 @@
 import assert from 'node:assert/strict';
 import {SmartPricing} from '../src/pricing.js';
 const output=[];
-for(const [mode,names] of [['Fast',4],['Balanced',10]]) {
+for(const [mode,names] of [['Fast',10],['Balanced',25],['Long',50]]) {
   let clock=0,calls=0,first=null;
   const client=SmartPricing.createClient({now:()=>clock,wait:async ms=>{clock+=ms;},interval:3400});
   await SmartPricing.scan({names:Array.from({length:275},(_,i)=>'Weapon '+i),limit:names,quantity:2,

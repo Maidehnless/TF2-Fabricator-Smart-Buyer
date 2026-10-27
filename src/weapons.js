@@ -141,7 +141,7 @@
             onProgress?.(cached.result);
             return cached.result;
         }
-        const limit=weaponVerificationMode==='fast'?4:weaponVerificationMode==='balanced'?10:names.length;
+        const limit=weaponVerificationMode==='exhaustive'?names.length:({fast:10,balanced:25,long:50}[weaponVerificationMode] || 25);
         const reportFailure=detail=>writeDiagnostic('warn','[TF2 Pricing] Candidate failed:',detail);
         const result=await SmartPricing.scan({names,quantity,limit,signal,onProgress,onFailure:reportFailure,
             read:(name,signal)=>readIndividualWeaponOffers(name,quantity,currency,signal)});

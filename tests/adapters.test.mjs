@@ -84,7 +84,7 @@ test('valid native Multi-Buy identities and quantities produce exact integer tot
  app.setHTML(async()=>`<table><tr><td><a href="/market/listings/440/Killstreak%20Bat">Bat</a><input class="market_multi_price" data-nameid="1" value="A$ 0.06"><input id="buy_1_qty" value="2"></td></tr></table>`);
  assert.equal((await app.getMultiBuyTotal('https://steamcommunity.com/market/multibuy?appid=440&items[]=Killstreak%20Bat&qty[]=2',1)).minorUnits,12);
 });
-test('fast scan uses four direct listing requests and reuses successful result cache',async()=>{
+test('fast scan uses ten direct listing requests and reuses successful result cache',async()=>{
  const {app,window}=await loadApp();window.g_rgWalletInfo={wallet_currency:21};
  const db=JSON.parse(await readFile('data/killstreak-prices.json','utf8'));
  app.priceDatabase.priority=db.priority;app.priceDatabase.generatedAt=db.generatedAtUTC;
@@ -94,8 +94,8 @@ test('fast scan uses four direct listing requests and reuses successful result c
  app.createInventoryPriceSettings();const select=document.querySelector('select');select.value='fast';select.dispatchEvent(new window.Event('change'));
  const first=await app.getCheapestInputWeapon('regular',2);
  const second=await app.getCheapestInputWeapon('regular',2);
- assert.equal(urls.length,4);assert.ok(urls.every(u=>u.includes('/listings/440/') && !u.includes('/search/')));
- assert.equal(first.checked,4);assert.equal(second.offers[0].price,6);
+ assert.equal(urls.length,10);assert.ok(urls.every(u=>u.includes('/listings/440/') && !u.includes('/search/')));
+ assert.equal(first.checked,10);assert.equal(second.offers[0].price,6);
 });
 
 test('missing wallet metadata and different dollar currencies cannot be combined',async()=>{

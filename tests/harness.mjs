@@ -1,7 +1,7 @@
 import vm from 'node:vm';
 import {parseHTML,DOMParser} from 'linkedom';
 import {bundle} from '../scripts/build.mjs';
-export async function loadApp(html='<html><head></head><body></body></html>') {
+export async function loadApp(html='<html><head></head><body></body></html>', {values={}}={}) {
   const {window,document}=parseHTML(html);
   const location={pathname:'/profiles/76561198000000001/inventory',href:'https://steamcommunity.com/profiles/76561198000000001/inventory',origin:'https://steamcommunity.com'};
   window.location=location;
@@ -16,16 +16,16 @@ export async function loadApp(html='<html><head></head><body></body></html>') {
   const logs=[];
   const ctx=vm.createContext({window,document,location,DOMParser,URL,URLSearchParams,AbortController,DOMException,
     console:{log:(...x)=>logs.push(x),warn:(...x)=>logs.push(x),error:(...x)=>logs.push(x)},
-    GM_getValue:(_,fallback)=>fallback,GM_setValue:()=>{},GM_xmlhttpRequest:()=>{throw Error('Unexpected live network request');},
+    GM_getValue:(key,fallback)=>values[key] ?? fallback,GM_setValue:()=>{},GM_xmlhttpRequest:()=>{throw Error('Unexpected live network request');},
     setTimeout,clearTimeout,setInterval,requestAnimationFrame:f=>f(),MutationObserver:window.MutationObserver});
   const exports=['parseSteamPrice','formatSteamCurrency','findFabricatorParts','findRequiredKillstreakWeapon',
     'findFinishedKitName','buildMultiBuyURL','extractIndividualOffers','parseRobotPartInventoryPage',
     'missingRobotParts','isViewedInventoryOwn','getMultiBuyTotal','validatePublishedPriceDatabase',
     'redactDiagnosticText','ownedRobotInventory','createInventoryPriceSettings','updateMultiBuyButton',
-    'decodeSteamMarketResponse','getCheapestInputWeapon','priceDatabase','SmartPricing','walletContext'];
+    'runUpdateSafely','ensureOwnedRobotInventory','initMultiBuySupportMessage','decodeSteamMarketResponse','getCheapestInputWeapon','priceDatabase','SmartPricing','walletContext'];
   const source=await bundle({bootstrap:false});
-  const declaration=source.includes('function decodeSteamMarketResponse(')?'':'const decodeSteamMarketResponse=undefined;';
-  const code=source.replace(/\n\}\)\(\);\s*$/,`\n${declaration}\nglobalThis.app={${exports.join(',')},setHTML:fn=>requestHTML=fn,setJSON:fn=>requestJSON=fn,setInventory:fn=>requestInventoryJSON=fn,refreshOwnedRobotInventory};\n})();`);
+  const declaration=(source.includes('function ensureOwnedRobotInventory(')?'':'const ensureOwnedRobotInventory=undefined;')+(source.includes('function decodeSteamMarketResponse(')?'':'const decodeSteamMarketResponse=undefined;')+(source.includes('function initMultiBuySupportMessage(')?'':'const initMultiBuySupportMessage=undefined;');
+  const code=source.replace(/\n\}\)\(\);\s*$/,`\n${declaration}\nglobalThis.app={${exports.join(',')},setWeaponSearch:fn=>getCheapestInputWeapon=fn,setHTML:fn=>requestHTML=fn,setJSON:fn=>requestJSON=fn,setInventory:fn=>requestInventoryJSON=fn,refreshOwnedRobotInventory};\n})();`);
   vm.runInContext(code,ctx);
   return {app:ctx.app,ctx,document,window,logs,run:s=>vm.runInContext(s,ctx)};
 }

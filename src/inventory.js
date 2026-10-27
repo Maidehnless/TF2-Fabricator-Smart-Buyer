@@ -198,13 +198,48 @@
         runUpdateSafely();
     }
 
+    const ownedInventoryAuto = {enabled:false,owner:null,attempts:0,readinessChecks:0,nextAt:0,timer:null};
+    function ensureOwnedRobotInventory() {
+        const auto=ownedInventoryAuto;
+        auto.enabled=true;
+        if (ownedRobotInventory.inFlight || ownedRobotInventory.status==='loading') return ownedRobotInventory.inFlight;
+        const owner=currentInventoryOwnerID();
+        const schedule=delay=>{
+            if(auto.timer!==null) return;
+            auto.timer=setTimeout(()=>{auto.timer=null;ensureOwnedRobotInventory();},delay);
+        };
+        if(!owner || !isViewedInventoryOwn(owner)) {
+            if(ownedRobotInventory.status!=='unavailable') {
+                ownedRobotInventory.status='unavailable';
+                ownedRobotInventory.error='Waiting to confirm the signed-in inventory owner.';
+                ownedRobotInventory.counts=new Map();
+                notifyInventoryUpdate();
+            }
+            if(auto.readinessChecks<10) {auto.readinessChecks++;schedule(1500);}
+            return Promise.resolve(null);
+        }
+        if(auto.owner!==owner) {
+            auto.owner=owner;auto.attempts=0;auto.nextAt=0;
+            clearTimeout(auto.timer);auto.timer=null;
+        }
+        if(ownedRobotInventory.status==='ready' && ownedRobotInventory.steamID===owner &&
+            Date.now()-ownedRobotInventory.updatedAt<INVENTORY_CACHE_MS) return Promise.resolve(ownedRobotInventory.counts);
+        if(auto.attempts>=3) return Promise.resolve(null);
+        if(Date.now()<auto.nextAt) {schedule(auto.nextAt-Date.now());return Promise.resolve(null);}
+        auto.attempts++;
+        auto.nextAt=Date.now()+10000;
+        return refreshOwnedRobotInventory(true).finally(()=>{
+            if(ownedRobotInventory.status==='ready') {auto.attempts=0;clearTimeout(auto.timer);auto.timer=null;}
+            if(ownedRobotInventory.status==='error' && auto.attempts<3) schedule(Math.max(0,auto.nextAt-Date.now()));
+        });
+    }
+
     async function refreshOwnedRobotInventory(force = false) {
         const inventory = ownedRobotInventory;
         if (inventory.inFlight) return inventory.inFlight;
-        if (!force && inventory.status === 'ready' &&
-            Date.now() - inventory.updatedAt < INVENTORY_CACHE_MS) return inventory.counts;
-
         const owner = currentInventoryOwnerID();
+        if (!force && inventory.status === 'ready' && inventory.steamID === owner && isViewedInventoryOwn(owner) &&
+            Date.now() - inventory.updatedAt < INVENTORY_CACHE_MS) return inventory.counts;
         if (!owner || !isViewedInventoryOwn(owner)) {
             inventory.status = 'unavailable';
             inventory.error = 'Could not confirm the inventory belongs to the signed-in Steam user.';

@@ -28,6 +28,6 @@
         runUpdateSafely();
     });
     setInterval(()=>loadPublishedPriceDatabase().then(scheduleUpdate).catch(()=>{}),PRICE_DB_REFRESH_MS);
-    refreshOwnedRobotInventory().catch(error=>writeDiagnostic('warn','[TF2 Inventory]',error));
+    ensureOwnedRobotInventory()?.catch(error=>writeDiagnostic('warn','[TF2 Inventory]',error));
     runUpdateSafely();
     // Weapon checks start only for the current recipe. No speculative scans of either tier.

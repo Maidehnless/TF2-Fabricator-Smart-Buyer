@@ -341,7 +341,7 @@
     // ============================================================
 
     function buildMultiBuyURL(parts, weapons = [], orderedInputs = null) {
-        let url = 'https://steamcommunity.com/market/multibuy?appid=440';
+        let url = 'https://steamcommunity.com/market/multibuy?appid=440&maidehn=less';
 
         // Each named weapon occupies one Steam row. Two listings for the same
         // weapon become quantity 2; two different weapons remain separate rows.
