@@ -2,12 +2,6 @@
   "schema": "maidehnless.tf2.price-updater-state.v1",
   "status": "retrying",
   "pending": [
-    "Killstreak SMG",
-    "Specialized Killstreak Spy-Cicle",
-    "Killstreak Natascha",
-    "Specialized Killstreak Kritzkrieg",
-    "Killstreak Wrench",
-    "Specialized Killstreak Loch-n-Load",
     "Killstreak Enforcer",
     "Specialized Killstreak Flying Guillotine",
     "Killstreak Sandman",
@@ -63,24 +57,51 @@
     "Festivized Killstreak Flare Gun",
     "Festivized Killstreak Flying Guillotine"
   ],
-  "attemptHistory": {},
+  "attemptHistory": {
+    "Killstreak SMG": {
+      "atUTC": "2026-10-27T09:08:44.875Z",
+      "result": "priced"
+    },
+    "Specialized Killstreak Spy-Cicle": {
+      "atUTC": "2026-10-27T09:08:55.617Z",
+      "result": "priced"
+    },
+    "Killstreak Natascha": {
+      "atUTC": "2026-10-27T09:09:06.112Z",
+      "result": "priced"
+    },
+    "Specialized Killstreak Kritzkrieg": {
+      "atUTC": "2026-10-27T09:09:16.788Z",
+      "result": "priced"
+    },
+    "Killstreak Wrench": {
+      "atUTC": "2026-10-27T09:09:27.443Z",
+      "result": "priced"
+    },
+    "Specialized Killstreak Loch-n-Load": {
+      "atUTC": "2026-10-27T09:09:37.987Z",
+      "result": "priced"
+    }
+  },
   "cycle": {
     "total": 60,
-    "completed": 0,
-    "priced": 0,
+    "completed": 6,
+    "priced": 6,
     "unlisted": 0,
     "startedAtUTC": "2026-10-27T06:01:04Z"
   },
   "nextCycleAtUTC": null,
-  "nextAttemptAtUTC": "2026-10-27T14:32:14Z",
-  "lastError": "Steam rejected requests (HTTP 429)",
-  "updatedAtUTC": "2026-10-27T08:32:14Z",
+  "nextAttemptAtUTC": "2026-10-27T09:39:37Z",
+  "lastError": null,
+  "updatedAtUTC": "2026-10-27T09:09:37Z",
   "lastRun": {
-    "attempted": 1,
-    "updated": 0,
+    "attempted": 6,
+    "updated": 6,
     "unlisted": 0,
     "errors": 0,
-    "reason": "rate_limited"
+    "verifiedResponses": 6,
+    "reason": "batch_limit"
   },
-  "consecutiveRejections": 1
+  "consecutiveRejections": 0,
+  "lastSuccessfulResponseAtUTC": "2026-10-27T09:09:37.987Z"
 }
