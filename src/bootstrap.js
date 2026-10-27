@@ -24,6 +24,7 @@
     observer.observe(document.body,{childList:true,subtree:true,characterData:true,
         attributes:true,attributeFilter:['style','class','hidden','data-props']});
     loadPriceUpdateSchedule(true);
+    setInterval(updatePriceScheduleUI, 15000);
     loadPublishedPriceDatabase(true).then(()=>{
         currentFingerprint='';
         runUpdateSafely();

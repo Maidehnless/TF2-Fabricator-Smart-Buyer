@@ -4,7 +4,7 @@
 // @author       Maidehnless
 // @icon         https://avatars.akamai.steamstatic.com/2d1c9b05adb94b479e8671f9133e3d9189fcd23a_full.jpg
 // @license      MIT
-// @version      3.0.1
+// @version      3.0.2
 // @description  Checks ranked individual Killstreak weapon offers, subtracts owned robot parts and builds manual fabricator purchase links and kit sale estimates.
 // @match        https://steamcommunity.com/*/inventory*
 // @match        https://steamcommunity.com/market/multibuy*
@@ -144,7 +144,7 @@ const SmartPricing = (() => {
     const BUTTON_SPACER_ID = 'tf2-fabricator-button-spacer';
     const ERROR_DIALOG_ID = 'tf2-fabricator-error-report-dialog';
     const ERROR_LOG_ID = 'tf2-fabricator-error-report-log';
-    const SCRIPT_VERSION = '3.0.1';
+    const SCRIPT_VERSION = '3.0.2';
     const PRICE_DB_URL = 'https://raw.githubusercontent.com/Maidehnless/TF2-Fabricator-Smart-Buyer/main/data/killstreak-prices.json';
     const PRICE_DB_CACHE_KEY = 'tf2-fabricator-remote-price-db-v1';
     const MODE_STORAGE_KEY = 'tf2-fabricator-verify-mode-v1';
@@ -3450,13 +3450,10 @@ const SmartPricing = (() => {
         const data = priceUpdateSchedule.data;
         const retry = data.status === 'retrying';
         const date = new Date(retry ? data.nextAttemptAtUTC : data.nextCycleAtUTC);
-        next.textContent = (retry ? 'Next retry eligible: ' : 'Next update eligible: ') +
-            date.toLocaleString(undefined, {timeZoneName: 'short'});
-        const due = date.getTime() <= Date.now();
-        detail.textContent = data.cycle.completed + '/' + data.cycle.total + ' Killstreak entries checked. ' +
-            (due ? 'Eligible now; awaiting the next workflow attempt. ' : 'Shown in your local time. ') +
-            'GitHub scheduling and Steam limits can delay completion.' +
-            (retry && data.lastError ? ' Last issue: ' + String(data.lastError).slice(0, 300) : '');
+        const minutes = Math.max(0, Math.ceil((date.getTime() - Date.now()) / 60000));
+        next.textContent = 'Next Update: ' + minutes + (minutes === 1 ? ' minute' : ' minutes');
+        detail.textContent = 'GitHub scheduling and Steam limits can delay completion.\n' +
+            'Previous issue: ' + (data.lastError ? String(data.lastError).slice(0, 300) : 'None reported.');
     }
 
     function validatePublishedPriceDatabase(data) {
@@ -3643,7 +3640,7 @@ const SmartPricing = (() => {
         popup.appendChild(next);
         const schedule = document.createElement('div');
         schedule.id = 'tf2-price-db-schedule-status';
-        schedule.style.cssText = 'font-size:11px;color:#a8b9c7;margin:3px 0 10px;max-width:340px;';
+        schedule.style.cssText = 'white-space:pre-line;font-size:11px;color:#a8b9c7;margin:3px 0 10px;max-width:340px;';
         popup.appendChild(schedule);
         const workflow = document.createElement('a');
         workflow.href = 'https://github.com/Maidehnless/TF2-Fabricator-Smart-Buyer/actions/workflows/update-prices.yml';
@@ -4811,6 +4808,7 @@ const SmartPricing = (() => {
     observer.observe(document.body,{childList:true,subtree:true,characterData:true,
         attributes:true,attributeFilter:['style','class','hidden','data-props']});
     loadPriceUpdateSchedule(true);
+    setInterval(updatePriceScheduleUI, 15000);
     loadPublishedPriceDatabase(true).then(()=>{
         currentFingerprint='';
         runUpdateSafely();

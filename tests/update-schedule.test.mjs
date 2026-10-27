@@ -13,18 +13,23 @@ async function setup(data,status=200){
  env.ctx.GM_xmlhttpRequest=opts=>{env.request=opts;opts.onload({status,responseText:JSON.stringify(data)});};
  await env.app.loadPriceUpdateSchedule(true);return env;
 }
-test('retry schedule shows viewer-local deadline, cycle progress and rate-limit issue',async()=>{
- const {document,request}=await setup(checkpoint());
+test('schedule shows rounded-up minutes, delay notice and previous issue',async()=>{
+ const {document,request,app,run}=await setup(checkpoint('retrying','2026-10-27T07:25:00Z'));
+ run("Date.now = () => Date.parse('2026-10-27T07:20:01Z')");
+ app.updatePriceDatabaseSettingsUI();
  assert.match(request.url,/update-prices-state\.json/);
- const text=document.getElementById('tf2-price-db-next-update').textContent;
- assert.match(text,/Next retry eligible/);
- assert.ok(text.includes(new Date('2099-10-27T07:18:54Z').toLocaleString(undefined,{timeZoneName:'short'})));
- assert.match(document.getElementById('tf2-price-db-schedule-status').textContent,/4\/60.*Steam HTTP 429/);
+ assert.equal(document.getElementById('tf2-price-db-next-update').textContent,'Next Update: 5 minutes');
+ assert.equal(document.getElementById('tf2-price-db-schedule-status').textContent,
+  'GitHub scheduling and Steam limits can delay completion.\nPrevious issue: Steam HTTP 429');
+ run("Date.now = () => Date.parse('2026-10-27T07:24:01Z')");
+ app.updatePriceDatabaseSettingsUI();
+ assert.equal(document.getElementById('tf2-price-db-next-update').textContent,'Next Update: 1 minute');
 });
-test('completed cycle shows next scheduled update and overdue times avoid promising completion',async()=>{
+test('overdue completed cycle shows zero minutes and no issue without inventing a completion',async()=>{
  const env=await setup(checkpoint('complete','2000-01-01T00:00:00Z'));
- assert.match(env.document.getElementById('tf2-price-db-next-update').textContent,/Next update eligible/);
- assert.match(env.document.getElementById('tf2-price-db-schedule-status').textContent,/awaiting.*workflow/i);
+ assert.equal(env.document.getElementById('tf2-price-db-next-update').textContent,'Next Update: 0 minutes');
+ assert.equal(env.document.getElementById('tf2-price-db-schedule-status').textContent,
+  'GitHub scheduling and Steam limits can delay completion.\nPrevious issue: None reported.');
 });
 test('invalid checkpoint deadline and failed fetch do not fabricate an update time',async()=>{
  for(const [data,status] of [[checkpoint('retrying','invalid'),200],[checkpoint(),503],[{...checkpoint(),status:'other'},200]]){

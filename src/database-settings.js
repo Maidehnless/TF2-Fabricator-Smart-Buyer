@@ -60,13 +60,10 @@
         const data = priceUpdateSchedule.data;
         const retry = data.status === 'retrying';
         const date = new Date(retry ? data.nextAttemptAtUTC : data.nextCycleAtUTC);
-        next.textContent = (retry ? 'Next retry eligible: ' : 'Next update eligible: ') +
-            date.toLocaleString(undefined, {timeZoneName: 'short'});
-        const due = date.getTime() <= Date.now();
-        detail.textContent = data.cycle.completed + '/' + data.cycle.total + ' Killstreak entries checked. ' +
-            (due ? 'Eligible now; awaiting the next workflow attempt. ' : 'Shown in your local time. ') +
-            'GitHub scheduling and Steam limits can delay completion.' +
-            (retry && data.lastError ? ' Last issue: ' + String(data.lastError).slice(0, 300) : '');
+        const minutes = Math.max(0, Math.ceil((date.getTime() - Date.now()) / 60000));
+        next.textContent = 'Next Update: ' + minutes + (minutes === 1 ? ' minute' : ' minutes');
+        detail.textContent = 'GitHub scheduling and Steam limits can delay completion.\n' +
+            'Previous issue: ' + (data.lastError ? String(data.lastError).slice(0, 300) : 'None reported.');
     }
 
     function validatePublishedPriceDatabase(data) {
@@ -253,7 +250,7 @@
         popup.appendChild(next);
         const schedule = document.createElement('div');
         schedule.id = 'tf2-price-db-schedule-status';
-        schedule.style.cssText = 'font-size:11px;color:#a8b9c7;margin:3px 0 10px;max-width:340px;';
+        schedule.style.cssText = 'white-space:pre-line;font-size:11px;color:#a8b9c7;margin:3px 0 10px;max-width:340px;';
         popup.appendChild(schedule);
         const workflow = document.createElement('a');
         workflow.href = 'https://github.com/Maidehnless/TF2-Fabricator-Smart-Buyer/actions/workflows/update-prices.yml';
