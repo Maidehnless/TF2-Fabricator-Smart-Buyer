@@ -1,25 +1,25 @@
 {
   "schema": "maidehnless.tf2.killstreak_priority.v1",
-  "generatedAtUTC": "2026-10-28T07:27:29.585Z",
+  "generatedAtUTC": "2026-10-28T14:14:17.735Z",
   "currency": "USD",
   "scannerVersion": "1.2",
   "totalNames": 550,
-  "pricedCount": 378,
+  "pricedCount": 422,
   "priority": {
     "regular": [
       "Killstreak Enforcer",
-      "Killstreak Ambassador",
       "Killstreak SMG",
+      "Killstreak Ambassador",
       "Killstreak Apoco-Fists",
       "Killstreak Back Scratcher",
       "Killstreak Fists",
       "Killstreak Holy Mackerel",
-      "Killstreak Huo-Long Heater",
       "Killstreak Manmelter",
       "Killstreak Pain Train",
       "Killstreak Warrior's Spirit",
       "Killstreak Cleaner's Carbine",
       "Killstreak Chargin' Targe",
+      "Killstreak Huo-Long Heater",
       "Killstreak Natascha",
       "Killstreak Claidheamh Mòr",
       "Killstreak Bat Outta Hell",
@@ -158,18 +158,40 @@
       "Festivized Killstreak Revolver",
       "Festivized Killstreak Sniper Rifle",
       "Festivized Killstreak Loose Cannon",
+      "Festivized Killstreak Panic Attack",
       "Festivized Killstreak Scotsman's Skullcutter",
+      "Killstreak Frying Pan",
+      "Festivized Killstreak Rescue Ranger",
+      "Festivized Killstreak Scottish Resistance",
+      "Festivized Killstreak Soda Popper",
       "Festivized Killstreak Back Scratcher",
+      "Festivized Killstreak Stickybomb Launcher",
+      "Festivized Killstreak Rocket Launcher",
+      "Festivized Killstreak Grenade Launcher",
+      "Festivized Killstreak Minigun",
+      "Festivized Killstreak Natascha",
+      "Festivized Killstreak Tomislav",
+      "Festivized Killstreak Jag",
       "Festivized Killstreak Claidheamh Mòr",
+      "Festivized Killstreak Knife",
       "Festivized Killstreak Black Box",
+      "Festivized Killstreak Spy-Cicle",
       "Festivized Killstreak Air Strike",
       "Festivized Killstreak Brass Beast",
       "Festivized Killstreak Amputator",
+      "Festivized Killstreak Shotgun",
       "Festivized Killstreak Crusader's Crossbow",
       "Festivized Killstreak Bazaar Bargain",
+      "Festivized Killstreak Kritzkrieg",
       "Festivized Killstreak Degreaser",
+      "Festivized Killstreak Machina",
+      "Festivized Killstreak SMG",
       "Festivized Killstreak Detonator",
+      "Festivized Killstreak Three-Rune Blade",
       "Festivized Killstreak Family Business",
+      "Festivized Killstreak Shortstop",
+      "Festivized Killstreak Loch-n-Load",
+      "Killstreak AWPer Hand",
       "Festivized Killstreak Ambassador",
       "Festivized Killstreak Fire Axe",
       "Festivized Killstreak Disciplinary Action",
@@ -196,28 +218,6 @@
       "Festivized Killstreak Bat Outta Hell",
       "Festivized Killstreak Axtinguisher",
       "Festivized Killstreak Backburner",
-      "Festivized Killstreak Panic Attack",
-      "Festivized Killstreak Rescue Ranger",
-      "Festivized Killstreak Knife",
-      "Festivized Killstreak Scottish Resistance",
-      "Killstreak Frying Pan",
-      "Festivized Killstreak Stickybomb Launcher",
-      "Festivized Killstreak Rocket Launcher",
-      "Festivized Killstreak Grenade Launcher",
-      "Festivized Killstreak Minigun",
-      "Festivized Killstreak Natascha",
-      "Festivized Killstreak Spy-Cicle",
-      "Festivized Killstreak Tomislav",
-      "Festivized Killstreak Jag",
-      "Festivized Killstreak Soda Popper",
-      "Festivized Killstreak Shotgun",
-      "Festivized Killstreak Machina",
-      "Festivized Killstreak SMG",
-      "Festivized Killstreak Three-Rune Blade",
-      "Festivized Killstreak Shortstop",
-      "Festivized Killstreak Kritzkrieg",
-      "Killstreak AWPer Hand",
-      "Festivized Killstreak Loch-n-Load",
       "Festivized Killstreak Scattergun",
       "Festivized Killstreak Scorch Shot",
       "Festivized Killstreak Quick-Fix",
@@ -286,12 +286,12 @@
     "specialized": [
       "Specialized Killstreak Splendid Screen",
       "Specialized Killstreak Flying Guillotine",
+      "Specialized Killstreak Baby Face's Blaster",
+      "Specialized Killstreak Rescue Ranger",
       "Specialized Killstreak Overdose",
       "Specialized Killstreak Hitman's Heatmaker",
       "Specialized Killstreak Huntsman",
-      "Specialized Killstreak Baby Face's Blaster",
       "Specialized Killstreak Wanga Prick",
-      "Specialized Killstreak Rescue Ranger",
       "Specialized Killstreak Winger",
       "Specialized Killstreak Tomislav",
       "Specialized Killstreak Scorch Shot",
@@ -472,27 +472,27 @@
       "Festivized Specialized Killstreak Ullapool Caber",
       "Festivized Specialized Killstreak Frying Pan",
       "Festivized Specialized Killstreak Huntsman",
-      "Specialized Killstreak Scattergun",
       "Festivized Specialized Killstreak Fan O'War",
       "Festivized Specialized Killstreak Dragon's Fury",
+      "Specialized Killstreak Scattergun",
       "Festivized Specialized Killstreak Reserve Shooter",
       "Festivized Specialized Killstreak Brass Beast",
       "Festivized Specialized Killstreak Diamondback",
       "Festivized Specialized Killstreak Scorch Shot",
       "Festivized Specialized Killstreak Medi Gun",
-      "Festivized Specialized Killstreak Market Gardener",
       "Festivized Specialized Killstreak Nessie's Nine Iron",
-      "Festivized Specialized Killstreak Fire Axe",
-      "Festivized Specialized Killstreak Machina",
-      "Festivized Specialized Killstreak Vaccinator",
-      "Festivized Specialized Killstreak Eyelander",
-      "Festivized Specialized Killstreak Eureka Effect",
-      "Festivized Specialized Killstreak Liberty Launcher",
       "Festivized Specialized Killstreak Conscientious Objector",
       "Festivized Specialized Killstreak Phlogistinator",
+      "Festivized Specialized Killstreak Market Gardener",
+      "Festivized Specialized Killstreak Fire Axe",
+      "Festivized Specialized Killstreak Machina",
+      "Festivized Specialized Killstreak Eyelander",
+      "Festivized Specialized Killstreak Vaccinator",
+      "Festivized Specialized Killstreak Eureka Effect",
+      "Festivized Specialized Killstreak Liberty Launcher",
+      "Festivized Specialized Killstreak AWPer Hand",
       "Festivized Specialized Killstreak Amputator",
       "Festivized Specialized Killstreak Maul",
-      "Festivized Specialized Killstreak AWPer Hand",
       "Festivized Specialized Killstreak Backburner",
       "Festivized Specialized Killstreak Freedom Staff",
       "Festivized Specialized Killstreak Your Eternal Reward",
@@ -619,18 +619,19 @@
       "name": "Killstreak AWPer Hand",
       "tier": "regular",
       "marketUrl": "https://steamcommunity.com/market/listings/440/Killstreak%20AWPer%20Hand",
-      "status": "unavailable",
-      "price": null,
-      "displayPrice": "Awaiting USD check",
-      "source": "awaiting-usd-refresh",
-      "checkedAtUTC": null,
-      "lastResult": "awaiting_usd_check",
+      "status": "priced",
+      "price": 2.23,
+      "displayPrice": "US$ 2.23",
+      "source": "github-actions-priceoverview",
+      "checkedAtUTC": "2026-10-28T14:13:46.546Z",
+      "lastResult": "priced",
       "previousQuote": {
         "currency": "AUD",
         "price": 3.17,
         "checkedAtUTC": "2026-10-26T22:01:47.381Z",
         "status": "priced"
-      }
+      },
+      "lastAttemptAtUTC": "2026-10-28T14:13:46.546Z"
     },
     {
       "name": "Killstreak Rocket Launcher",
@@ -672,18 +673,19 @@
       "name": "Killstreak Frying Pan",
       "tier": "regular",
       "marketUrl": "https://steamcommunity.com/market/listings/440/Killstreak%20Frying%20Pan",
-      "status": "unavailable",
-      "price": null,
-      "displayPrice": "Awaiting USD check",
-      "source": "awaiting-usd-refresh",
-      "checkedAtUTC": null,
-      "lastResult": "awaiting_usd_check",
+      "status": "priced",
+      "price": 1.67,
+      "displayPrice": "US$ 1.67",
+      "source": "github-actions-priceoverview",
+      "checkedAtUTC": "2026-10-28T14:08:05.595Z",
+      "lastResult": "priced",
       "previousQuote": {
         "currency": "AUD",
         "price": 2.46,
         "checkedAtUTC": "2026-10-26T22:02:00.700Z",
         "status": "priced"
-      }
+      },
+      "lastAttemptAtUTC": "2026-10-28T14:08:05.595Z"
     },
     {
       "name": "Killstreak Medi Gun",
@@ -1485,7 +1487,7 @@
       "price": 0.5,
       "displayPrice": "US$ 0.50",
       "source": "github-actions-priceoverview",
-      "checkedAtUTC": "2026-10-28T07:19:04.516Z",
+      "checkedAtUTC": "2026-10-28T14:05:46.273Z",
       "lastResult": "priced",
       "previousQuote": {
         "currency": "AUD",
@@ -1493,7 +1495,7 @@
         "checkedAtUTC": "2026-10-26T23:05:44.540Z",
         "status": "priced"
       },
-      "lastAttemptAtUTC": "2026-10-28T07:19:04.516Z"
+      "lastAttemptAtUTC": "2026-10-28T14:05:46.273Z"
     },
     {
       "name": "Killstreak Minigun",
@@ -1968,10 +1970,10 @@
       "tier": "regular",
       "marketUrl": "https://steamcommunity.com/market/listings/440/Killstreak%20SMG",
       "status": "priced",
-      "price": 0.5,
-      "displayPrice": "US$ 0.50",
+      "price": 0.49,
+      "displayPrice": "US$ 0.49",
       "source": "github-actions-priceoverview",
-      "checkedAtUTC": "2026-10-28T07:17:50.219Z",
+      "checkedAtUTC": "2026-10-28T14:04:52.237Z",
       "lastResult": "priced",
       "previousQuote": {
         "currency": "AUD",
@@ -1979,7 +1981,7 @@
         "checkedAtUTC": "2026-10-26T23:09:25.763Z",
         "status": "priced"
       },
-      "lastAttemptAtUTC": "2026-10-28T07:17:50.219Z"
+      "lastAttemptAtUTC": "2026-10-28T14:04:52.237Z"
     },
     {
       "name": "Killstreak Huntsman",
@@ -2007,7 +2009,7 @@
       "price": 0.5,
       "displayPrice": "US$ 0.50",
       "source": "github-actions-priceoverview",
-      "checkedAtUTC": "2026-10-28T07:17:39.182Z",
+      "checkedAtUTC": "2026-10-28T14:04:41.493Z",
       "lastResult": "priced",
       "previousQuote": {
         "currency": "AUD",
@@ -2015,7 +2017,7 @@
         "checkedAtUTC": "2026-10-26T23:06:38.813Z",
         "status": "priced"
       },
-      "lastAttemptAtUTC": "2026-10-28T07:17:39.182Z"
+      "lastAttemptAtUTC": "2026-10-28T14:04:41.493Z"
     },
     {
       "name": "Killstreak Persian Persuader",
@@ -2385,7 +2387,7 @@
       "price": 0.5,
       "displayPrice": "US$ 0.50",
       "source": "github-actions-priceoverview",
-      "checkedAtUTC": "2026-10-28T07:19:36.319Z",
+      "checkedAtUTC": "2026-10-28T14:06:19.259Z",
       "lastResult": "priced",
       "previousQuote": {
         "currency": "AUD",
@@ -2393,7 +2395,7 @@
         "checkedAtUTC": "2026-10-26T23:06:02.659Z",
         "status": "priced"
       },
-      "lastAttemptAtUTC": "2026-10-28T07:19:36.319Z"
+      "lastAttemptAtUTC": "2026-10-28T14:06:19.259Z"
     },
     {
       "name": "Killstreak Baby Face's Blaster",
@@ -2781,7 +2783,7 @@
       "price": 0.49,
       "displayPrice": "US$ 0.49",
       "source": "github-actions-priceoverview",
-      "checkedAtUTC": "2026-10-28T07:18:32.305Z",
+      "checkedAtUTC": "2026-10-28T14:05:14.094Z",
       "lastResult": "priced",
       "previousQuote": {
         "currency": "AUD",
@@ -2789,7 +2791,7 @@
         "checkedAtUTC": "2026-10-26T23:12:34.227Z",
         "status": "priced"
       },
-      "lastAttemptAtUTC": "2026-10-28T07:18:32.305Z"
+      "lastAttemptAtUTC": "2026-10-28T14:05:14.094Z"
     },
     {
       "name": "Killstreak Warrior's Spirit",
@@ -2889,7 +2891,7 @@
       "price": 0.5,
       "displayPrice": "US$ 0.50",
       "source": "github-actions-priceoverview",
-      "checkedAtUTC": "2026-10-28T07:17:28.221Z",
+      "checkedAtUTC": "2026-10-28T14:04:31.047Z",
       "lastResult": "priced",
       "previousQuote": {
         "currency": "AUD",
@@ -2897,7 +2899,7 @@
         "checkedAtUTC": "2026-10-26T23:06:29.763Z",
         "status": "priced"
       },
-      "lastAttemptAtUTC": "2026-10-28T07:17:28.221Z"
+      "lastAttemptAtUTC": "2026-10-28T14:04:31.047Z"
     },
     {
       "name": "Killstreak Scottish Resistance",
@@ -3066,10 +3068,10 @@
       "tier": "regular",
       "marketUrl": "https://steamcommunity.com/market/listings/440/Killstreak%20Huo-Long%20Heater",
       "status": "priced",
-      "price": 0.5,
-      "displayPrice": "US$ 0.50",
+      "price": 0.51,
+      "displayPrice": "US$ 0.51",
       "source": "github-actions-priceoverview",
-      "checkedAtUTC": "2026-10-28T07:17:06.812Z",
+      "checkedAtUTC": "2026-10-28T14:04:09.495Z",
       "lastResult": "priced",
       "previousQuote": {
         "currency": "AUD",
@@ -3077,7 +3079,7 @@
         "checkedAtUTC": "2026-10-26T23:06:47.464Z",
         "status": "priced"
       },
-      "lastAttemptAtUTC": "2026-10-28T07:17:06.812Z"
+      "lastAttemptAtUTC": "2026-10-28T14:04:09.495Z"
     },
     {
       "name": "Killstreak Freedom Staff",
@@ -3159,7 +3161,7 @@
       "price": 0.5,
       "displayPrice": "US$ 0.50",
       "source": "github-actions-priceoverview",
-      "checkedAtUTC": "2026-10-28T07:19:25.824Z",
+      "checkedAtUTC": "2026-10-28T14:06:08.418Z",
       "lastResult": "priced",
       "previousQuote": {
         "currency": "AUD",
@@ -3167,7 +3169,7 @@
         "checkedAtUTC": "2026-10-26T23:05:53.940Z",
         "status": "priced"
       },
-      "lastAttemptAtUTC": "2026-10-28T07:19:25.824Z"
+      "lastAttemptAtUTC": "2026-10-28T14:06:08.418Z"
     },
     {
       "name": "Killstreak Maul",
@@ -3945,7 +3947,7 @@
       "price": 1.61,
       "displayPrice": "US$ 1.61",
       "source": "github-actions-priceoverview",
-      "checkedAtUTC": "2026-10-28T07:18:43.339Z",
+      "checkedAtUTC": "2026-10-28T14:05:24.453Z",
       "lastResult": "priced",
       "previousQuote": {
         "currency": "AUD",
@@ -3953,7 +3955,7 @@
         "checkedAtUTC": "2026-10-26T23:17:03.947Z",
         "status": "priced"
       },
-      "lastAttemptAtUTC": "2026-10-28T07:18:43.339Z"
+      "lastAttemptAtUTC": "2026-10-28T14:05:24.453Z"
     },
     {
       "name": "Specialized Killstreak Beggar's Bazooka",
@@ -4140,10 +4142,10 @@
       "tier": "specialized",
       "marketUrl": "https://steamcommunity.com/market/listings/440/Specialized%20Killstreak%20Splendid%20Screen",
       "status": "priced",
-      "price": 1.54,
-      "displayPrice": "US$ 1.54",
+      "price": 1.58,
+      "displayPrice": "US$ 1.58",
       "source": "github-actions-priceoverview",
-      "checkedAtUTC": "2026-10-28T07:18:53.604Z",
+      "checkedAtUTC": "2026-10-28T14:05:35.752Z",
       "lastResult": "priced",
       "previousQuote": {
         "currency": "AUD",
@@ -4151,7 +4153,7 @@
         "checkedAtUTC": "2026-10-26T23:05:58.391Z",
         "status": "priced"
       },
-      "lastAttemptAtUTC": "2026-10-28T07:18:53.604Z"
+      "lastAttemptAtUTC": "2026-10-28T14:05:35.752Z"
     },
     {
       "name": "Specialized Killstreak Pretty Boy's Pocket Pistol",
@@ -4176,10 +4178,10 @@
       "tier": "specialized",
       "marketUrl": "https://steamcommunity.com/market/listings/440/Specialized%20Killstreak%20Rescue%20Ranger",
       "status": "priced",
-      "price": 1.68,
-      "displayPrice": "US$ 1.68",
+      "price": 1.63,
+      "displayPrice": "US$ 1.63",
       "source": "github-actions-priceoverview",
-      "checkedAtUTC": "2026-10-27T10:38:49.070Z",
+      "checkedAtUTC": "2026-10-28T14:03:48.011Z",
       "lastResult": "priced",
       "previousQuote": {
         "currency": "AUD",
@@ -4187,7 +4189,7 @@
         "checkedAtUTC": "2026-10-26T23:06:43.328Z",
         "status": "priced"
       },
-      "lastAttemptAtUTC": "2026-10-27T10:38:49.070Z"
+      "lastAttemptAtUTC": "2026-10-28T14:03:48.011Z"
     },
     {
       "name": "Specialized Killstreak Sydney Sleeper",
@@ -4536,10 +4538,10 @@
       "tier": "specialized",
       "marketUrl": "https://steamcommunity.com/market/listings/440/Specialized%20Killstreak%20Hitman's%20Heatmaker",
       "status": "priced",
-      "price": 1.66,
-      "displayPrice": "US$ 1.66",
+      "price": 1.65,
+      "displayPrice": "US$ 1.65",
       "source": "github-actions-priceoverview",
-      "checkedAtUTC": "2026-10-28T07:18:11.196Z",
+      "checkedAtUTC": "2026-10-28T14:05:03.085Z",
       "lastResult": "priced",
       "previousQuote": {
         "currency": "AUD",
@@ -4547,7 +4549,7 @@
         "checkedAtUTC": "2026-10-26T23:19:08.520Z",
         "status": "priced"
       },
-      "lastAttemptAtUTC": "2026-10-28T07:18:11.196Z"
+      "lastAttemptAtUTC": "2026-10-28T14:05:03.085Z"
     },
     {
       "name": "Specialized Killstreak Quickiebomb Launcher",
@@ -4719,7 +4721,7 @@
       "price": 1.67,
       "displayPrice": "US$ 1.67",
       "source": "github-actions-priceoverview",
-      "checkedAtUTC": "2026-10-28T07:17:17.790Z",
+      "checkedAtUTC": "2026-10-28T14:04:20.479Z",
       "lastResult": "priced",
       "previousQuote": {
         "currency": "AUD",
@@ -4727,7 +4729,7 @@
         "checkedAtUTC": "2026-10-26T23:06:16.238Z",
         "status": "priced"
       },
-      "lastAttemptAtUTC": "2026-10-28T07:17:17.790Z"
+      "lastAttemptAtUTC": "2026-10-28T14:04:20.479Z"
     },
     {
       "name": "Specialized Killstreak Holy Mackerel",
@@ -5130,10 +5132,10 @@
       "tier": "specialized",
       "marketUrl": "https://steamcommunity.com/market/listings/440/Specialized%20Killstreak%20Baby%20Face's%20Blaster",
       "status": "priced",
-      "price": 1.67,
-      "displayPrice": "US$ 1.67",
+      "price": 1.62,
+      "displayPrice": "US$ 1.62",
       "source": "github-actions-priceoverview",
-      "checkedAtUTC": "2026-10-28T07:20:18.957Z",
+      "checkedAtUTC": "2026-10-28T14:06:29.879Z",
       "lastResult": "priced",
       "previousQuote": {
         "currency": "AUD",
@@ -5141,7 +5143,7 @@
         "checkedAtUTC": "2026-10-26T23:21:33.240Z",
         "status": "priced"
       },
-      "lastAttemptAtUTC": "2026-10-28T07:20:18.957Z"
+      "lastAttemptAtUTC": "2026-10-28T14:06:29.879Z"
     },
     {
       "name": "Specialized Killstreak Pain Train",
@@ -5709,7 +5711,7 @@
       "price": 1.68,
       "displayPrice": "US$ 1.68",
       "source": "github-actions-priceoverview",
-      "checkedAtUTC": "2026-10-28T07:16:56.360Z",
+      "checkedAtUTC": "2026-10-28T14:03:58.344Z",
       "lastResult": "priced",
       "previousQuote": {
         "currency": "AUD",
@@ -5717,7 +5719,7 @@
         "checkedAtUTC": "2026-10-26T23:06:52.019Z",
         "status": "priced"
       },
-      "lastAttemptAtUTC": "2026-10-28T07:16:56.360Z"
+      "lastAttemptAtUTC": "2026-10-28T14:03:58.344Z"
     },
     {
       "name": "Specialized Killstreak Sandman",
@@ -5745,7 +5747,7 @@
       "price": 1.65,
       "displayPrice": "US$ 1.65",
       "source": "github-actions-priceoverview",
-      "checkedAtUTC": "2026-10-28T07:19:14.720Z",
+      "checkedAtUTC": "2026-10-28T14:05:57.398Z",
       "lastResult": "priced",
       "previousQuote": {
         "currency": "AUD",
@@ -5753,7 +5755,7 @@
         "checkedAtUTC": "2026-10-26T23:06:07.195Z",
         "status": "priced"
       },
-      "lastAttemptAtUTC": "2026-10-28T07:19:14.720Z"
+      "lastAttemptAtUTC": "2026-10-28T14:05:57.398Z"
     },
     {
       "name": "Specialized Killstreak Unarmed Combat",
@@ -6094,18 +6096,19 @@
       "name": "Festivized Killstreak Rocket Launcher",
       "tier": "regular",
       "marketUrl": "https://steamcommunity.com/market/listings/440/Festivized%20Killstreak%20Rocket%20Launcher",
-      "status": "unavailable",
-      "price": null,
-      "displayPrice": "Awaiting USD check",
-      "source": "awaiting-usd-refresh",
-      "checkedAtUTC": null,
-      "lastResult": "awaiting_usd_check",
+      "status": "priced",
+      "price": 1.81,
+      "displayPrice": "US$ 1.81",
+      "source": "github-actions-priceoverview",
+      "checkedAtUTC": "2026-10-28T14:08:49.324Z",
+      "lastResult": "priced",
       "previousQuote": {
         "currency": "AUD",
         "price": 2.57,
         "checkedAtUTC": "2026-10-26T23:25:21.410Z",
         "status": "priced"
-      }
+      },
+      "lastAttemptAtUTC": "2026-10-28T14:08:49.324Z"
     },
     {
       "name": "Festivized Killstreak Conniver's Kunai",
@@ -6163,18 +6166,19 @@
       "name": "Festivized Killstreak Tomislav",
       "tier": "regular",
       "marketUrl": "https://steamcommunity.com/market/listings/440/Festivized%20Killstreak%20Tomislav",
-      "status": "unavailable",
-      "price": null,
-      "displayPrice": "Awaiting USD check",
-      "source": "awaiting-usd-refresh",
-      "checkedAtUTC": null,
-      "lastResult": "awaiting_usd_check",
+      "status": "priced",
+      "price": 1.89,
+      "displayPrice": "US$ 1.89",
+      "source": "github-actions-priceoverview",
+      "checkedAtUTC": "2026-10-28T14:10:34.729Z",
+      "lastResult": "priced",
       "previousQuote": {
         "currency": "AUD",
         "price": 2.8,
         "checkedAtUTC": "2026-10-26T23:25:39.304Z",
         "status": "priced"
-      }
+      },
+      "lastAttemptAtUTC": "2026-10-28T14:10:34.729Z"
     },
     {
       "name": "Festivized Killstreak Original",
@@ -6352,18 +6356,19 @@
       "name": "Festivized Killstreak Grenade Launcher",
       "tier": "regular",
       "marketUrl": "https://steamcommunity.com/market/listings/440/Festivized%20Killstreak%20Grenade%20Launcher",
-      "status": "unavailable",
-      "price": null,
-      "displayPrice": "Awaiting USD check",
-      "source": "awaiting-usd-refresh",
-      "checkedAtUTC": null,
-      "lastResult": "awaiting_usd_check",
+      "status": "priced",
+      "price": 1.81,
+      "displayPrice": "US$ 1.81",
+      "source": "github-actions-priceoverview",
+      "checkedAtUTC": "2026-10-28T14:09:10.175Z",
+      "lastResult": "priced",
       "previousQuote": {
         "currency": "AUD",
         "price": 2.6,
         "checkedAtUTC": "2026-10-26T23:26:20.033Z",
         "status": "priced"
-      }
+      },
+      "lastAttemptAtUTC": "2026-10-28T14:09:10.175Z"
     },
     {
       "name": "Festivized Killstreak Big Earner",
@@ -6387,18 +6392,19 @@
       "name": "Festivized Killstreak Knife",
       "tier": "regular",
       "marketUrl": "https://steamcommunity.com/market/listings/440/Festivized%20Killstreak%20Knife",
-      "status": "unavailable",
-      "price": null,
-      "displayPrice": "Awaiting USD check",
-      "source": "awaiting-usd-refresh",
-      "checkedAtUTC": null,
-      "lastResult": "awaiting_usd_check",
+      "status": "priced",
+      "price": 1.91,
+      "displayPrice": "US$ 1.91",
+      "source": "github-actions-priceoverview",
+      "checkedAtUTC": "2026-10-28T14:07:22.967Z",
+      "lastResult": "priced",
       "previousQuote": {
         "currency": "AUD",
         "price": 2.39,
         "checkedAtUTC": "2026-10-26T23:26:28.886Z",
         "status": "priced"
-      }
+      },
+      "lastAttemptAtUTC": "2026-10-28T14:07:22.967Z"
     },
     {
       "name": "Festivized Killstreak Gunslinger",
@@ -6421,18 +6427,19 @@
       "name": "Festivized Killstreak Shotgun",
       "tier": "regular",
       "marketUrl": "https://steamcommunity.com/market/listings/440/Festivized%20Killstreak%20Shotgun",
-      "status": "unavailable",
-      "price": null,
-      "displayPrice": "Awaiting USD check",
-      "source": "awaiting-usd-refresh",
-      "checkedAtUTC": null,
-      "lastResult": "awaiting_usd_check",
+      "status": "priced",
+      "price": 2.04,
+      "displayPrice": "US$ 2.04",
+      "source": "github-actions-priceoverview",
+      "checkedAtUTC": "2026-10-28T14:11:38.064Z",
+      "lastResult": "priced",
       "previousQuote": {
         "currency": "AUD",
         "price": 2.93,
         "checkedAtUTC": "2026-10-26T23:26:33.371Z",
         "status": "priced"
-      }
+      },
+      "lastAttemptAtUTC": "2026-10-28T14:11:38.064Z"
     },
     {
       "name": "Festivized Killstreak Eyelander",
@@ -6491,35 +6498,37 @@
       "name": "Festivized Killstreak Panic Attack",
       "tier": "regular",
       "marketUrl": "https://steamcommunity.com/market/listings/440/Festivized%20Killstreak%20Panic%20Attack",
-      "status": "unavailable",
-      "price": null,
-      "displayPrice": "Awaiting USD check",
-      "source": "awaiting-usd-refresh",
-      "checkedAtUTC": null,
-      "lastResult": "awaiting_usd_check",
+      "status": "priced",
+      "price": 1.65,
+      "displayPrice": "US$ 1.65",
+      "source": "github-actions-priceoverview",
+      "checkedAtUTC": "2026-10-28T14:06:40.854Z",
+      "lastResult": "priced",
       "previousQuote": {
         "currency": "AUD",
         "price": 2.36,
         "checkedAtUTC": "2026-10-26T23:26:46.519Z",
         "status": "priced"
-      }
+      },
+      "lastAttemptAtUTC": "2026-10-28T14:06:40.854Z"
     },
     {
       "name": "Festivized Killstreak Jag",
       "tier": "regular",
       "marketUrl": "https://steamcommunity.com/market/listings/440/Festivized%20Killstreak%20Jag",
-      "status": "unavailable",
-      "price": null,
-      "displayPrice": "Awaiting USD check",
-      "source": "awaiting-usd-refresh",
-      "checkedAtUTC": null,
-      "lastResult": "awaiting_usd_check",
+      "status": "priced",
+      "price": 1.9,
+      "displayPrice": "US$ 1.90",
+      "source": "github-actions-priceoverview",
+      "checkedAtUTC": "2026-10-28T14:10:55.449Z",
+      "lastResult": "priced",
       "previousQuote": {
         "currency": "AUD",
         "price": 2.82,
         "checkedAtUTC": "2026-10-26T23:26:51.079Z",
         "status": "priced"
-      }
+      },
+      "lastAttemptAtUTC": "2026-10-28T14:10:55.449Z"
     },
     {
       "name": "Festivized Killstreak Market Gardener",
@@ -6542,18 +6551,19 @@
       "name": "Festivized Killstreak Stickybomb Launcher",
       "tier": "regular",
       "marketUrl": "https://steamcommunity.com/market/listings/440/Festivized%20Killstreak%20Stickybomb%20Launcher",
-      "status": "unavailable",
-      "price": null,
-      "displayPrice": "Awaiting USD check",
-      "source": "awaiting-usd-refresh",
-      "checkedAtUTC": null,
-      "lastResult": "awaiting_usd_check",
+      "status": "priced",
+      "price": 1.8,
+      "displayPrice": "US$ 1.80",
+      "source": "github-actions-priceoverview",
+      "checkedAtUTC": "2026-10-28T14:08:27.267Z",
+      "lastResult": "priced",
       "previousQuote": {
         "currency": "AUD",
         "price": 2.56,
         "checkedAtUTC": "2026-10-26T23:26:59.641Z",
         "status": "priced"
-      }
+      },
+      "lastAttemptAtUTC": "2026-10-28T14:08:27.267Z"
     },
     {
       "name": "Festivized Killstreak Dragon's Fury",
@@ -6770,18 +6780,19 @@
       "name": "Festivized Killstreak Loch-n-Load",
       "tier": "regular",
       "marketUrl": "https://steamcommunity.com/market/listings/440/Festivized%20Killstreak%20Loch-n-Load",
-      "status": "unavailable",
-      "price": null,
-      "displayPrice": "Awaiting USD check",
-      "source": "awaiting-usd-refresh",
-      "checkedAtUTC": null,
-      "lastResult": "awaiting_usd_check",
+      "status": "priced",
+      "price": 2.22,
+      "displayPrice": "US$ 2.22",
+      "source": "github-actions-priceoverview",
+      "checkedAtUTC": "2026-10-28T14:14:07.266Z",
+      "lastResult": "priced",
       "previousQuote": {
         "currency": "AUD",
         "price": 3.17,
         "checkedAtUTC": "2026-10-26T23:27:44.822Z",
         "status": "priced"
-      }
+      },
+      "lastAttemptAtUTC": "2026-10-28T14:14:07.266Z"
     },
     {
       "name": "Festivized Killstreak Bushwacka",
@@ -6822,18 +6833,19 @@
       "name": "Festivized Killstreak Shortstop",
       "tier": "regular",
       "marketUrl": "https://steamcommunity.com/market/listings/440/Festivized%20Killstreak%20Shortstop",
-      "status": "unavailable",
-      "price": null,
-      "displayPrice": "Awaiting USD check",
-      "source": "awaiting-usd-refresh",
-      "checkedAtUTC": null,
-      "lastResult": "awaiting_usd_check",
+      "status": "priced",
+      "price": 2.19,
+      "displayPrice": "US$ 2.19",
+      "source": "github-actions-priceoverview",
+      "checkedAtUTC": "2026-10-28T14:13:04.146Z",
+      "lastResult": "priced",
       "previousQuote": {
         "currency": "AUD",
         "price": 3.12,
         "checkedAtUTC": "2026-10-26T23:27:58.007Z",
         "status": "priced"
-      }
+      },
+      "lastAttemptAtUTC": "2026-10-28T14:13:04.146Z"
     },
     {
       "name": "Festivized Killstreak Splendid Screen",
@@ -6856,18 +6868,19 @@
       "name": "Festivized Killstreak Rescue Ranger",
       "tier": "regular",
       "marketUrl": "https://steamcommunity.com/market/listings/440/Festivized%20Killstreak%20Rescue%20Ranger",
-      "status": "unavailable",
-      "price": null,
-      "displayPrice": "Awaiting USD check",
-      "source": "awaiting-usd-refresh",
-      "checkedAtUTC": null,
-      "lastResult": "awaiting_usd_check",
+      "status": "priced",
+      "price": 1.7,
+      "displayPrice": "US$ 1.70",
+      "source": "github-actions-priceoverview",
+      "checkedAtUTC": "2026-10-28T14:07:01.811Z",
+      "lastResult": "priced",
       "previousQuote": {
         "currency": "AUD",
         "price": 2.36,
         "checkedAtUTC": "2026-10-26T23:28:02.665Z",
         "status": "priced"
-      }
+      },
+      "lastAttemptAtUTC": "2026-10-28T14:07:01.811Z"
     },
     {
       "name": "Festivized Killstreak Sydney Sleeper",
@@ -6908,35 +6921,37 @@
       "name": "Festivized Killstreak Minigun",
       "tier": "regular",
       "marketUrl": "https://steamcommunity.com/market/listings/440/Festivized%20Killstreak%20Minigun",
-      "status": "unavailable",
-      "price": null,
-      "displayPrice": "Awaiting USD check",
-      "source": "awaiting-usd-refresh",
-      "checkedAtUTC": null,
-      "lastResult": "awaiting_usd_check",
+      "status": "priced",
+      "price": 1.81,
+      "displayPrice": "US$ 1.81",
+      "source": "github-actions-priceoverview",
+      "checkedAtUTC": "2026-10-28T14:09:31.424Z",
+      "lastResult": "priced",
       "previousQuote": {
         "currency": "AUD",
         "price": 2.62,
         "checkedAtUTC": "2026-10-26T23:28:16.541Z",
         "status": "priced"
-      }
+      },
+      "lastAttemptAtUTC": "2026-10-28T14:09:31.424Z"
     },
     {
       "name": "Festivized Killstreak Machina",
       "tier": "regular",
       "marketUrl": "https://steamcommunity.com/market/listings/440/Festivized%20Killstreak%20Machina",
-      "status": "unavailable",
-      "price": null,
-      "displayPrice": "Awaiting USD check",
-      "source": "awaiting-usd-refresh",
-      "checkedAtUTC": null,
-      "lastResult": "awaiting_usd_check",
+      "status": "priced",
+      "price": 2.14,
+      "displayPrice": "US$ 2.14",
+      "source": "github-actions-priceoverview",
+      "checkedAtUTC": "2026-10-28T14:11:59.120Z",
+      "lastResult": "priced",
       "previousQuote": {
         "currency": "AUD",
         "price": 3.06,
         "checkedAtUTC": "2026-10-26T23:28:20.946Z",
         "status": "priced"
-      }
+      },
+      "lastAttemptAtUTC": "2026-10-28T14:11:59.120Z"
     },
     {
       "name": "Festivized Killstreak Reserve Shooter",
@@ -7082,18 +7097,19 @@
       "name": "Festivized Killstreak Kritzkrieg",
       "tier": "regular",
       "marketUrl": "https://steamcommunity.com/market/listings/440/Festivized%20Killstreak%20Kritzkrieg",
-      "status": "unavailable",
-      "price": null,
-      "displayPrice": "Awaiting USD check",
-      "source": "awaiting-usd-refresh",
-      "checkedAtUTC": null,
-      "lastResult": "awaiting_usd_check",
+      "status": "priced",
+      "price": 2.1,
+      "displayPrice": "US$ 2.10",
+      "source": "github-actions-priceoverview",
+      "checkedAtUTC": "2026-10-28T14:13:25.888Z",
+      "lastResult": "priced",
       "previousQuote": {
         "currency": "AUD",
         "price": 3.16,
         "checkedAtUTC": "2026-10-26T23:28:52.842Z",
         "status": "priced"
-      }
+      },
+      "lastAttemptAtUTC": "2026-10-28T14:13:25.888Z"
     },
     {
       "name": "Festivized Killstreak Classic",
@@ -7135,18 +7151,19 @@
       "name": "Festivized Killstreak Spy-Cicle",
       "tier": "regular",
       "marketUrl": "https://steamcommunity.com/market/listings/440/Festivized%20Killstreak%20Spy-Cicle",
-      "status": "unavailable",
-      "price": null,
-      "displayPrice": "Awaiting USD check",
-      "source": "awaiting-usd-refresh",
-      "checkedAtUTC": null,
-      "lastResult": "awaiting_usd_check",
+      "status": "priced",
+      "price": 1.96,
+      "displayPrice": "US$ 1.96",
+      "source": "github-actions-priceoverview",
+      "checkedAtUTC": "2026-10-28T14:10:13.745Z",
+      "lastResult": "priced",
       "previousQuote": {
         "currency": "AUD",
         "price": 2.79,
         "checkedAtUTC": "2026-10-26T23:29:06.360Z",
         "status": "priced"
-      }
+      },
+      "lastAttemptAtUTC": "2026-10-28T14:10:13.745Z"
     },
     {
       "name": "Festivized Killstreak Detonator",
@@ -7330,18 +7347,19 @@
       "name": "Festivized Killstreak SMG",
       "tier": "regular",
       "marketUrl": "https://steamcommunity.com/market/listings/440/Festivized%20Killstreak%20SMG",
-      "status": "unavailable",
-      "price": null,
-      "displayPrice": "Awaiting USD check",
-      "source": "awaiting-usd-refresh",
-      "checkedAtUTC": null,
-      "lastResult": "awaiting_usd_check",
+      "status": "priced",
+      "price": 2.14,
+      "displayPrice": "US$ 2.14",
+      "source": "github-actions-priceoverview",
+      "checkedAtUTC": "2026-10-28T14:12:20.364Z",
+      "lastResult": "priced",
       "previousQuote": {
         "currency": "AUD",
         "price": 3.07,
         "checkedAtUTC": "2026-10-26T23:29:51.004Z",
         "status": "priced"
-      }
+      },
+      "lastAttemptAtUTC": "2026-10-28T14:12:20.364Z"
     },
     {
       "name": "Festivized Killstreak Huntsman",
@@ -7453,18 +7471,19 @@
       "name": "Festivized Killstreak Soda Popper",
       "tier": "regular",
       "marketUrl": "https://steamcommunity.com/market/listings/440/Festivized%20Killstreak%20Soda%20Popper",
-      "status": "unavailable",
-      "price": null,
-      "displayPrice": "Awaiting USD check",
-      "source": "awaiting-usd-refresh",
-      "checkedAtUTC": null,
-      "lastResult": "awaiting_usd_check",
+      "status": "priced",
+      "price": 1.78,
+      "displayPrice": "US$ 1.78",
+      "source": "github-actions-priceoverview",
+      "checkedAtUTC": "2026-10-28T14:11:16.669Z",
+      "lastResult": "priced",
       "previousQuote": {
         "currency": "AUD",
         "price": 2.82,
         "checkedAtUTC": "2026-10-26T23:30:22.516Z",
         "status": "priced"
-      }
+      },
+      "lastAttemptAtUTC": "2026-10-28T14:11:16.669Z"
     },
     {
       "name": "Festivized Killstreak Boston Basher",
@@ -7962,18 +7981,19 @@
       "name": "Festivized Killstreak Scottish Resistance",
       "tier": "regular",
       "marketUrl": "https://steamcommunity.com/market/listings/440/Festivized%20Killstreak%20Scottish%20Resistance",
-      "status": "unavailable",
-      "price": null,
-      "displayPrice": "Awaiting USD check",
-      "source": "awaiting-usd-refresh",
-      "checkedAtUTC": null,
-      "lastResult": "awaiting_usd_check",
+      "status": "priced",
+      "price": 1.73,
+      "displayPrice": "US$ 1.73",
+      "source": "github-actions-priceoverview",
+      "checkedAtUTC": "2026-10-28T14:07:44.875Z",
+      "lastResult": "priced",
       "previousQuote": {
         "currency": "AUD",
         "price": 2.46,
         "checkedAtUTC": "2026-10-26T23:32:03.275Z",
         "status": "priced"
-      }
+      },
+      "lastAttemptAtUTC": "2026-10-28T14:07:44.875Z"
     },
     {
       "name": "Festivized Killstreak Killing Gloves of Boxing",
@@ -8098,18 +8118,19 @@
       "name": "Festivized Killstreak Natascha",
       "tier": "regular",
       "marketUrl": "https://steamcommunity.com/market/listings/440/Festivized%20Killstreak%20Natascha",
-      "status": "unavailable",
-      "price": null,
-      "displayPrice": "Awaiting USD check",
-      "source": "awaiting-usd-refresh",
-      "checkedAtUTC": null,
-      "lastResult": "awaiting_usd_check",
+      "status": "priced",
+      "price": 1.88,
+      "displayPrice": "US$ 1.88",
+      "source": "github-actions-priceoverview",
+      "checkedAtUTC": "2026-10-28T14:09:52.463Z",
+      "lastResult": "priced",
       "previousQuote": {
         "currency": "AUD",
         "price": 2.68,
         "checkedAtUTC": "2026-10-26T23:32:16.263Z",
         "status": "priced"
-      }
+      },
+      "lastAttemptAtUTC": "2026-10-28T14:09:52.463Z"
     },
     {
       "name": "Festivized Killstreak Back Scatter",
@@ -8133,18 +8154,19 @@
       "name": "Festivized Killstreak Three-Rune Blade",
       "tier": "regular",
       "marketUrl": "https://steamcommunity.com/market/listings/440/Festivized%20Killstreak%20Three-Rune%20Blade",
-      "status": "unavailable",
-      "price": null,
-      "displayPrice": "Awaiting USD check",
-      "source": "awaiting-usd-refresh",
-      "checkedAtUTC": null,
-      "lastResult": "awaiting_usd_check",
+      "status": "priced",
+      "price": 2.16,
+      "displayPrice": "US$ 2.16",
+      "source": "github-actions-priceoverview",
+      "checkedAtUTC": "2026-10-28T14:12:42.018Z",
+      "lastResult": "priced",
       "previousQuote": {
         "currency": "AUD",
         "price": 3.07,
         "checkedAtUTC": "2026-10-26T23:32:25.070Z",
         "status": "priced"
-      }
+      },
+      "lastAttemptAtUTC": "2026-10-28T14:12:42.018Z"
     },
     {
       "name": "Festivized Killstreak Maul",
@@ -8167,18 +8189,19 @@
       "name": "Festivized Specialized Killstreak Conscientious Objector",
       "tier": "specialized",
       "marketUrl": "https://steamcommunity.com/market/listings/440/Festivized%20Specialized%20Killstreak%20Conscientious%20Objector",
-      "status": "unavailable",
-      "price": null,
-      "displayPrice": "Awaiting USD check",
-      "source": "awaiting-usd-refresh",
-      "checkedAtUTC": null,
-      "lastResult": "awaiting_usd_check",
+      "status": "priced",
+      "price": 4.33,
+      "displayPrice": "US$ 4.33",
+      "source": "github-actions-priceoverview",
+      "checkedAtUTC": "2026-10-28T14:12:09.533Z",
+      "lastResult": "priced",
       "previousQuote": {
         "currency": "AUD",
         "price": 6.96,
         "checkedAtUTC": "2026-10-26T23:32:33.713Z",
         "status": "priced"
-      }
+      },
+      "lastAttemptAtUTC": "2026-10-28T14:12:09.533Z"
     },
     {
       "name": "Festivized Specialized Killstreak Scattergun",
@@ -8220,18 +8243,19 @@
       "name": "Festivized Specialized Killstreak AWPer Hand",
       "tier": "specialized",
       "marketUrl": "https://steamcommunity.com/market/listings/440/Festivized%20Specialized%20Killstreak%20AWPer%20Hand",
-      "status": "unavailable",
-      "price": null,
-      "displayPrice": "Awaiting USD check",
-      "source": "awaiting-usd-refresh",
-      "checkedAtUTC": null,
-      "lastResult": "awaiting_usd_check",
+      "status": "priced",
+      "price": 5.21,
+      "displayPrice": "US$ 5.21",
+      "source": "github-actions-priceoverview",
+      "checkedAtUTC": "2026-10-28T14:13:36.098Z",
+      "lastResult": "priced",
       "previousQuote": {
         "currency": "AUD",
         "price": 7.82,
         "checkedAtUTC": "2026-10-26T23:32:47.166Z",
         "status": "priced"
-      }
+      },
+      "lastAttemptAtUTC": "2026-10-28T14:13:36.098Z"
     },
     {
       "name": "Festivized Specialized Killstreak Rocket Launcher",
@@ -8291,18 +8315,19 @@
       "name": "Festivized Specialized Killstreak Medi Gun",
       "tier": "specialized",
       "marketUrl": "https://steamcommunity.com/market/listings/440/Festivized%20Specialized%20Killstreak%20Medi%20Gun",
-      "status": "unavailable",
-      "price": null,
-      "displayPrice": "Awaiting USD check",
-      "source": "awaiting-usd-refresh",
-      "checkedAtUTC": null,
-      "lastResult": "awaiting_usd_check",
+      "status": "priced",
+      "price": 4.2,
+      "displayPrice": "US$ 4.20",
+      "source": "github-actions-priceoverview",
+      "checkedAtUTC": "2026-10-28T14:08:59.873Z",
+      "lastResult": "priced",
       "previousQuote": {
         "currency": "AUD",
         "price": 6.01,
         "checkedAtUTC": "2026-10-26T23:33:04.592Z",
         "status": "priced"
-      }
+      },
+      "lastAttemptAtUTC": "2026-10-28T14:08:59.873Z"
     },
     {
       "name": "Festivized Specialized Killstreak Tomislav",
@@ -8344,18 +8369,19 @@
       "name": "Festivized Specialized Killstreak Phlogistinator",
       "tier": "specialized",
       "marketUrl": "https://steamcommunity.com/market/listings/440/Festivized%20Specialized%20Killstreak%20Phlogistinator",
-      "status": "unavailable",
-      "price": null,
-      "displayPrice": "Awaiting USD check",
-      "source": "awaiting-usd-refresh",
-      "checkedAtUTC": null,
-      "lastResult": "awaiting_usd_check",
+      "status": "priced",
+      "price": 4.33,
+      "displayPrice": "US$ 4.33",
+      "source": "github-actions-priceoverview",
+      "checkedAtUTC": "2026-10-28T14:12:30.874Z",
+      "lastResult": "priced",
       "previousQuote": {
         "currency": "AUD",
         "price": 7.09,
         "checkedAtUTC": "2026-10-26T23:33:17.687Z",
         "status": "priced"
-      }
+      },
+      "lastAttemptAtUTC": "2026-10-28T14:12:30.874Z"
     },
     {
       "name": "Festivized Specialized Killstreak L'Étranger",
@@ -8589,18 +8615,19 @@
       "name": "Festivized Specialized Killstreak Eyelander",
       "tier": "specialized",
       "marketUrl": "https://steamcommunity.com/market/listings/440/Festivized%20Specialized%20Killstreak%20Eyelander",
-      "status": "unavailable",
-      "price": null,
-      "displayPrice": "Awaiting USD check",
-      "source": "awaiting-usd-refresh",
-      "checkedAtUTC": null,
-      "lastResult": "awaiting_usd_check",
+      "status": "priced",
+      "price": 4.68,
+      "displayPrice": "US$ 4.68",
+      "source": "github-actions-priceoverview",
+      "checkedAtUTC": "2026-10-28T14:11:06.195Z",
+      "lastResult": "priced",
       "previousQuote": {
         "currency": "AUD",
         "price": 6.72,
         "checkedAtUTC": "2026-10-26T23:34:07.346Z",
         "status": "priced"
-      }
+      },
+      "lastAttemptAtUTC": "2026-10-28T14:11:06.195Z"
     },
     {
       "name": "Festivized Specialized Killstreak Force-a-Nature",
@@ -8677,18 +8704,19 @@
       "name": "Festivized Specialized Killstreak Market Gardener",
       "tier": "specialized",
       "marketUrl": "https://steamcommunity.com/market/listings/440/Festivized%20Specialized%20Killstreak%20Market%20Gardener",
-      "status": "unavailable",
-      "price": null,
-      "displayPrice": "Awaiting USD check",
-      "source": "awaiting-usd-refresh",
-      "checkedAtUTC": null,
-      "lastResult": "awaiting_usd_check",
+      "status": "priced",
+      "price": 4.43,
+      "displayPrice": "US$ 4.43",
+      "source": "github-actions-priceoverview",
+      "checkedAtUTC": "2026-10-28T14:09:21.069Z",
+      "lastResult": "priced",
       "previousQuote": {
         "currency": "AUD",
         "price": 6.32,
         "checkedAtUTC": "2026-10-26T23:34:24.630Z",
         "status": "priced"
-      }
+      },
+      "lastAttemptAtUTC": "2026-10-28T14:09:21.069Z"
     },
     {
       "name": "Festivized Specialized Killstreak Stickybomb Launcher",
@@ -8712,18 +8740,19 @@
       "name": "Festivized Specialized Killstreak Dragon's Fury",
       "tier": "specialized",
       "marketUrl": "https://steamcommunity.com/market/listings/440/Festivized%20Specialized%20Killstreak%20Dragon's%20Fury",
-      "status": "unavailable",
-      "price": null,
-      "displayPrice": "Awaiting USD check",
-      "source": "awaiting-usd-refresh",
-      "checkedAtUTC": null,
-      "lastResult": "awaiting_usd_check",
+      "status": "priced",
+      "price": 3.88,
+      "displayPrice": "US$ 3.88",
+      "source": "github-actions-priceoverview",
+      "checkedAtUTC": "2026-10-28T14:07:12.134Z",
+      "lastResult": "priced",
       "previousQuote": {
         "currency": "AUD",
         "price": 5.56,
         "checkedAtUTC": "2026-10-26T23:34:33.639Z",
         "status": "priced"
-      }
+      },
+      "lastAttemptAtUTC": "2026-10-28T14:07:12.134Z"
     },
     {
       "name": "Festivized Specialized Killstreak Atomizer",
@@ -8868,18 +8897,19 @@
       "name": "Festivized Specialized Killstreak Scorch Shot",
       "tier": "specialized",
       "marketUrl": "https://steamcommunity.com/market/listings/440/Festivized%20Specialized%20Killstreak%20Scorch%20Shot",
-      "status": "unavailable",
-      "price": null,
-      "displayPrice": "Awaiting USD check",
-      "source": "awaiting-usd-refresh",
-      "checkedAtUTC": null,
-      "lastResult": "awaiting_usd_check",
+      "status": "priced",
+      "price": 4.11,
+      "displayPrice": "US$ 4.11",
+      "source": "github-actions-priceoverview",
+      "checkedAtUTC": "2026-10-28T14:08:38.274Z",
+      "lastResult": "priced",
       "previousQuote": {
         "currency": "AUD",
         "price": 5.9,
         "checkedAtUTC": "2026-10-26T23:35:04.464Z",
         "status": "priced"
-      }
+      },
+      "lastAttemptAtUTC": "2026-10-28T14:08:38.274Z"
     },
     {
       "name": "Festivized Specialized Killstreak Mantreads",
@@ -8902,18 +8932,19 @@
       "name": "Festivized Specialized Killstreak Eureka Effect",
       "tier": "specialized",
       "marketUrl": "https://steamcommunity.com/market/listings/440/Festivized%20Specialized%20Killstreak%20Eureka%20Effect",
-      "status": "unavailable",
-      "price": null,
-      "displayPrice": "Awaiting USD check",
-      "source": "awaiting-usd-refresh",
-      "checkedAtUTC": null,
-      "lastResult": "awaiting_usd_check",
+      "status": "priced",
+      "price": 4.74,
+      "displayPrice": "US$ 4.74",
+      "source": "github-actions-priceoverview",
+      "checkedAtUTC": "2026-10-28T14:11:27.000Z",
+      "lastResult": "priced",
       "previousQuote": {
         "currency": "AUD",
         "price": 6.76,
         "checkedAtUTC": "2026-10-26T23:35:08.596Z",
         "status": "priced"
-      }
+      },
+      "lastAttemptAtUTC": "2026-10-28T14:11:27.000Z"
     },
     {
       "name": "Festivized Specialized Killstreak Loch-n-Load",
@@ -9075,35 +9106,37 @@
       "name": "Festivized Specialized Killstreak Machina",
       "tier": "specialized",
       "marketUrl": "https://steamcommunity.com/market/listings/440/Festivized%20Specialized%20Killstreak%20Machina",
-      "status": "unavailable",
-      "price": null,
-      "displayPrice": "Awaiting USD check",
-      "source": "awaiting-usd-refresh",
-      "checkedAtUTC": null,
-      "lastResult": "awaiting_usd_check",
+      "status": "priced",
+      "price": 4.61,
+      "displayPrice": "US$ 4.61",
+      "source": "github-actions-priceoverview",
+      "checkedAtUTC": "2026-10-28T14:10:24.002Z",
+      "lastResult": "priced",
       "previousQuote": {
         "currency": "AUD",
         "price": 6.59,
         "checkedAtUTC": "2026-10-26T23:35:30.518Z",
         "status": "priced"
-      }
+      },
+      "lastAttemptAtUTC": "2026-10-28T14:10:24.002Z"
     },
     {
       "name": "Festivized Specialized Killstreak Reserve Shooter",
       "tier": "specialized",
       "marketUrl": "https://steamcommunity.com/market/listings/440/Festivized%20Specialized%20Killstreak%20Reserve%20Shooter",
-      "status": "unavailable",
-      "price": null,
-      "displayPrice": "Awaiting USD check",
-      "source": "awaiting-usd-refresh",
-      "checkedAtUTC": null,
-      "lastResult": "awaiting_usd_check",
+      "status": "priced",
+      "price": 3.93,
+      "displayPrice": "US$ 3.93",
+      "source": "github-actions-priceoverview",
+      "checkedAtUTC": "2026-10-28T14:07:34.076Z",
+      "lastResult": "priced",
       "previousQuote": {
         "currency": "AUD",
         "price": 5.59,
         "checkedAtUTC": "2026-10-26T23:35:34.942Z",
         "status": "priced"
-      }
+      },
+      "lastAttemptAtUTC": "2026-10-28T14:07:34.076Z"
     },
     {
       "name": "Festivized Specialized Killstreak Cow Mangler 5000",
@@ -9177,18 +9210,19 @@
       "name": "Festivized Specialized Killstreak Liberty Launcher",
       "tier": "specialized",
       "marketUrl": "https://steamcommunity.com/market/listings/440/Festivized%20Specialized%20Killstreak%20Liberty%20Launcher",
-      "status": "unavailable",
-      "price": null,
-      "displayPrice": "Awaiting USD check",
-      "source": "awaiting-usd-refresh",
-      "checkedAtUTC": null,
-      "lastResult": "awaiting_usd_check",
+      "status": "priced",
+      "price": 4.79,
+      "displayPrice": "US$ 4.79",
+      "source": "github-actions-priceoverview",
+      "checkedAtUTC": "2026-10-28T14:11:48.365Z",
+      "lastResult": "priced",
       "previousQuote": {
         "currency": "AUD",
         "price": 6.82,
         "checkedAtUTC": "2026-10-26T23:35:57.268Z",
         "status": "priced"
-      }
+      },
+      "lastAttemptAtUTC": "2026-10-28T14:11:48.365Z"
     },
     {
       "name": "Festivized Specialized Killstreak Family Business",
@@ -9318,18 +9352,19 @@
       "name": "Festivized Specialized Killstreak Fan O'War",
       "tier": "specialized",
       "marketUrl": "https://steamcommunity.com/market/listings/440/Festivized%20Specialized%20Killstreak%20Fan%20O'War",
-      "status": "unavailable",
-      "price": null,
-      "displayPrice": "Awaiting USD check",
-      "source": "awaiting-usd-refresh",
-      "checkedAtUTC": null,
-      "lastResult": "awaiting_usd_check",
+      "status": "priced",
+      "price": 3.76,
+      "displayPrice": "US$ 3.76",
+      "source": "github-actions-priceoverview",
+      "checkedAtUTC": "2026-10-28T14:06:51.577Z",
+      "lastResult": "priced",
       "previousQuote": {
         "currency": "AUD",
         "price": 5.37,
         "checkedAtUTC": "2026-10-26T23:36:27.880Z",
         "status": "priced"
-      }
+      },
+      "lastAttemptAtUTC": "2026-10-28T14:06:51.577Z"
     },
     {
       "name": "Festivized Specialized Killstreak Hitman's Heatmaker",
@@ -9422,52 +9457,55 @@
       "name": "Festivized Specialized Killstreak Diamondback",
       "tier": "specialized",
       "marketUrl": "https://steamcommunity.com/market/listings/440/Festivized%20Specialized%20Killstreak%20Diamondback",
-      "status": "unavailable",
-      "price": null,
-      "displayPrice": "Awaiting USD check",
-      "source": "awaiting-usd-refresh",
-      "checkedAtUTC": null,
-      "lastResult": "awaiting_usd_check",
+      "status": "priced",
+      "price": 4.05,
+      "displayPrice": "US$ 4.05",
+      "source": "github-actions-priceoverview",
+      "checkedAtUTC": "2026-10-28T14:08:16.287Z",
+      "lastResult": "priced",
       "previousQuote": {
         "currency": "AUD",
         "price": 5.79,
         "checkedAtUTC": "2026-10-26T23:36:45.830Z",
         "status": "priced"
-      }
+      },
+      "lastAttemptAtUTC": "2026-10-28T14:08:16.287Z"
     },
     {
       "name": "Festivized Specialized Killstreak Fire Axe",
       "tier": "specialized",
       "marketUrl": "https://steamcommunity.com/market/listings/440/Festivized%20Specialized%20Killstreak%20Fire%20Axe",
-      "status": "unavailable",
-      "price": null,
-      "displayPrice": "Awaiting USD check",
-      "source": "awaiting-usd-refresh",
-      "checkedAtUTC": null,
-      "lastResult": "awaiting_usd_check",
+      "status": "priced",
+      "price": 4.55,
+      "displayPrice": "US$ 4.55",
+      "source": "github-actions-priceoverview",
+      "checkedAtUTC": "2026-10-28T14:10:03.403Z",
+      "lastResult": "priced",
       "previousQuote": {
         "currency": "AUD",
         "price": 6.51,
         "checkedAtUTC": "2026-10-26T23:36:50.055Z",
         "status": "priced"
-      }
+      },
+      "lastAttemptAtUTC": "2026-10-28T14:10:03.403Z"
     },
     {
       "name": "Festivized Specialized Killstreak Brass Beast",
       "tier": "specialized",
       "marketUrl": "https://steamcommunity.com/market/listings/440/Festivized%20Specialized%20Killstreak%20Brass%20Beast",
-      "status": "unavailable",
-      "price": null,
-      "displayPrice": "Awaiting USD check",
-      "source": "awaiting-usd-refresh",
-      "checkedAtUTC": null,
-      "lastResult": "awaiting_usd_check",
+      "status": "priced",
+      "price": 4.02,
+      "displayPrice": "US$ 4.02",
+      "source": "github-actions-priceoverview",
+      "checkedAtUTC": "2026-10-28T14:07:55.298Z",
+      "lastResult": "priced",
       "previousQuote": {
         "currency": "AUD",
         "price": 5.76,
         "checkedAtUTC": "2026-10-26T23:36:54.307Z",
         "status": "priced"
-      }
+      },
+      "lastAttemptAtUTC": "2026-10-28T14:07:55.298Z"
     },
     {
       "name": "Festivized Specialized Killstreak SMG",
@@ -9633,18 +9671,19 @@
       "name": "Festivized Specialized Killstreak Amputator",
       "tier": "specialized",
       "marketUrl": "https://steamcommunity.com/market/listings/440/Festivized%20Specialized%20Killstreak%20Amputator",
-      "status": "unavailable",
-      "price": null,
-      "displayPrice": "Awaiting USD check",
-      "source": "awaiting-usd-refresh",
-      "checkedAtUTC": null,
-      "lastResult": "awaiting_usd_check",
+      "status": "priced",
+      "price": 5.24,
+      "displayPrice": "US$ 5.24",
+      "source": "github-actions-priceoverview",
+      "checkedAtUTC": "2026-10-28T14:12:53.273Z",
+      "lastResult": "priced",
       "previousQuote": {
         "currency": "AUD",
         "price": 7.47,
         "checkedAtUTC": "2026-10-26T23:37:30.136Z",
         "status": "priced"
-      }
+      },
+      "lastAttemptAtUTC": "2026-10-28T14:12:53.273Z"
     },
     {
       "name": "Festivized Specialized Killstreak Direct Hit",
@@ -9994,35 +10033,37 @@
       "name": "Festivized Specialized Killstreak Backburner",
       "tier": "specialized",
       "marketUrl": "https://steamcommunity.com/market/listings/440/Festivized%20Specialized%20Killstreak%20Backburner",
-      "status": "unavailable",
-      "price": null,
-      "displayPrice": "Awaiting USD check",
-      "source": "awaiting-usd-refresh",
-      "checkedAtUTC": null,
-      "lastResult": "awaiting_usd_check",
+      "status": "priced",
+      "price": 5.54,
+      "displayPrice": "US$ 5.54",
+      "source": "github-actions-priceoverview",
+      "checkedAtUTC": "2026-10-28T14:13:56.785Z",
+      "lastResult": "priced",
       "previousQuote": {
         "currency": "AUD",
         "price": 7.9,
         "checkedAtUTC": "2026-10-26T23:38:27.512Z",
         "status": "priced"
-      }
+      },
+      "lastAttemptAtUTC": "2026-10-28T14:13:56.785Z"
     },
     {
       "name": "Festivized Specialized Killstreak Nessie's Nine Iron",
       "tier": "specialized",
       "marketUrl": "https://steamcommunity.com/market/listings/440/Festivized%20Specialized%20Killstreak%20Nessie's%20Nine%20Iron",
-      "status": "unavailable",
-      "price": null,
-      "displayPrice": "Awaiting USD check",
-      "source": "awaiting-usd-refresh",
-      "checkedAtUTC": null,
-      "lastResult": "awaiting_usd_check",
+      "status": "priced",
+      "price": 4.28,
+      "displayPrice": "US$ 4.28",
+      "source": "github-actions-priceoverview",
+      "checkedAtUTC": "2026-10-28T14:09:42.230Z",
+      "lastResult": "priced",
       "previousQuote": {
         "currency": "AUD",
         "price": 6.39,
         "checkedAtUTC": "2026-10-26T23:38:31.911Z",
         "status": "priced"
-      }
+      },
+      "lastAttemptAtUTC": "2026-10-28T14:09:42.230Z"
     },
     {
       "name": "Festivized Specialized Killstreak Enforcer",
@@ -10062,18 +10103,19 @@
       "name": "Festivized Specialized Killstreak Vaccinator",
       "tier": "specialized",
       "marketUrl": "https://steamcommunity.com/market/listings/440/Festivized%20Specialized%20Killstreak%20Vaccinator",
-      "status": "unavailable",
-      "price": null,
-      "displayPrice": "Awaiting USD check",
-      "source": "awaiting-usd-refresh",
-      "checkedAtUTC": null,
-      "lastResult": "awaiting_usd_check",
+      "status": "priced",
+      "price": 4.69,
+      "displayPrice": "US$ 4.69",
+      "source": "github-actions-priceoverview",
+      "checkedAtUTC": "2026-10-28T14:10:45.294Z",
+      "lastResult": "priced",
       "previousQuote": {
         "currency": "AUD",
         "price": 6.72,
         "checkedAtUTC": "2026-10-26T23:38:45.205Z",
         "status": "priced"
-      }
+      },
+      "lastAttemptAtUTC": "2026-10-28T14:10:45.294Z"
     },
     {
       "name": "Festivized Specialized Killstreak Bat Outta Hell",
@@ -10216,18 +10258,19 @@
       "name": "Festivized Specialized Killstreak Freedom Staff",
       "tier": "specialized",
       "marketUrl": "https://steamcommunity.com/market/listings/440/Festivized%20Specialized%20Killstreak%20Freedom%20Staff",
-      "status": "unavailable",
-      "price": null,
-      "displayPrice": "Awaiting USD check",
-      "source": "awaiting-usd-refresh",
-      "checkedAtUTC": null,
-      "lastResult": "awaiting_usd_check",
+      "status": "priced",
+      "price": 5.68,
+      "displayPrice": "US$ 5.68",
+      "source": "github-actions-priceoverview",
+      "checkedAtUTC": "2026-10-28T14:14:17.731Z",
+      "lastResult": "priced",
       "previousQuote": {
         "currency": "AUD",
         "price": 8.1,
         "checkedAtUTC": "2026-10-26T23:39:03.619Z",
         "status": "priced"
-      }
+      },
+      "lastAttemptAtUTC": "2026-10-28T14:14:17.731Z"
     },
     {
       "name": "Festivized Specialized Killstreak Natascha",
@@ -10284,21 +10327,22 @@
       "name": "Festivized Specialized Killstreak Maul",
       "tier": "specialized",
       "marketUrl": "https://steamcommunity.com/market/listings/440/Festivized%20Specialized%20Killstreak%20Maul",
-      "status": "unavailable",
-      "price": null,
-      "displayPrice": "Awaiting USD check",
-      "source": "awaiting-usd-refresh",
-      "checkedAtUTC": null,
-      "lastResult": "awaiting_usd_check",
+      "status": "priced",
+      "price": 5.37,
+      "displayPrice": "US$ 5.37",
+      "source": "github-actions-priceoverview",
+      "checkedAtUTC": "2026-10-28T14:13:15.140Z",
+      "lastResult": "priced",
       "previousQuote": {
         "currency": "AUD",
         "price": 7.67,
         "checkedAtUTC": "2026-10-26T23:39:16.265Z",
         "status": "priced"
-      }
+      },
+      "lastAttemptAtUTC": "2026-10-28T14:13:15.140Z"
     }
   ],
-  "latestPublishedUTC": "2026-10-28T07:27:29.585Z",
+  "latestPublishedUTC": "2026-10-28T14:14:17.735Z",
   "updaterVersion": "1.3.0",
   "lastRun": {
     "attempted": 60,
@@ -10308,7 +10352,7 @@
     "verifiedResponses": 60,
     "reason": "complete",
     "remaining": 0,
-    "completedUTC": "2026-10-28T07:27:29Z",
+    "completedUTC": "2026-10-28T14:14:17Z",
     "nextAttemptAtUTC": null
   },
   "migration": {
