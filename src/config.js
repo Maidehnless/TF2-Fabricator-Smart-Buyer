@@ -5,7 +5,7 @@
     const BUTTON_SPACER_ID = 'tf2-fabricator-button-spacer';
     const ERROR_DIALOG_ID = 'tf2-fabricator-error-report-dialog';
     const ERROR_LOG_ID = 'tf2-fabricator-error-report-log';
-    const SCRIPT_VERSION = '3.0.7';
+    const SCRIPT_VERSION = '3.1.0';
     const PRICE_DB_URL = 'https://raw.githubusercontent.com/Maidehnless/TF2-Fabricator-Smart-Buyer/main/data/killstreak-prices.json';
     const PRICE_DB_CACHE_KEY = 'tf2-fabricator-remote-price-db-v1';
     const MODE_STORAGE_KEY = 'tf2-fabricator-verify-mode-v1';
@@ -640,3 +640,11 @@
     // ============================================================
     // BASIC HELPERS
     // ============================================================
+
+    function isTF2InventorySelection() {
+        if (location.pathname.startsWith('/market/multibuy')) return true;
+        const hash = location.hash || new URL(location.href).hash;
+        if (hash) return /^#440(?:_|$)/.test(hash);
+        const appid = window.g_ActiveInventory?.appid;
+        return !appid || String(appid) === '440';
+    }

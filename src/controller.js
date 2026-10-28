@@ -1,5 +1,5 @@
     async function updateMultiBuyButton() {
-        const fabricator = findFabricatorParts();
+        const fabricator = isTF2InventorySelection() ? findFabricatorParts() : null;
         const kitName = fabricator ? findFinishedKitName() : null;
         const weaponRequirement = fabricator ? findRequiredKillstreakWeapon(fabricator) : null;
 

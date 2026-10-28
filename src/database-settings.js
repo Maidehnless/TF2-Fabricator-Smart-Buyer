@@ -164,7 +164,10 @@
 
     function createInventoryPriceSettings() {
         const more = document.getElementById('inventory_more_dselect_container');
-        if (!more || document.getElementById('tf2-fabricator-settings')) return;
+        const existing = document.getElementById('tf2-fabricator-settings');
+        const supported = isTF2InventorySelection();
+        if (existing) existing.hidden = !supported;
+        if (!more || existing || !supported) return;
         const wrap = document.createElement('div');
         wrap.id = 'tf2-fabricator-settings';
         wrap.style.cssText = 'display:inline-block;position:relative;vertical-align:middle;margin:0 8px;float:right;';

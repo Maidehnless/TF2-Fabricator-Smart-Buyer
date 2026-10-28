@@ -202,6 +202,10 @@
     function ensureOwnedRobotInventory() {
         const auto=ownedInventoryAuto;
         auto.enabled=true;
+        if (!isTF2InventorySelection()) {
+            clearTimeout(auto.timer);auto.timer=null;
+            return Promise.resolve(null);
+        }
         if (ownedRobotInventory.inFlight || ownedRobotInventory.status==='loading') return ownedRobotInventory.inFlight;
         const owner=currentInventoryOwnerID();
         const schedule=delay=>{

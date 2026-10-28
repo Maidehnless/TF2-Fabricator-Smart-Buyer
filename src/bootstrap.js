@@ -19,6 +19,7 @@
             runUpdateSafely();
         },200);
     }
+    window.addEventListener('hashchange', () => scheduleUpdate());
     createInventoryPriceSettings();
     const observer=new MutationObserver(scheduleUpdate);
     observer.observe(document.body,{childList:true,subtree:true,characterData:true,

@@ -6,7 +6,7 @@
 // @license      MIT
 // @version      3.1.0
 // @description  Checks ranked individual Killstreak weapon offers, subtracts owned robot parts and builds manual fabricator purchase links and kit sale estimates.
-// @match        https://steamcommunity.com/*/inventory#440*
+// @match        https://steamcommunity.com/*/inventory*
 // @match        https://steamcommunity.com/market/multibuy*
 // @grant        GM_xmlhttpRequest
 // @connect      steamcommunity.com
@@ -144,7 +144,7 @@ const SmartPricing = (() => {
     const BUTTON_SPACER_ID = 'tf2-fabricator-button-spacer';
     const ERROR_DIALOG_ID = 'tf2-fabricator-error-report-dialog';
     const ERROR_LOG_ID = 'tf2-fabricator-error-report-log';
-    const SCRIPT_VERSION = '3.0.7';
+    const SCRIPT_VERSION = '3.1.0';
     const PRICE_DB_URL = 'https://raw.githubusercontent.com/Maidehnless/TF2-Fabricator-Smart-Buyer/main/data/killstreak-prices.json';
     const PRICE_DB_CACHE_KEY = 'tf2-fabricator-remote-price-db-v1';
     const MODE_STORAGE_KEY = 'tf2-fabricator-verify-mode-v1';
@@ -779,6 +779,14 @@ const SmartPricing = (() => {
     // ============================================================
     // BASIC HELPERS
     // ============================================================
+
+    function isTF2InventorySelection() {
+        if (location.pathname.startsWith('/market/multibuy')) return true;
+        const hash = location.hash || new URL(location.href).hash;
+        if (hash) return /^#440(?:_|$)/.test(hash);
+        const appid = window.g_ActiveInventory?.appid;
+        return !appid || String(appid) === '440';
+    }
 
 // Source: src/diagnostics.js
     function redactDiagnosticText(text) {
@@ -1492,6 +1500,10 @@ const SmartPricing = (() => {
     function ensureOwnedRobotInventory() {
         const auto=ownedInventoryAuto;
         auto.enabled=true;
+        if (!isTF2InventorySelection()) {
+            clearTimeout(auto.timer);auto.timer=null;
+            return Promise.resolve(null);
+        }
         if (ownedRobotInventory.inFlight || ownedRobotInventory.status==='loading') return ownedRobotInventory.inFlight;
         const owner=currentInventoryOwnerID();
         const schedule=delay=>{
@@ -3554,7 +3566,10 @@ const SmartPricing = (() => {
 
     function createInventoryPriceSettings() {
         const more = document.getElementById('inventory_more_dselect_container');
-        if (!more || document.getElementById('tf2-fabricator-settings')) return;
+        const existing = document.getElementById('tf2-fabricator-settings');
+        const supported = isTF2InventorySelection();
+        if (existing) existing.hidden = !supported;
+        if (!more || existing || !supported) return;
         const wrap = document.createElement('div');
         wrap.id = 'tf2-fabricator-settings';
         wrap.style.cssText = 'display:inline-block;position:relative;vertical-align:middle;margin:0 8px;float:right;';
@@ -4504,7 +4519,7 @@ const SmartPricing = (() => {
 
 // Source: src/controller.js
     async function updateMultiBuyButton() {
-        const fabricator = findFabricatorParts();
+        const fabricator = isTF2InventorySelection() ? findFabricatorParts() : null;
         const kitName = fabricator ? findFinishedKitName() : null;
         const weaponRequirement = fabricator ? findRequiredKillstreakWeapon(fabricator) : null;
 
@@ -4949,6 +4964,7 @@ const SmartPricing = (() => {
             runUpdateSafely();
         },200);
     }
+    window.addEventListener('hashchange', () => scheduleUpdate());
     createInventoryPriceSettings();
     const observer=new MutationObserver(scheduleUpdate);
     observer.observe(document.body,{childList:true,subtree:true,characterData:true,
