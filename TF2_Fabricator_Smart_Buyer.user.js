@@ -6,7 +6,7 @@
 // @license      MIT
 // @version      3.0.7
 // @description  Checks ranked individual Killstreak weapon offers, subtracts owned robot parts and builds manual fabricator purchase links and kit sale estimates.
-// @match        https://steamcommunity.com/*/inventory*
+// @match        https://steamcommunity.com/*/inventory#440*
 // @match        https://steamcommunity.com/market/multibuy*
 // @grant        GM_xmlhttpRequest
 // @connect      steamcommunity.com
