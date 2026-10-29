@@ -2,66 +2,6 @@
   "schema": "maidehnless.tf2.price-updater-state.v1",
   "status": "retrying",
   "pending": [
-    "Killstreak Cleaner's Carbine",
-    "Specialized Killstreak Scotsman's Skullcutter",
-    "Killstreak Classic",
-    "Specialized Killstreak Übersaw",
-    "Killstreak Unarmed Combat",
-    "Specialized Killstreak Market Gardener",
-    "Killstreak Baby Face's Blaster",
-    "Specialized Killstreak Degreaser",
-    "Killstreak Minigun",
-    "Specialized Killstreak Revolver",
-    "Killstreak Übersaw",
-    "Specialized Killstreak Wrench",
-    "Killstreak Winger",
-    "Specialized Killstreak Gloves of Running Urgently",
-    "Killstreak Axtinguisher",
-    "Specialized Killstreak Shortstop",
-    "Killstreak Bat",
-    "Specialized Killstreak Bottle",
-    "Killstreak Boston Basher",
-    "Specialized Killstreak Bushwacka",
-    "Killstreak Eviction Notice",
-    "Specialized Killstreak Disciplinary Action",
-    "Killstreak Fists of Steel",
-    "Specialized Killstreak Persian Persuader",
-    "Killstreak Huntsman",
-    "Specialized Killstreak Warrior's Spirit",
-    "Killstreak Kritzkrieg",
-    "Specialized Killstreak Eureka Effect",
-    "Killstreak Back Scatter",
-    "Specialized Killstreak Holiday Punch",
-    "Killstreak Hot Hand",
-    "Specialized Killstreak Freedom Staff",
-    "Killstreak Syringe Gun",
-    "Specialized Killstreak Atomizer",
-    "Killstreak Air Strike",
-    "Specialized Killstreak Solemn Vow",
-    "Killstreak Loose Cannon",
-    "Specialized Killstreak Southern Hospitality",
-    "Killstreak Direct Hit",
-    "Specialized Killstreak Natascha",
-    "Killstreak Flare Gun",
-    "Specialized Killstreak Quickiebomb Launcher",
-    "Killstreak Lollichop",
-    "Specialized Killstreak Brass Beast",
-    "Killstreak Neon Annihilator",
-    "Specialized Killstreak Liberty Launcher",
-    "Killstreak Nessie's Nine Iron",
-    "Specialized Killstreak Pomson 6000",
-    "Killstreak Overdose",
-    "Specialized Killstreak Direct Hit",
-    "Killstreak Quickiebomb Launcher",
-    "Specialized Killstreak Equalizer",
-    "Killstreak Scottish Resistance",
-    "Specialized Killstreak Scorch Shot",
-    "Killstreak Bat Outta Hell",
-    "Specialized Killstreak Wrap Assassin",
-    "Killstreak Sniper Rifle",
-    "Specialized Killstreak Widowmaker",
-    "Killstreak Solemn Vow",
-    "Specialized Killstreak Bonesaw",
     "Killstreak Diamondback",
     "Specialized Killstreak Escape Plan",
     "Killstreak Amputator",
@@ -755,7 +695,7 @@
       "result": "priced"
     },
     "Specialized Killstreak Scorch Shot": {
-      "atUTC": "2026-10-27T12:47:34.381Z",
+      "atUTC": "2026-10-29T08:59:10.483Z",
       "result": "priced"
     },
     "Specialized Killstreak Ambassador": {
@@ -763,7 +703,7 @@
       "result": "priced"
     },
     "Killstreak Bat Outta Hell": {
-      "atUTC": "2026-10-27T12:47:44.961Z",
+      "atUTC": "2026-10-29T08:59:21.308Z",
       "result": "priced"
     },
     "Specialized Killstreak Classic": {
@@ -827,235 +767,235 @@
       "result": "priced"
     },
     "Killstreak Cleaner's Carbine": {
-      "atUTC": "2026-10-27T10:47:53.033Z",
+      "atUTC": "2026-10-29T08:49:46.342Z",
       "result": "priced"
     },
     "Specialized Killstreak Scotsman's Skullcutter": {
-      "atUTC": "2026-10-27T11:12:17.455Z",
+      "atUTC": "2026-10-29T08:49:57.006Z",
       "result": "priced"
     },
     "Killstreak Classic": {
-      "atUTC": "2026-10-27T11:12:28.502Z",
+      "atUTC": "2026-10-29T08:50:07.512Z",
       "result": "priced"
     },
     "Specialized Killstreak Übersaw": {
-      "atUTC": "2026-10-27T11:12:39.161Z",
+      "atUTC": "2026-10-29T08:50:18.492Z",
       "result": "priced"
     },
     "Killstreak Unarmed Combat": {
-      "atUTC": "2026-10-27T11:12:49.377Z",
+      "atUTC": "2026-10-29T08:50:29.643Z",
       "result": "priced"
     },
     "Specialized Killstreak Market Gardener": {
-      "atUTC": "2026-10-27T11:12:59.792Z",
+      "atUTC": "2026-10-29T08:50:39.996Z",
       "result": "priced"
     },
     "Killstreak Baby Face's Blaster": {
-      "atUTC": "2026-10-27T11:13:10.828Z",
+      "atUTC": "2026-10-29T08:50:50.335Z",
       "result": "priced"
     },
     "Specialized Killstreak Degreaser": {
-      "atUTC": "2026-10-27T11:13:21.517Z",
+      "atUTC": "2026-10-29T08:51:00.806Z",
       "result": "priced"
     },
     "Killstreak Minigun": {
-      "atUTC": "2026-10-27T11:13:31.847Z",
+      "atUTC": "2026-10-29T08:51:11.468Z",
       "result": "priced"
     },
     "Specialized Killstreak Revolver": {
-      "atUTC": "2026-10-27T11:13:42.520Z",
+      "atUTC": "2026-10-29T08:51:21.761Z",
       "result": "priced"
     },
     "Killstreak Übersaw": {
-      "atUTC": "2026-10-27T11:13:53.418Z",
+      "atUTC": "2026-10-29T08:51:33.116Z",
       "result": "priced"
     },
     "Specialized Killstreak Wrench": {
-      "atUTC": "2026-10-27T11:14:04.207Z",
+      "atUTC": "2026-10-29T08:51:43.946Z",
       "result": "priced"
     },
     "Killstreak Winger": {
-      "atUTC": "2026-10-27T11:14:14.785Z",
+      "atUTC": "2026-10-29T08:51:54.839Z",
       "result": "priced"
     },
     "Specialized Killstreak Gloves of Running Urgently": {
-      "atUTC": "2026-10-27T11:14:25.218Z",
+      "atUTC": "2026-10-29T08:52:05.208Z",
       "result": "priced"
     },
     "Killstreak Axtinguisher": {
-      "atUTC": "2026-10-27T11:14:35.723Z",
+      "atUTC": "2026-10-29T08:52:15.830Z",
       "result": "priced"
     },
     "Specialized Killstreak Shortstop": {
-      "atUTC": "2026-10-27T11:14:46.462Z",
+      "atUTC": "2026-10-29T08:52:26.224Z",
       "result": "priced"
     },
     "Killstreak Bat": {
-      "atUTC": "2026-10-27T11:14:56.776Z",
+      "atUTC": "2026-10-29T08:52:36.455Z",
       "result": "priced"
     },
     "Specialized Killstreak Bottle": {
-      "atUTC": "2026-10-27T11:15:07.408Z",
+      "atUTC": "2026-10-29T08:52:47.334Z",
       "result": "priced"
     },
     "Killstreak Boston Basher": {
-      "atUTC": "2026-10-27T11:15:17.859Z",
+      "atUTC": "2026-10-29T08:52:58.248Z",
       "result": "priced"
     },
     "Specialized Killstreak Bushwacka": {
-      "atUTC": "2026-10-27T11:15:28.367Z",
+      "atUTC": "2026-10-29T08:53:09.171Z",
       "result": "priced"
     },
     "Killstreak Eviction Notice": {
-      "atUTC": "2026-10-27T11:15:39.100Z",
+      "atUTC": "2026-10-29T08:53:20.019Z",
       "result": "priced"
     },
     "Specialized Killstreak Disciplinary Action": {
-      "atUTC": "2026-10-27T11:15:50.129Z",
+      "atUTC": "2026-10-29T08:53:30.251Z",
       "result": "priced"
     },
     "Killstreak Fists of Steel": {
-      "atUTC": "2026-10-27T11:16:00.461Z",
+      "atUTC": "2026-10-29T08:53:40.509Z",
       "result": "priced"
     },
     "Specialized Killstreak Persian Persuader": {
-      "atUTC": "2026-10-27T11:16:11.201Z",
+      "atUTC": "2026-10-29T08:53:50.797Z",
       "result": "priced"
     },
     "Killstreak Huntsman": {
-      "atUTC": "2026-10-27T11:16:21.714Z",
+      "atUTC": "2026-10-29T08:54:01.847Z",
       "result": "priced"
     },
     "Specialized Killstreak Warrior's Spirit": {
-      "atUTC": "2026-10-27T11:16:32.421Z",
+      "atUTC": "2026-10-29T08:54:12.639Z",
       "result": "priced"
     },
     "Killstreak Kritzkrieg": {
-      "atUTC": "2026-10-27T11:16:42.540Z",
+      "atUTC": "2026-10-29T08:54:23.692Z",
       "result": "priced"
     },
     "Specialized Killstreak Eureka Effect": {
-      "atUTC": "2026-10-27T11:16:52.817Z",
+      "atUTC": "2026-10-29T08:54:34.442Z",
       "result": "priced"
     },
     "Killstreak Back Scatter": {
-      "atUTC": "2026-10-27T11:17:03.606Z",
+      "atUTC": "2026-10-29T08:54:45.417Z",
       "result": "priced"
     },
     "Specialized Killstreak Holiday Punch": {
-      "atUTC": "2026-10-27T11:17:14.391Z",
+      "atUTC": "2026-10-29T08:54:55.758Z",
       "result": "priced"
     },
     "Killstreak Hot Hand": {
-      "atUTC": "2026-10-27T11:17:24.807Z",
+      "atUTC": "2026-10-29T08:55:06.682Z",
       "result": "priced"
     },
     "Specialized Killstreak Freedom Staff": {
-      "atUTC": "2026-10-27T11:17:35.525Z",
+      "atUTC": "2026-10-29T08:55:17.446Z",
       "result": "priced"
     },
     "Killstreak Syringe Gun": {
-      "atUTC": "2026-10-27T11:17:45.834Z",
+      "atUTC": "2026-10-29T08:55:27.929Z",
       "result": "priced"
     },
     "Specialized Killstreak Atomizer": {
-      "atUTC": "2026-10-27T11:17:56.007Z",
+      "atUTC": "2026-10-29T08:55:38.107Z",
       "result": "priced"
     },
     "Killstreak Air Strike": {
-      "atUTC": "2026-10-27T11:18:06.671Z",
+      "atUTC": "2026-10-29T08:55:48.513Z",
       "result": "priced"
     },
     "Specialized Killstreak Solemn Vow": {
-      "atUTC": "2026-10-27T11:18:17.564Z",
+      "atUTC": "2026-10-29T08:55:59.686Z",
       "result": "priced"
     },
     "Killstreak Loose Cannon": {
-      "atUTC": "2026-10-27T11:18:28.157Z",
+      "atUTC": "2026-10-29T08:56:10.561Z",
       "result": "priced"
     },
     "Specialized Killstreak Southern Hospitality": {
-      "atUTC": "2026-10-27T11:18:38.598Z",
+      "atUTC": "2026-10-29T08:56:20.706Z",
       "result": "priced"
     },
     "Killstreak Direct Hit": {
-      "atUTC": "2026-10-27T11:18:48.844Z",
+      "atUTC": "2026-10-29T08:56:31.793Z",
       "result": "priced"
     },
     "Specialized Killstreak Natascha": {
-      "atUTC": "2026-10-27T11:18:59.347Z",
+      "atUTC": "2026-10-29T08:56:41.965Z",
       "result": "priced"
     },
     "Killstreak Flare Gun": {
-      "atUTC": "2026-10-27T11:19:09.699Z",
+      "atUTC": "2026-10-29T08:56:52.854Z",
       "result": "priced"
     },
     "Specialized Killstreak Quickiebomb Launcher": {
-      "atUTC": "2026-10-27T11:19:20.641Z",
+      "atUTC": "2026-10-29T08:57:03.412Z",
       "result": "priced"
     },
     "Killstreak Lollichop": {
-      "atUTC": "2026-10-27T11:19:31.301Z",
+      "atUTC": "2026-10-29T08:57:14.297Z",
       "result": "priced"
     },
     "Specialized Killstreak Brass Beast": {
-      "atUTC": "2026-10-27T11:19:41.731Z",
+      "atUTC": "2026-10-29T08:57:24.639Z",
       "result": "priced"
     },
     "Killstreak Neon Annihilator": {
-      "atUTC": "2026-10-27T11:19:52.243Z",
+      "atUTC": "2026-10-29T08:57:35.349Z",
       "result": "priced"
     },
     "Specialized Killstreak Liberty Launcher": {
-      "atUTC": "2026-10-27T11:20:02.371Z",
+      "atUTC": "2026-10-29T08:57:45.966Z",
       "result": "priced"
     },
     "Killstreak Nessie's Nine Iron": {
-      "atUTC": "2026-10-27T11:20:12.771Z",
+      "atUTC": "2026-10-29T08:57:56.126Z",
       "result": "priced"
     },
     "Specialized Killstreak Pomson 6000": {
-      "atUTC": "2026-10-27T11:20:22.912Z",
+      "atUTC": "2026-10-29T08:58:06.770Z",
       "result": "priced"
     },
     "Killstreak Overdose": {
-      "atUTC": "2026-10-27T11:20:33.696Z",
+      "atUTC": "2026-10-29T08:58:17.211Z",
       "result": "priced"
     },
     "Specialized Killstreak Direct Hit": {
-      "atUTC": "2026-10-27T11:20:44.052Z",
+      "atUTC": "2026-10-29T08:58:27.389Z",
       "result": "priced"
     },
     "Killstreak Quickiebomb Launcher": {
-      "atUTC": "2026-10-27T11:20:54.708Z",
+      "atUTC": "2026-10-29T08:58:38.299Z",
       "result": "priced"
     },
     "Specialized Killstreak Equalizer": {
-      "atUTC": "2026-10-27T11:21:05.207Z",
+      "atUTC": "2026-10-29T08:58:49.055Z",
       "result": "priced"
     },
     "Killstreak Scottish Resistance": {
-      "atUTC": "2026-10-27T11:21:15.798Z",
+      "atUTC": "2026-10-29T08:58:59.440Z",
       "result": "priced"
     },
     "Specialized Killstreak Wrap Assassin": {
-      "atUTC": "2026-10-27T12:49:31.496Z",
+      "atUTC": "2026-10-29T08:59:32.027Z",
       "result": "priced"
     },
     "Killstreak Sniper Rifle": {
-      "atUTC": "2026-10-27T12:49:41.937Z",
+      "atUTC": "2026-10-29T08:59:43.047Z",
       "result": "priced"
     },
     "Specialized Killstreak Widowmaker": {
-      "atUTC": "2026-10-27T12:49:53.006Z",
+      "atUTC": "2026-10-29T08:59:53.737Z",
       "result": "priced"
     },
     "Killstreak Solemn Vow": {
-      "atUTC": "2026-10-27T12:50:03.307Z",
+      "atUTC": "2026-10-29T09:00:04.604Z",
       "result": "priced"
     },
     "Specialized Killstreak Bonesaw": {
-      "atUTC": "2026-10-27T12:50:14.316Z",
+      "atUTC": "2026-10-29T09:00:15.340Z",
       "result": "priced"
     },
     "Killstreak Diamondback": {
@@ -2577,31 +2517,31 @@
   },
   "cycle": {
     "total": 550,
-    "completed": 180,
-    "priced": 129,
+    "completed": 240,
+    "priced": 189,
     "unlisted": 51,
     "startedAtUTC": "2026-10-28T19:59:05Z"
   },
   "nextCycleAtUTC": null,
-  "nextAttemptAtUTC": "2026-10-29T03:13:06Z",
+  "nextAttemptAtUTC": "2026-10-29T09:30:15Z",
   "lastError": null,
   "consecutiveRejections": 0,
-  "lastSuccessfulResponseAtUTC": "2026-10-29T02:43:06.335Z",
-  "updatedAtUTC": "2026-10-29T02:43:06Z",
+  "lastSuccessfulResponseAtUTC": "2026-10-29T09:00:15.340Z",
+  "updatedAtUTC": "2026-10-29T09:00:15Z",
   "lastRun": {
     "attempted": 60,
-    "updated": 55,
-    "unlisted": 5,
+    "updated": 60,
+    "unlisted": 0,
     "errors": 0,
     "verifiedResponses": 60,
     "reason": "batch_limit"
   },
   "dailyCoverage": {
-    "asOfUTC": "2026-10-29T02:43:06Z",
+    "asOfUTC": "2026-10-29T09:00:15Z",
     "total": 550,
-    "checkedLast24Hours": 316,
+    "checkedLast24Hours": 331,
     "neverChecked": 0,
-    "overdue": 234,
+    "overdue": 219,
     "cheapCandidates": 16
   }
 }
