@@ -2,66 +2,6 @@
   "schema": "maidehnless.tf2.price-updater-state.v1",
   "status": "retrying",
   "pending": [
-    "Killstreak Diamondback",
-    "Specialized Killstreak Escape Plan",
-    "Killstreak Amputator",
-    "Specialized Killstreak Pretty Boy's Pocket Pistol",
-    "Killstreak Ham Shank",
-    "Specialized Killstreak SMG",
-    "Killstreak Homewrecker",
-    "Specialized Killstreak Cleaner's Carbine",
-    "Killstreak Powerjack",
-    "Specialized Killstreak Killing Gloves of Boxing",
-    "Killstreak Revolver",
-    "Specialized Killstreak Mantreads",
-    "Killstreak Backburner",
-    "Specialized Killstreak Tide Turner",
-    "Killstreak Fortified Compound",
-    "Specialized Killstreak Amputator",
-    "Killstreak Shortstop",
-    "Specialized Killstreak Dragon's Fury",
-    "Killstreak Shovel",
-    "Specialized Killstreak Sun-on-a-Stick",
-    "Killstreak Maul",
-    "Specialized Killstreak Reserve Shooter",
-    "Killstreak Bottle",
-    "Specialized Killstreak Jag",
-    "Killstreak Chargin' Targe",
-    "Specialized Killstreak Conniver's Kunai",
-    "Killstreak Cow Mangler 5000",
-    "Specialized Killstreak Fire Axe",
-    "Killstreak Frontier Justice",
-    "Specialized Killstreak Big Earner",
-    "Killstreak Persian Persuader",
-    "Specialized Killstreak Phlogistinator",
-    "Killstreak Spy-Cicle",
-    "Specialized Killstreak Enforcer",
-    "Killstreak Bonesaw",
-    "Specialized Killstreak Fists",
-    "Killstreak Brass Beast",
-    "Specialized Killstreak Detonator",
-    "Killstreak Pomson 6000",
-    "Killstreak Claidheamh Mòr",
-    "Killstreak Natascha",
-    "Specialized Killstreak Frontier Justice",
-    "Killstreak Scotsman's Skullcutter",
-    "Specialized Killstreak Sharpened Volcano Fragment",
-    "Killstreak Southern Hospitality",
-    "Specialized Killstreak Soda Popper",
-    "Killstreak Short Circuit",
-    "Specialized Killstreak Axtinguisher",
-    "Killstreak Hitman's Heatmaker",
-    "Specialized Killstreak Boston Basher",
-    "Killstreak Equalizer",
-    "Specialized Killstreak Fists of Steel",
-    "Killstreak Blutsauger",
-    "Specialized Killstreak Unarmed Combat",
-    "Killstreak Postal Pummeler",
-    "Specialized Killstreak Panic Attack",
-    "Killstreak Pretty Boy's Pocket Pistol",
-    "Specialized Killstreak Nessie's Nine Iron",
-    "Killstreak Wanga Prick",
-    "Specialized Killstreak L'Étranger",
     "Killstreak Fan O'War",
     "Specialized Killstreak Sharp Dresser",
     "Killstreak Freedom Staff",
@@ -323,7 +263,7 @@
       "result": "priced"
     },
     "Killstreak Natascha": {
-      "atUTC": "2026-10-27T18:21:09.161Z",
+      "atUTC": "2026-10-29T15:46:08.776Z",
       "result": "priced"
     },
     "Specialized Killstreak Kritzkrieg": {
@@ -711,7 +651,7 @@
       "result": "priced"
     },
     "Killstreak Claidheamh Mòr": {
-      "atUTC": "2026-10-27T18:20:48.087Z",
+      "atUTC": "2026-10-29T15:45:57.542Z",
       "result": "priced"
     },
     "Specialized Killstreak Back Scratcher": {
@@ -999,235 +939,235 @@
       "result": "priced"
     },
     "Killstreak Diamondback": {
-      "atUTC": "2026-10-27T12:50:24.623Z",
+      "atUTC": "2026-10-29T15:39:03.049Z",
       "result": "priced"
     },
     "Specialized Killstreak Escape Plan": {
-      "atUTC": "2026-10-27T12:50:34.755Z",
+      "atUTC": "2026-10-29T15:39:13.360Z",
       "result": "priced"
     },
     "Killstreak Amputator": {
-      "atUTC": "2026-10-27T12:50:45.390Z",
+      "atUTC": "2026-10-29T15:39:23.817Z",
       "result": "priced"
     },
     "Specialized Killstreak Pretty Boy's Pocket Pistol": {
-      "atUTC": "2026-10-27T12:50:55.649Z",
+      "atUTC": "2026-10-29T15:39:34.836Z",
       "result": "priced"
     },
     "Killstreak Ham Shank": {
-      "atUTC": "2026-10-27T12:51:06.390Z",
+      "atUTC": "2026-10-29T15:39:45.207Z",
       "result": "priced"
     },
     "Specialized Killstreak SMG": {
-      "atUTC": "2026-10-27T12:51:17.175Z",
+      "atUTC": "2026-10-29T15:39:55.562Z",
       "result": "priced"
     },
     "Killstreak Homewrecker": {
-      "atUTC": "2026-10-27T12:51:28.218Z",
+      "atUTC": "2026-10-29T15:40:06.342Z",
       "result": "priced"
     },
     "Specialized Killstreak Cleaner's Carbine": {
-      "atUTC": "2026-10-27T12:51:39.117Z",
+      "atUTC": "2026-10-29T15:40:16.918Z",
       "result": "priced"
     },
     "Killstreak Powerjack": {
-      "atUTC": "2026-10-27T12:51:49.894Z",
+      "atUTC": "2026-10-29T15:40:27.283Z",
       "result": "priced"
     },
     "Specialized Killstreak Killing Gloves of Boxing": {
-      "atUTC": "2026-10-27T12:52:00.162Z",
+      "atUTC": "2026-10-29T15:40:37.810Z",
       "result": "priced"
     },
     "Killstreak Revolver": {
-      "atUTC": "2026-10-27T12:52:11.042Z",
+      "atUTC": "2026-10-29T15:40:48.768Z",
       "result": "priced"
     },
     "Specialized Killstreak Mantreads": {
-      "atUTC": "2026-10-27T12:52:22.095Z",
+      "atUTC": "2026-10-29T15:40:59.638Z",
       "result": "priced"
     },
     "Killstreak Backburner": {
-      "atUTC": "2026-10-27T12:52:32.502Z",
+      "atUTC": "2026-10-29T15:41:10.202Z",
       "result": "priced"
     },
     "Specialized Killstreak Tide Turner": {
-      "atUTC": "2026-10-27T12:52:43.588Z",
+      "atUTC": "2026-10-29T15:41:21.035Z",
       "result": "priced"
     },
     "Killstreak Fortified Compound": {
-      "atUTC": "2026-10-27T12:52:53.763Z",
+      "atUTC": "2026-10-29T15:41:31.364Z",
       "result": "priced"
     },
     "Specialized Killstreak Amputator": {
-      "atUTC": "2026-10-27T12:53:04.665Z",
+      "atUTC": "2026-10-29T15:41:41.691Z",
       "result": "priced"
     },
     "Killstreak Shortstop": {
-      "atUTC": "2026-10-27T12:53:14.988Z",
+      "atUTC": "2026-10-29T15:41:52.025Z",
       "result": "priced"
     },
     "Specialized Killstreak Dragon's Fury": {
-      "atUTC": "2026-10-27T12:53:25.424Z",
+      "atUTC": "2026-10-29T15:42:02.321Z",
       "result": "priced"
     },
     "Killstreak Shovel": {
-      "atUTC": "2026-10-27T12:53:36.202Z",
+      "atUTC": "2026-10-29T15:42:12.691Z",
       "result": "priced"
     },
     "Specialized Killstreak Sun-on-a-Stick": {
-      "atUTC": "2026-10-27T12:53:47.191Z",
+      "atUTC": "2026-10-29T15:42:23.845Z",
       "result": "priced"
     },
     "Killstreak Maul": {
-      "atUTC": "2026-10-27T12:53:57.724Z",
+      "atUTC": "2026-10-29T15:42:34.535Z",
       "result": "priced"
     },
     "Specialized Killstreak Reserve Shooter": {
-      "atUTC": "2026-10-27T12:54:08.746Z",
+      "atUTC": "2026-10-29T15:42:45.261Z",
       "result": "priced"
     },
     "Killstreak Bottle": {
-      "atUTC": "2026-10-27T12:54:19.891Z",
+      "atUTC": "2026-10-29T15:42:55.914Z",
       "result": "priced"
     },
     "Specialized Killstreak Jag": {
-      "atUTC": "2026-10-27T12:54:30.956Z",
+      "atUTC": "2026-10-29T15:43:06.470Z",
       "result": "priced"
     },
     "Killstreak Chargin' Targe": {
-      "atUTC": "2026-10-27T12:54:41.553Z",
+      "atUTC": "2026-10-29T15:43:17.513Z",
       "result": "priced"
     },
     "Specialized Killstreak Conniver's Kunai": {
-      "atUTC": "2026-10-27T12:54:52.408Z",
+      "atUTC": "2026-10-29T15:43:27.838Z",
       "result": "priced"
     },
     "Killstreak Cow Mangler 5000": {
-      "atUTC": "2026-10-27T12:55:03.085Z",
+      "atUTC": "2026-10-29T15:43:38.909Z",
       "result": "priced"
     },
     "Specialized Killstreak Fire Axe": {
-      "atUTC": "2026-10-27T12:55:14.041Z",
+      "atUTC": "2026-10-29T15:43:49.835Z",
       "result": "priced"
     },
     "Killstreak Frontier Justice": {
-      "atUTC": "2026-10-27T12:55:24.478Z",
+      "atUTC": "2026-10-29T15:44:00.061Z",
       "result": "priced"
     },
     "Specialized Killstreak Big Earner": {
-      "atUTC": "2026-10-27T12:55:34.602Z",
+      "atUTC": "2026-10-29T15:44:10.723Z",
       "result": "priced"
     },
     "Killstreak Persian Persuader": {
-      "atUTC": "2026-10-27T12:55:45.052Z",
+      "atUTC": "2026-10-29T15:44:21.259Z",
       "result": "priced"
     },
     "Specialized Killstreak Phlogistinator": {
-      "atUTC": "2026-10-27T12:55:55.666Z",
+      "atUTC": "2026-10-29T15:44:32.057Z",
       "result": "priced"
     },
     "Killstreak Spy-Cicle": {
-      "atUTC": "2026-10-27T12:56:05.936Z",
+      "atUTC": "2026-10-29T15:44:42.448Z",
       "result": "priced"
     },
     "Specialized Killstreak Enforcer": {
-      "atUTC": "2026-10-27T12:56:16.158Z",
+      "atUTC": "2026-10-29T15:44:53.254Z",
       "result": "priced"
     },
     "Killstreak Bonesaw": {
-      "atUTC": "2026-10-27T12:56:26.649Z",
+      "atUTC": "2026-10-29T15:45:04.358Z",
       "result": "priced"
     },
     "Specialized Killstreak Fists": {
-      "atUTC": "2026-10-27T12:56:36.796Z",
+      "atUTC": "2026-10-29T15:45:14.792Z",
       "result": "priced"
     },
     "Killstreak Brass Beast": {
-      "atUTC": "2026-10-27T12:56:46.991Z",
+      "atUTC": "2026-10-29T15:45:25.568Z",
       "result": "priced"
     },
     "Specialized Killstreak Detonator": {
-      "atUTC": "2026-10-27T12:56:57.755Z",
+      "atUTC": "2026-10-29T15:45:36.579Z",
       "result": "priced"
     },
     "Killstreak Pomson 6000": {
-      "atUTC": "2026-10-27T12:57:08.096Z",
+      "atUTC": "2026-10-29T15:45:47.094Z",
       "result": "priced"
     },
     "Specialized Killstreak Frontier Justice": {
-      "atUTC": "2026-10-27T18:23:29.835Z",
+      "atUTC": "2026-10-29T15:46:19.780Z",
       "result": "priced"
     },
     "Killstreak Scotsman's Skullcutter": {
-      "atUTC": "2026-10-27T18:23:40.460Z",
+      "atUTC": "2026-10-29T15:46:30.121Z",
       "result": "priced"
     },
     "Specialized Killstreak Sharpened Volcano Fragment": {
-      "atUTC": "2026-10-27T18:23:51.516Z",
+      "atUTC": "2026-10-29T15:46:40.838Z",
       "result": "priced"
     },
     "Killstreak Southern Hospitality": {
-      "atUTC": "2026-10-27T18:24:02.566Z",
+      "atUTC": "2026-10-29T15:46:51.756Z",
       "result": "priced"
     },
     "Specialized Killstreak Soda Popper": {
-      "atUTC": "2026-10-27T18:24:13.387Z",
+      "atUTC": "2026-10-29T15:47:02.507Z",
       "result": "priced"
     },
     "Killstreak Short Circuit": {
-      "atUTC": "2026-10-27T18:24:23.793Z",
+      "atUTC": "2026-10-29T15:47:13.149Z",
       "result": "priced"
     },
     "Specialized Killstreak Axtinguisher": {
-      "atUTC": "2026-10-27T18:24:33.991Z",
+      "atUTC": "2026-10-29T15:47:24.250Z",
       "result": "priced"
     },
     "Killstreak Hitman's Heatmaker": {
-      "atUTC": "2026-10-27T18:24:44.442Z",
+      "atUTC": "2026-10-29T15:47:34.608Z",
       "result": "priced"
     },
     "Specialized Killstreak Boston Basher": {
-      "atUTC": "2026-10-27T18:24:55.259Z",
+      "atUTC": "2026-10-29T15:47:45.473Z",
       "result": "priced"
     },
     "Killstreak Equalizer": {
-      "atUTC": "2026-10-27T18:25:05.455Z",
+      "atUTC": "2026-10-29T15:47:55.957Z",
       "result": "priced"
     },
     "Specialized Killstreak Fists of Steel": {
-      "atUTC": "2026-10-27T18:25:15.785Z",
+      "atUTC": "2026-10-29T15:48:06.237Z",
       "result": "priced"
     },
     "Killstreak Blutsauger": {
-      "atUTC": "2026-10-27T18:25:26.569Z",
+      "atUTC": "2026-10-29T15:48:16.791Z",
       "result": "priced"
     },
     "Specialized Killstreak Unarmed Combat": {
-      "atUTC": "2026-10-27T18:25:37.685Z",
+      "atUTC": "2026-10-29T15:48:27.347Z",
       "result": "priced"
     },
     "Killstreak Postal Pummeler": {
-      "atUTC": "2026-10-27T18:25:48.156Z",
+      "atUTC": "2026-10-29T15:48:37.846Z",
       "result": "priced"
     },
     "Specialized Killstreak Panic Attack": {
-      "atUTC": "2026-10-27T18:25:59.216Z",
+      "atUTC": "2026-10-29T15:48:48.841Z",
       "result": "priced"
     },
     "Killstreak Pretty Boy's Pocket Pistol": {
-      "atUTC": "2026-10-27T18:26:10.324Z",
+      "atUTC": "2026-10-29T15:48:59.351Z",
       "result": "priced"
     },
     "Specialized Killstreak Nessie's Nine Iron": {
-      "atUTC": "2026-10-27T18:26:21.400Z",
+      "atUTC": "2026-10-29T15:49:09.833Z",
       "result": "priced"
     },
     "Killstreak Wanga Prick": {
-      "atUTC": "2026-10-27T18:26:32.454Z",
+      "atUTC": "2026-10-29T15:49:20.200Z",
       "result": "priced"
     },
     "Specialized Killstreak L'Étranger": {
-      "atUTC": "2026-10-27T18:26:42.876Z",
+      "atUTC": "2026-10-29T15:49:30.775Z",
       "result": "priced"
     },
     "Killstreak Fan O'War": {
@@ -2517,17 +2457,17 @@
   },
   "cycle": {
     "total": 550,
-    "completed": 240,
-    "priced": 189,
+    "completed": 300,
+    "priced": 249,
     "unlisted": 51,
     "startedAtUTC": "2026-10-28T19:59:05Z"
   },
   "nextCycleAtUTC": null,
-  "nextAttemptAtUTC": "2026-10-29T09:30:15Z",
+  "nextAttemptAtUTC": "2026-10-29T16:19:30Z",
   "lastError": null,
   "consecutiveRejections": 0,
-  "lastSuccessfulResponseAtUTC": "2026-10-29T09:00:15.340Z",
-  "updatedAtUTC": "2026-10-29T09:00:15Z",
+  "lastSuccessfulResponseAtUTC": "2026-10-29T15:49:30.775Z",
+  "updatedAtUTC": "2026-10-29T15:49:30Z",
   "lastRun": {
     "attempted": 60,
     "updated": 60,
@@ -2537,11 +2477,11 @@
     "reason": "batch_limit"
   },
   "dailyCoverage": {
-    "asOfUTC": "2026-10-29T09:00:15Z",
+    "asOfUTC": "2026-10-29T15:49:30Z",
     "total": 550,
-    "checkedLast24Hours": 331,
+    "checkedLast24Hours": 346,
     "neverChecked": 0,
-    "overdue": 219,
+    "overdue": 204,
     "cheapCandidates": 16
   }
 }
