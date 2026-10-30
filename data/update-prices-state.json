@@ -1,18 +1,7 @@
 {
   "schema": "maidehnless.tf2.price-updater-state.v1",
-  "status": "retrying",
-  "pending": [
-    "Festivized Killstreak Frying Pan",
-    "Festivized Specialized Killstreak Neon Annihilator",
-    "Festivized Killstreak Medi Gun",
-    "Festivized Specialized Killstreak Homewrecker",
-    "Festivized Killstreak Ullapool Caber",
-    "Festivized Specialized Killstreak Bottle",
-    "Festivized Killstreak Sharp Dresser",
-    "Festivized Specialized Killstreak Scottish Handshake",
-    "Festivized Killstreak Widowmaker",
-    "Specialized Killstreak Bread Bite"
-  ],
+  "status": "complete",
+  "pending": [],
   "attemptHistory": {
     "Killstreak SMG": {
       "atUTC": "2026-10-30T11:46:23.568Z",
@@ -1867,43 +1856,43 @@
       "result": "priced"
     },
     "Festivized Killstreak Frying Pan": {
-      "atUTC": "2026-10-28T19:35:47.443Z",
+      "atUTC": "2026-10-30T17:11:08.346Z",
       "result": "priced"
     },
     "Festivized Specialized Killstreak Neon Annihilator": {
-      "atUTC": "2026-10-28T19:35:57.800Z",
+      "atUTC": "2026-10-30T17:11:19.688Z",
       "result": "priced"
     },
     "Festivized Killstreak Medi Gun": {
-      "atUTC": "2026-10-28T19:36:08.910Z",
+      "atUTC": "2026-10-30T17:11:30.332Z",
       "result": "priced"
     },
     "Festivized Specialized Killstreak Homewrecker": {
-      "atUTC": "2026-10-28T19:36:19.610Z",
+      "atUTC": "2026-10-30T17:11:41.157Z",
       "result": "priced"
     },
     "Festivized Killstreak Ullapool Caber": {
-      "atUTC": "2026-10-28T19:36:29.895Z",
+      "atUTC": "2026-10-30T17:11:52.228Z",
       "result": "priced"
     },
     "Festivized Specialized Killstreak Bottle": {
-      "atUTC": "2026-10-28T19:36:40.703Z",
+      "atUTC": "2026-10-30T17:12:02.937Z",
       "result": "priced"
     },
     "Festivized Killstreak Sharp Dresser": {
-      "atUTC": "2026-10-28T19:36:51.590Z",
+      "atUTC": "2026-10-30T17:12:14.082Z",
       "result": "priced"
     },
     "Festivized Specialized Killstreak Scottish Handshake": {
-      "atUTC": "2026-10-28T19:37:02.771Z",
+      "atUTC": "2026-10-30T17:12:24.738Z",
       "result": "priced"
     },
     "Festivized Killstreak Widowmaker": {
-      "atUTC": "2026-10-28T19:37:13.855Z",
+      "atUTC": "2026-10-30T17:12:35.895Z",
       "result": "priced"
     },
     "Specialized Killstreak Bread Bite": {
-      "atUTC": "2026-10-28T19:37:24.793Z",
+      "atUTC": "2026-10-30T17:12:47.122Z",
       "result": "priced"
     },
     "Festivized Killstreak Force-a-Nature": {
@@ -2217,31 +2206,38 @@
   },
   "cycle": {
     "total": 550,
-    "completed": 540,
-    "priced": 487,
+    "completed": 550,
+    "priced": 497,
     "unlisted": 53,
     "startedAtUTC": "2026-10-28T19:59:05Z"
   },
-  "nextCycleAtUTC": null,
-  "nextAttemptAtUTC": "2026-10-30T12:22:27Z",
+  "nextCycleAtUTC": "2026-10-28T20:59:05Z",
+  "nextAttemptAtUTC": null,
   "lastError": null,
   "consecutiveRejections": 0,
-  "lastSuccessfulResponseAtUTC": "2026-10-30T11:52:27.584Z",
-  "updatedAtUTC": "2026-10-30T11:52:27Z",
+  "lastSuccessfulResponseAtUTC": "2026-10-30T17:12:47.122Z",
+  "updatedAtUTC": "2026-10-30T17:12:47Z",
   "lastRun": {
-    "attempted": 60,
-    "updated": 59,
-    "unlisted": 1,
+    "attempted": 10,
+    "updated": 10,
+    "unlisted": 0,
     "errors": 0,
-    "verifiedResponses": 60,
-    "reason": "batch_limit"
+    "verifiedResponses": 10,
+    "reason": "complete"
   },
   "dailyCoverage": {
-    "asOfUTC": "2026-10-30T11:52:27Z",
+    "asOfUTC": "2026-10-30T17:12:47Z",
     "total": 550,
-    "checkedLast24Hours": 300,
+    "checkedLast24Hours": 250,
     "neverChecked": 0,
-    "overdue": 250,
+    "overdue": 300,
     "cheapCandidates": 16
+  },
+  "planningPolicy": "daily-and-cheap-v1",
+  "adaptiveSettings": {
+    "leading": 8,
+    "cheapRefreshMinutes": 60.0,
+    "dailyRefreshHours": 24.0,
+    "dailyHeadroomHours": 4.0
   }
 }
