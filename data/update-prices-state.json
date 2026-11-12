@@ -1,7 +1,498 @@
 {
   "schema": "maidehnless.tf2.price-updater-state.v1",
-  "status": "complete",
-  "pending": [],
+  "status": "retrying",
+  "pending": [
+    "Specialized Killstreak Bonesaw",
+    "Killstreak Ambassador",
+    "Specialized Killstreak Bazaar Bargain",
+    "Killstreak Diamondback",
+    "Specialized Killstreak Escape Plan",
+    "Specialized Killstreak Pretty Boy's Pocket Pistol",
+    "Killstreak Ham Shank",
+    "Specialized Killstreak SMG",
+    "Specialized Killstreak Cleaner's Carbine",
+    "Killstreak Powerjack",
+    "Specialized Killstreak Killing Gloves of Boxing",
+    "Killstreak Revolver",
+    "Specialized Killstreak Mantreads",
+    "Specialized Killstreak Tide Turner",
+    "Killstreak Fortified Compound",
+    "Specialized Killstreak Amputator",
+    "Killstreak Shortstop",
+    "Specialized Killstreak Dragon's Fury",
+    "Killstreak Shovel",
+    "Specialized Killstreak Sun-on-a-Stick",
+    "Killstreak Maul",
+    "Specialized Killstreak Reserve Shooter",
+    "Killstreak Bottle",
+    "Specialized Killstreak Jag",
+    "Specialized Killstreak Conniver's Kunai",
+    "Killstreak Cow Mangler 5000",
+    "Specialized Killstreak Fire Axe",
+    "Killstreak Frontier Justice",
+    "Killstreak Persian Persuader",
+    "Specialized Killstreak Phlogistinator",
+    "Killstreak Spy-Cicle",
+    "Specialized Killstreak Enforcer",
+    "Killstreak Bonesaw",
+    "Specialized Killstreak Fists",
+    "Killstreak Brass Beast",
+    "Specialized Killstreak Detonator",
+    "Killstreak Pomson 6000",
+    "Specialized Killstreak Frontier Justice",
+    "Killstreak Scotsman's Skullcutter",
+    "Specialized Killstreak Gunslinger",
+    "Specialized Killstreak Holiday Punch",
+    "Killstreak Scottish Resistance",
+    "Specialized Killstreak Sharpened Volcano Fragment",
+    "Specialized Killstreak Soda Popper",
+    "Specialized Killstreak Market Gardener",
+    "Killstreak Short Circuit",
+    "Specialized Killstreak Axtinguisher",
+    "Killstreak Hitman's Heatmaker",
+    "Specialized Killstreak Boston Basher",
+    "Killstreak Equalizer",
+    "Specialized Killstreak Bushwacka",
+    "Killstreak Blutsauger",
+    "Specialized Killstreak Unarmed Combat",
+    "Killstreak Postal Pummeler",
+    "Specialized Killstreak Panic Attack",
+    "Killstreak Pretty Boy's Pocket Pistol",
+    "Specialized Killstreak Nessie's Nine Iron",
+    "Killstreak Wanga Prick",
+    "Killstreak Fan O'War",
+    "Specialized Killstreak Sharp Dresser",
+    "Killstreak Freedom Staff",
+    "Killstreak Liberty Launcher",
+    "Specialized Killstreak Your Eternal Reward",
+    "Killstreak Ullapool Caber",
+    "Specialized Killstreak Shotgun",
+    "Specialized Killstreak Backburner",
+    "Killstreak Quick-Fix",
+    "Specialized Killstreak Minigun",
+    "Killstreak Wrap Assassin",
+    "Specialized Killstreak Syringe Gun",
+    "Killstreak Disciplinary Action",
+    "Specialized Killstreak Postal Pummeler",
+    "Killstreak Rescue Ranger",
+    "Killstreak Soda Popper",
+    "Specialized Killstreak Frying Pan",
+    "Killstreak Machina",
+    "Specialized Killstreak Eviction Notice",
+    "Killstreak Holiday Punch",
+    "Specialized Killstreak Maul",
+    "Killstreak Sydney Sleeper",
+    "Killstreak Sandman",
+    "Specialized Killstreak Righteous Bison",
+    "Killstreak Escape Plan",
+    "Killstreak Cleaner's Carbine",
+    "Specialized Killstreak Eureka Effect",
+    "Specialized Killstreak Scottish Resistance",
+    "Specialized Killstreak Baby Face's Blaster",
+    "Specialized Killstreak Widowmaker",
+    "Specialized Killstreak Original",
+    "Specialized Killstreak Ambassador",
+    "Killstreak Family Business",
+    "Specialized Killstreak Three-Rune Blade",
+    "Killstreak Baby Face's Blaster",
+    "Killstreak Holy Mackerel",
+    "Killstreak Rainblower",
+    "Specialized Killstreak Vita-Saw",
+    "Killstreak Eureka Effect",
+    "Specialized Killstreak Family Business",
+    "Killstreak Fire Axe",
+    "Specialized Killstreak Pain Train",
+    "Killstreak Killing Gloves of Boxing",
+    "Specialized Killstreak Bat Outta Hell",
+    "Specialized Killstreak Sniper Rifle",
+    "Killstreak Splendid Screen",
+    "Specialized Killstreak Short Circuit",
+    "Killstreak Sun-on-a-Stick",
+    "Specialized Killstreak Apoco-Fists",
+    "Killstreak Bushwacka",
+    "Festivized Specialized Killstreak Minigun",
+    "Killstreak Gloves of Running Urgently",
+    "Specialized Killstreak Flame Thrower",
+    "Killstreak Righteous Bison",
+    "Specialized Killstreak Cow Mangler 5000",
+    "Specialized Killstreak Ullapool Caber",
+    "Killstreak Beggar's Bazooka",
+    "Festivized Specialized Killstreak Air Strike",
+    "Killstreak Reserve Shooter",
+    "Festivized Specialized Killstreak Shotgun",
+    "Specialized Killstreak Pistol",
+    "Killstreak Scorch Shot",
+    "Festivized Specialized Killstreak Panic Attack",
+    "Killstreak Stickybomb Launcher",
+    "Festivized Specialized Killstreak Grenade Launcher",
+    "Killstreak Flying Guillotine",
+    "Festivized Specialized Killstreak Soda Popper",
+    "Festivized Specialized Killstreak Detonator",
+    "Killstreak Crusader's Crossbow",
+    "Specialized Killstreak Neon Annihilator",
+    "Killstreak Pistol",
+    "Specialized Killstreak Splendid Screen",
+    "Killstreak Quickiebomb Launcher",
+    "Festivized Specialized Killstreak Tomislav",
+    "Specialized Killstreak Kritzkrieg",
+    "Specialized Killstreak Beggar's Bazooka",
+    "Specialized Killstreak L'Étranger",
+    "Killstreak Natascha",
+    "Killstreak Sharpened Volcano Fragment",
+    "Specialized Killstreak Wrench",
+    "Killstreak Panic Attack",
+    "Specialized Killstreak Homewrecker",
+    "Killstreak Force-a-Nature",
+    "Festivized Specialized Killstreak Sniper Rifle",
+    "Killstreak Degreaser",
+    "Festivized Specialized Killstreak SMG",
+    "Killstreak Bazaar Bargain",
+    "Specialized Killstreak Rocket Launcher",
+    "Killstreak Loch-n-Load",
+    "Festivized Specialized Killstreak Stickybomb Launcher",
+    "Festivized Specialized Killstreak Knife",
+    "Killstreak Atomizer",
+    "Festivized Specialized Killstreak Revolver",
+    "Killstreak Dragon's Fury",
+    "Festivized Specialized Killstreak Rescue Ranger",
+    "Killstreak Mantreads",
+    "Festivized Specialized Killstreak Axtinguisher",
+    "Killstreak Shotgun",
+    "Festivized Specialized Killstreak Kritzkrieg",
+    "Killstreak Widowmaker",
+    "Festivized Specialized Killstreak Shovel",
+    "Killstreak Grenade Launcher",
+    "Festivized Specialized Killstreak Loose Cannon",
+    "Killstreak Jag",
+    "Festivized Specialized Killstreak Black Box",
+    "Killstreak Knife",
+    "Festivized Specialized Killstreak Wrench",
+    "Killstreak Big Earner",
+    "Specialized Killstreak Medi Gun",
+    "Killstreak Half-Zatoichi",
+    "Specialized Killstreak AWPer Hand",
+    "Killstreak Gunslinger",
+    "Festivized Specialized Killstreak Powerjack",
+    "Killstreak Black Box",
+    "Festivized Specialized Killstreak Degreaser",
+    "Killstreak Rocket Launcher",
+    "Festivized Specialized Killstreak Scottish Resistance",
+    "Killstreak Market Gardener",
+    "Festivized Specialized Killstreak Big Earner",
+    "Killstreak Three-Rune Blade",
+    "Killstreak Kukri",
+    "Specialized Killstreak Knife",
+    "Specialized Killstreak Übersaw",
+    "Specialized Killstreak Eyelander",
+    "Killstreak Eyelander",
+    "Festivized Specialized Killstreak Pistol",
+    "Killstreak Iron Bomber",
+    "Killstreak Your Eternal Reward",
+    "Festivized Specialized Killstreak Jag",
+    "Killstreak Tide Turner",
+    "Festivized Specialized Killstreak Iron Bomber",
+    "Killstreak L'Étranger",
+    "Specialized Killstreak Conscientious Objector",
+    "Killstreak Phlogistinator",
+    "Festivized Specialized Killstreak Spy-Cicle",
+    "Festivized Killstreak Persian Persuader",
+    "Festivized Specialized Killstreak Rocket Launcher",
+    "Killstreak Sharp Dresser",
+    "Festivized Specialized Killstreak Bazaar Bargain",
+    "Killstreak Tomislav",
+    "Festivized Specialized Killstreak Original",
+    "Killstreak Medi Gun",
+    "Festivized Specialized Killstreak Quick-Fix",
+    "Killstreak Flame Thrower",
+    "Festivized Specialized Killstreak Disciplinary Action",
+    "Festivized Killstreak Holy Mackerel",
+    "Festivized Specialized Killstreak Holy Mackerel",
+    "Killstreak Original",
+    "Festivized Specialized Killstreak Scattergun",
+    "Killstreak Conniver's Kunai",
+    "Festivized Specialized Killstreak Crusader's Crossbow",
+    "Festivized Killstreak Wrench",
+    "Festivized Specialized Killstreak Back Scratcher",
+    "Festivized Killstreak Scotsman's Skullcutter",
+    "Festivized Specialized Killstreak Kukri",
+    "Festivized Killstreak Powerjack",
+    "Festivized Specialized Killstreak Ullapool Caber",
+    "Festivized Killstreak Übersaw",
+    "Specialized Killstreak Scattergun",
+    "Killstreak Scattergun",
+    "Festivized Specialized Killstreak Conniver's Kunai",
+    "Festivized Killstreak Revolver",
+    "Festivized Specialized Killstreak Frying Pan",
+    "Festivized Killstreak Sniper Rifle",
+    "Festivized Specialized Killstreak Huntsman",
+    "Festivized Killstreak Loose Cannon",
+    "Festivized Specialized Killstreak Flame Thrower",
+    "Killstreak Huo-Long Heater",
+    "Killstreak Vaccinator",
+    "Specialized Killstreak Big Earner",
+    "Festivized Killstreak Panic Attack",
+    "Festivized Specialized Killstreak Fan O'War",
+    "Festivized Killstreak Rescue Ranger",
+    "Festivized Specialized Killstreak Dragon's Fury",
+    "Festivized Killstreak Knife",
+    "Festivized Specialized Killstreak Reserve Shooter",
+    "Festivized Killstreak Scottish Resistance",
+    "Festivized Specialized Killstreak Brass Beast",
+    "Killstreak Frying Pan",
+    "Festivized Specialized Killstreak Diamondback",
+    "Festivized Killstreak Stickybomb Launcher",
+    "Festivized Specialized Killstreak Scorch Shot",
+    "Festivized Killstreak Rocket Launcher",
+    "Festivized Specialized Killstreak Medi Gun",
+    "Festivized Killstreak Grenade Launcher",
+    "Festivized Specialized Killstreak Market Gardener",
+    "Festivized Killstreak Minigun",
+    "Festivized Specialized Killstreak Nessie's Nine Iron",
+    "Festivized Killstreak Natascha",
+    "Festivized Specialized Killstreak Fire Axe",
+    "Festivized Killstreak Spy-Cicle",
+    "Festivized Specialized Killstreak Machina",
+    "Festivized Killstreak Tomislav",
+    "Festivized Specialized Killstreak Vaccinator",
+    "Festivized Killstreak Jag",
+    "Festivized Specialized Killstreak Eyelander",
+    "Festivized Killstreak Soda Popper",
+    "Festivized Specialized Killstreak Eureka Effect",
+    "Festivized Killstreak Shotgun",
+    "Festivized Specialized Killstreak Liberty Launcher",
+    "Festivized Killstreak Machina",
+    "Festivized Specialized Killstreak Conscientious Objector",
+    "Festivized Killstreak SMG",
+    "Festivized Specialized Killstreak Phlogistinator",
+    "Festivized Killstreak Three-Rune Blade",
+    "Festivized Specialized Killstreak Amputator",
+    "Festivized Killstreak Shortstop",
+    "Festivized Specialized Killstreak Maul",
+    "Festivized Killstreak Kritzkrieg",
+    "Festivized Specialized Killstreak AWPer Hand",
+    "Killstreak AWPer Hand",
+    "Festivized Specialized Killstreak Backburner",
+    "Festivized Killstreak Loch-n-Load",
+    "Festivized Specialized Killstreak Freedom Staff",
+    "Specialized Killstreak Scottish Handshake",
+    "Specialized Killstreak Bat",
+    "Killstreak Manmelter",
+    "Killstreak SMG",
+    "Festivized Killstreak Scattergun",
+    "Specialized Killstreak Overdose",
+    "Specialized Killstreak Loch-n-Load",
+    "Festivized Specialized Killstreak Your Eternal Reward",
+    "Festivized Killstreak Scorch Shot",
+    "Festivized Specialized Killstreak Direct Hit",
+    "Festivized Killstreak Quick-Fix",
+    "Festivized Specialized Killstreak Classic",
+    "Festivized Killstreak Gloves of Running Urgently",
+    "Festivized Specialized Killstreak Wrap Assassin",
+    "Festivized Killstreak Shovel",
+    "Festivized Specialized Killstreak Widowmaker",
+    "Festivized Killstreak Iron Bomber",
+    "Festivized Specialized Killstreak Escape Plan",
+    "Festivized Killstreak Pistol",
+    "Festivized Specialized Killstreak Fortified Compound",
+    "Festivized Killstreak Kukri",
+    "Festivized Specialized Killstreak Loch-n-Load",
+    "Festivized Killstreak Market Gardener",
+    "Festivized Specialized Killstreak Sandman",
+    "Festivized Killstreak Sydney Sleeper",
+    "Festivized Specialized Killstreak Postal Pummeler",
+    "Festivized Killstreak Winger",
+    "Festivized Specialized Killstreak Sharp Dresser",
+    "Killstreak Conscientious Objector",
+    "Festivized Specialized Killstreak Three-Rune Blade",
+    "Festivized Killstreak Your Eternal Reward",
+    "Festivized Specialized Killstreak Enforcer",
+    "Festivized Killstreak Solemn Vow",
+    "Festivized Specialized Killstreak L'Étranger",
+    "Festivized Killstreak Phlogistinator",
+    "Festivized Specialized Killstreak Beggar's Bazooka",
+    "Festivized Killstreak Hitman's Heatmaker",
+    "Festivized Specialized Killstreak Cow Mangler 5000",
+    "Festivized Killstreak Wrap Assassin",
+    "Festivized Specialized Killstreak Quickiebomb Launcher",
+    "Festivized Killstreak Frying Pan",
+    "Specialized Killstreak Vaccinator",
+    "Festivized Specialized Killstreak Neon Annihilator",
+    "Festivized Killstreak Medi Gun",
+    "Festivized Specialized Killstreak Homewrecker",
+    "Festivized Killstreak Ullapool Caber",
+    "Festivized Specialized Killstreak Bottle",
+    "Specialized Killstreak Hitman's Heatmaker",
+    "Festivized Killstreak Sharp Dresser",
+    "Festivized Specialized Killstreak Scottish Handshake",
+    "Festivized Killstreak Widowmaker",
+    "Killstreak Claidheamh Mòr",
+    "Specialized Killstreak Flare Gun",
+    "Specialized Killstreak Fists of Steel",
+    "Specialized Killstreak Bread Bite",
+    "Killstreak Wrench",
+    "Specialized Killstreak Gloves of Running Urgently",
+    "Specialized Killstreak Huntsman",
+    "Festivized Killstreak Force-a-Nature",
+    "Festivized Killstreak Fortified Compound",
+    "Festivized Killstreak Freedom Staff",
+    "Festivized Killstreak Gunslinger",
+    "Festivized Killstreak Half-Zatoichi",
+    "Festivized Killstreak Ham Shank",
+    "Festivized Killstreak Homewrecker",
+    "Festivized Killstreak Huntsman",
+    "Festivized Killstreak Huo-Long Heater",
+    "Festivized Killstreak Killing Gloves of Boxing",
+    "Festivized Killstreak L'Étranger",
+    "Festivized Killstreak Liberty Launcher",
+    "Festivized Killstreak Mantreads",
+    "Festivized Killstreak Maul",
+    "Festivized Killstreak Neon Annihilator",
+    "Festivized Killstreak Nessie's Nine Iron",
+    "Festivized Killstreak Original",
+    "Festivized Killstreak Postal Pummeler",
+    "Festivized Killstreak Quickiebomb Launcher",
+    "Festivized Killstreak Reserve Shooter",
+    "Festivized Killstreak Righteous Bison",
+    "Festivized Killstreak Sandman",
+    "Festivized Killstreak Scottish Handshake",
+    "Festivized Killstreak Southern Hospitality",
+    "Festivized Killstreak Splendid Screen",
+    "Festivized Killstreak Tide Turner",
+    "Festivized Killstreak Unarmed Combat",
+    "Killstreak Scottish Handshake",
+    "Festivized Killstreak Vaccinator",
+    "Festivized Killstreak Wanga Prick",
+    "Festivized Specialized Killstreak Ambassador",
+    "Festivized Specialized Killstreak Atomizer",
+    "Festivized Specialized Killstreak Baby Face's Blaster",
+    "Killstreak Air Strike",
+    "Festivized Specialized Killstreak Back Scatter",
+    "Festivized Specialized Killstreak Bat Outta Hell",
+    "Festivized Specialized Killstreak Blutsauger",
+    "Festivized Specialized Killstreak Boston Basher",
+    "Specialized Killstreak Wrap Assassin",
+    "Specialized Killstreak Rescue Ranger",
+    "Specialized Killstreak Spy-Cicle",
+    "Specialized Killstreak Sandman",
+    "Specialized Killstreak Huo-Long Heater",
+    "Festivized Specialized Killstreak Bushwacka",
+    "Festivized Specialized Killstreak Claidheamh Mòr",
+    "Festivized Specialized Killstreak Cleaner's Carbine",
+    "Festivized Specialized Killstreak Family Business",
+    "Festivized Specialized Killstreak Fists of Steel",
+    "Festivized Specialized Killstreak Flare Gun",
+    "Festivized Specialized Killstreak Flying Guillotine",
+    "Festivized Specialized Killstreak Force-a-Nature",
+    "Festivized Specialized Killstreak Gloves of Running Urgently",
+    "Festivized Specialized Killstreak Gunslinger",
+    "Festivized Specialized Killstreak Half-Zatoichi",
+    "Festivized Specialized Killstreak Ham Shank",
+    "Festivized Specialized Killstreak Hitman's Heatmaker",
+    "Festivized Specialized Killstreak Huo-Long Heater",
+    "Festivized Specialized Killstreak Killing Gloves of Boxing",
+    "Festivized Specialized Killstreak Mantreads",
+    "Festivized Specialized Killstreak Natascha",
+    "Festivized Specialized Killstreak Persian Persuader",
+    "Festivized Specialized Killstreak Righteous Bison",
+    "Festivized Specialized Killstreak Scotsman's Skullcutter",
+    "Festivized Specialized Killstreak Shortstop",
+    "Festivized Specialized Killstreak Solemn Vow",
+    "Festivized Specialized Killstreak Southern Hospitality",
+    "Festivized Specialized Killstreak Splendid Screen",
+    "Festivized Specialized Killstreak Sydney Sleeper",
+    "Festivized Specialized Killstreak Tide Turner",
+    "Festivized Specialized Killstreak Unarmed Combat",
+    "Festivized Specialized Killstreak Wanga Prick",
+    "Festivized Specialized Killstreak Winger",
+    "Killstreak Eviction Notice",
+    "Festivized Specialized Killstreak Übersaw",
+    "Killstreak Batsaber",
+    "Killstreak Big Kill",
+    "Killstreak Black Rose",
+    "Killstreak Bread Bite",
+    "Killstreak C.A.P.P.E.R",
+    "Killstreak Shooting Star",
+    "Specialized Killstreak Batsaber",
+    "Specialized Killstreak Big Kill",
+    "Specialized Killstreak Black Rose",
+    "Specialized Killstreak C.A.P.P.E.R",
+    "Specialized Killstreak Shooting Star",
+    "Killstreak Apoco-Fists",
+    "Killstreak Flare Gun",
+    "Festivized Killstreak AWPer Hand",
+    "Festivized Killstreak Air Strike",
+    "Festivized Killstreak Ambassador",
+    "Festivized Killstreak Amputator",
+    "Festivized Killstreak Atomizer",
+    "Festivized Killstreak Axtinguisher",
+    "Festivized Killstreak Baby Face's Blaster",
+    "Festivized Killstreak Back Scatter",
+    "Festivized Killstreak Back Scratcher",
+    "Festivized Killstreak Backburner",
+    "Festivized Killstreak Bat Outta Hell",
+    "Festivized Killstreak Bazaar Bargain",
+    "Festivized Killstreak Beggar's Bazooka",
+    "Festivized Killstreak Big Earner",
+    "Festivized Killstreak Black Box",
+    "Festivized Killstreak Blutsauger",
+    "Festivized Killstreak Boston Basher",
+    "Festivized Killstreak Bottle",
+    "Festivized Killstreak Brass Beast",
+    "Festivized Killstreak Bushwacka",
+    "Festivized Killstreak Claidheamh Mòr",
+    "Festivized Killstreak Classic",
+    "Festivized Killstreak Cleaner's Carbine",
+    "Festivized Killstreak Conniver's Kunai",
+    "Festivized Killstreak Conscientious Objector",
+    "Festivized Killstreak Cow Mangler 5000",
+    "Festivized Killstreak Crusader's Crossbow",
+    "Festivized Killstreak Degreaser",
+    "Festivized Killstreak Detonator",
+    "Specialized Killstreak Classic",
+    "Killstreak Bat",
+    "Specialized Killstreak Flying Guillotine",
+    "Festivized Killstreak Diamondback",
+    "Festivized Killstreak Direct Hit",
+    "Festivized Killstreak Disciplinary Action",
+    "Specialized Killstreak Hot Hand",
+    "Killstreak Fists",
+    "Festivized Killstreak Dragon's Fury",
+    "Festivized Killstreak Enforcer",
+    "Festivized Killstreak Escape Plan",
+    "Festivized Killstreak Eureka Effect",
+    "Festivized Killstreak Eyelander",
+    "Festivized Killstreak Family Business",
+    "Festivized Killstreak Fan O'War",
+    "Festivized Killstreak Fire Axe",
+    "Festivized Killstreak Fists of Steel",
+    "Killstreak Pain Train",
+    "Festivized Killstreak Flame Thrower",
+    "Festivized Killstreak Flare Gun",
+    "Festivized Killstreak Flying Guillotine",
+    "Specialized Killstreak Air Strike",
+    "Killstreak Back Scratcher",
+    "Specialized Killstreak Black Box",
+    "Specialized Killstreak Diamondback",
+    "Specialized Killstreak Ham Shank",
+    "Specialized Killstreak Chargin' Targe",
+    "Specialized Killstreak Crusader's Crossbow",
+    "Specialized Killstreak Holy Mackerel",
+    "Specialized Killstreak Shovel",
+    "Specialized Killstreak Stickybomb Launcher",
+    "Specialized Killstreak Fan O'War",
+    "Specialized Killstreak Rainblower",
+    "Specialized Killstreak Fortified Compound",
+    "Specialized Killstreak Quick-Fix",
+    "Specialized Killstreak Force-a-Nature",
+    "Specialized Killstreak Lollichop",
+    "Specialized Killstreak Back Scratcher",
+    "Specialized Killstreak Claidheamh Mòr",
+    "Specialized Killstreak Machina",
+    "Specialized Killstreak Kukri",
+    "Specialized Killstreak Powerjack",
+    "Killstreak Classic",
+    "Killstreak Huntsman"
+  ],
   "attemptHistory": {
     "Killstreak SMG": {
       "atUTC": "2026-11-11T02:47:53.083Z",
@@ -28,7 +519,7 @@
       "result": "priced"
     },
     "Killstreak Enforcer": {
-      "atUTC": "2026-11-12T04:17:25.354Z",
+      "atUTC": "2026-11-12T07:43:39.442Z",
       "result": "priced"
     },
     "Specialized Killstreak Flying Guillotine": {
@@ -64,7 +555,7 @@
       "result": "priced"
     },
     "Specialized Killstreak Sydney Sleeper": {
-      "atUTC": "2026-11-12T04:15:28.762Z",
+      "atUTC": "2026-11-12T07:44:10.863Z",
       "result": "priced"
     },
     "Festivized Killstreak AWPer Hand": {
@@ -248,7 +739,7 @@
       "result": "priced"
     },
     "Specialized Killstreak Wanga Prick": {
-      "atUTC": "2026-11-12T04:15:39.006Z",
+      "atUTC": "2026-11-12T07:43:28.482Z",
       "result": "priced"
     },
     "Specialized Killstreak Rescue Ranger": {
@@ -276,7 +767,7 @@
       "result": "priced"
     },
     "Specialized Killstreak Tomislav": {
-      "atUTC": "2026-11-09T02:03:01.713Z",
+      "atUTC": "2026-11-12T07:45:46.023Z",
       "result": "priced"
     },
     "Specialized Killstreak Ham Shank": {
@@ -284,7 +775,7 @@
       "result": "priced"
     },
     "Specialized Killstreak Winger": {
-      "atUTC": "2026-11-12T04:15:18.287Z",
+      "atUTC": "2026-11-12T07:44:31.860Z",
       "result": "priced"
     },
     "Specialized Killstreak Scottish Resistance": {
@@ -304,7 +795,7 @@
       "result": "priced"
     },
     "Specialized Killstreak Iron Bomber": {
-      "atUTC": "2026-11-09T02:02:30.078Z",
+      "atUTC": "2026-11-12T07:45:24.599Z",
       "result": "priced"
     },
     "Specialized Killstreak Scottish Handshake": {
@@ -324,7 +815,7 @@
       "result": "priced"
     },
     "Specialized Killstreak Grenade Launcher": {
-      "atUTC": "2026-11-12T04:22:57.714Z",
+      "atUTC": "2026-11-12T07:42:44.917Z",
       "result": "priced"
     },
     "Specialized Killstreak Knife": {
@@ -340,7 +831,7 @@
       "result": "priced"
     },
     "Specialized Killstreak Blutsauger": {
-      "atUTC": "2026-11-12T04:16:20.866Z",
+      "atUTC": "2026-11-12T07:43:06.391Z",
       "result": "priced"
     },
     "Specialized Killstreak Fortified Compound": {
@@ -348,11 +839,11 @@
       "result": "priced"
     },
     "Specialized Killstreak Back Scatter": {
-      "atUTC": "2026-11-12T04:17:03.620Z",
+      "atUTC": "2026-11-12T07:43:50.280Z",
       "result": "priced"
     },
     "Specialized Killstreak Manmelter": {
-      "atUTC": "2026-11-12T04:23:28.908Z",
+      "atUTC": "2026-11-12T07:44:53.144Z",
       "result": "priced"
     },
     "Specialized Killstreak Quick-Fix": {
@@ -380,11 +871,11 @@
       "result": "priced"
     },
     "Specialized Killstreak Loose Cannon": {
-      "atUTC": "2026-11-09T09:37:31.513Z",
+      "atUTC": "2026-11-12T07:52:24.189Z",
       "result": "priced"
     },
     "Specialized Killstreak Scorch Shot": {
-      "atUTC": "2026-11-09T02:09:36.892Z",
+      "atUTC": "2026-11-12T07:51:41.494Z",
       "result": "priced"
     },
     "Specialized Killstreak Ambassador": {
@@ -392,7 +883,7 @@
       "result": "priced"
     },
     "Killstreak Bat Outta Hell": {
-      "atUTC": "2026-11-09T02:09:47.555Z",
+      "atUTC": "2026-11-12T07:51:52.661Z",
       "result": "priced"
     },
     "Specialized Killstreak Classic": {
@@ -448,7 +939,7 @@
       "result": "priced"
     },
     "Killstreak Warrior's Spirit": {
-      "atUTC": "2026-11-09T09:38:03.592Z",
+      "atUTC": "2026-11-12T07:52:56.123Z",
       "result": "priced"
     },
     "Specialized Killstreak Powerjack": {
@@ -460,7 +951,7 @@
       "result": "priced"
     },
     "Specialized Killstreak Scotsman's Skullcutter": {
-      "atUTC": "2026-11-09T09:37:42.484Z",
+      "atUTC": "2026-11-12T07:52:35.092Z",
       "result": "priced"
     },
     "Killstreak Classic": {
@@ -472,7 +963,7 @@
       "result": "priced"
     },
     "Killstreak Unarmed Combat": {
-      "atUTC": "2026-11-09T02:03:12.120Z",
+      "atUTC": "2026-11-12T07:45:57.004Z",
       "result": "priced"
     },
     "Specialized Killstreak Market Gardener": {
@@ -484,19 +975,19 @@
       "result": "priced"
     },
     "Specialized Killstreak Degreaser": {
-      "atUTC": "2026-11-09T02:03:22.849Z",
+      "atUTC": "2026-11-12T07:46:07.604Z",
       "result": "priced"
     },
     "Killstreak Minigun": {
-      "atUTC": "2026-11-09T02:03:33.586Z",
+      "atUTC": "2026-11-12T07:46:18.030Z",
       "result": "priced"
     },
     "Specialized Killstreak Revolver": {
-      "atUTC": "2026-11-09T02:03:44.554Z",
+      "atUTC": "2026-11-12T07:46:28.859Z",
       "result": "priced"
     },
     "Killstreak Übersaw": {
-      "atUTC": "2026-11-09T02:03:54.873Z",
+      "atUTC": "2026-11-12T07:46:40.009Z",
       "result": "priced"
     },
     "Specialized Killstreak Wrench": {
@@ -504,7 +995,7 @@
       "result": "priced"
     },
     "Killstreak Winger": {
-      "atUTC": "2026-11-09T02:04:05.452Z",
+      "atUTC": "2026-11-12T07:46:50.513Z",
       "result": "priced"
     },
     "Specialized Killstreak Gloves of Running Urgently": {
@@ -512,11 +1003,11 @@
       "result": "priced"
     },
     "Killstreak Axtinguisher": {
-      "atUTC": "2026-11-09T02:04:26.597Z",
+      "atUTC": "2026-11-12T07:47:12.141Z",
       "result": "priced"
     },
     "Specialized Killstreak Shortstop": {
-      "atUTC": "2026-11-09T02:04:37.593Z",
+      "atUTC": "2026-11-12T07:47:23.229Z",
       "result": "priced"
     },
     "Killstreak Bat": {
@@ -524,11 +1015,11 @@
       "result": "priced"
     },
     "Specialized Killstreak Bottle": {
-      "atUTC": "2026-11-09T02:04:47.880Z",
+      "atUTC": "2026-11-12T07:47:34.344Z",
       "result": "priced"
     },
     "Killstreak Boston Basher": {
-      "atUTC": "2026-11-09T02:04:58.408Z",
+      "atUTC": "2026-11-12T07:47:45.050Z",
       "result": "priced"
     },
     "Specialized Killstreak Bushwacka": {
@@ -540,15 +1031,15 @@
       "result": "priced"
     },
     "Specialized Killstreak Disciplinary Action": {
-      "atUTC": "2026-11-09T02:05:08.920Z",
+      "atUTC": "2026-11-12T07:47:55.653Z",
       "result": "priced"
     },
     "Killstreak Fists of Steel": {
-      "atUTC": "2026-11-09T02:05:19.189Z",
+      "atUTC": "2026-11-12T07:48:06.262Z",
       "result": "priced"
     },
     "Specialized Killstreak Persian Persuader": {
-      "atUTC": "2026-11-09T02:05:29.657Z",
+      "atUTC": "2026-11-12T07:48:16.540Z",
       "result": "priced"
     },
     "Killstreak Huntsman": {
@@ -556,11 +1047,11 @@
       "result": "priced"
     },
     "Specialized Killstreak Warrior's Spirit": {
-      "atUTC": "2026-11-09T02:05:40.922Z",
+      "atUTC": "2026-11-12T07:48:27.293Z",
       "result": "priced"
     },
     "Killstreak Kritzkrieg": {
-      "atUTC": "2026-11-09T02:05:51.474Z",
+      "atUTC": "2026-11-12T07:48:38.232Z",
       "result": "priced"
     },
     "Specialized Killstreak Eureka Effect": {
@@ -568,7 +1059,7 @@
       "result": "priced"
     },
     "Killstreak Back Scatter": {
-      "atUTC": "2026-11-09T02:06:02.534Z",
+      "atUTC": "2026-11-12T07:48:48.780Z",
       "result": "priced"
     },
     "Specialized Killstreak Holiday Punch": {
@@ -576,19 +1067,19 @@
       "result": "priced"
     },
     "Killstreak Hot Hand": {
-      "atUTC": "2026-11-09T02:06:23.145Z",
+      "atUTC": "2026-11-12T07:48:59.343Z",
       "result": "priced"
     },
     "Specialized Killstreak Freedom Staff": {
-      "atUTC": "2026-11-09T02:06:33.564Z",
+      "atUTC": "2026-11-12T07:49:10.002Z",
       "result": "priced"
     },
     "Killstreak Syringe Gun": {
-      "atUTC": "2026-11-12T04:14:46.413Z",
+      "atUTC": "2026-11-12T07:43:17.370Z",
       "result": "priced"
     },
     "Specialized Killstreak Atomizer": {
-      "atUTC": "2026-11-09T02:06:55.581Z",
+      "atUTC": "2026-11-12T07:49:21.071Z",
       "result": "priced"
     },
     "Killstreak Air Strike": {
@@ -596,23 +1087,23 @@
       "result": "priced"
     },
     "Specialized Killstreak Solemn Vow": {
-      "atUTC": "2026-11-09T02:07:06.369Z",
+      "atUTC": "2026-11-12T07:49:31.993Z",
       "result": "priced"
     },
     "Killstreak Loose Cannon": {
-      "atUTC": "2026-11-09T02:07:17.351Z",
+      "atUTC": "2026-11-12T07:49:42.614Z",
       "result": "priced"
     },
     "Specialized Killstreak Southern Hospitality": {
-      "atUTC": "2026-11-09T02:07:27.986Z",
+      "atUTC": "2026-11-12T07:49:53.713Z",
       "result": "priced"
     },
     "Killstreak Direct Hit": {
-      "atUTC": "2026-11-09T02:07:38.684Z",
+      "atUTC": "2026-11-12T07:50:04.792Z",
       "result": "priced"
     },
     "Specialized Killstreak Natascha": {
-      "atUTC": "2026-11-09T09:37:52.861Z",
+      "atUTC": "2026-11-12T07:52:45.349Z",
       "result": "priced"
     },
     "Killstreak Flare Gun": {
@@ -620,39 +1111,39 @@
       "result": "priced"
     },
     "Specialized Killstreak Quickiebomb Launcher": {
-      "atUTC": "2026-11-09T02:07:49.324Z",
+      "atUTC": "2026-11-12T07:50:15.297Z",
       "result": "priced"
     },
     "Killstreak Lollichop": {
-      "atUTC": "2026-11-09T02:08:00.093Z",
+      "atUTC": "2026-11-12T07:50:25.943Z",
       "result": "priced"
     },
     "Specialized Killstreak Brass Beast": {
-      "atUTC": "2026-11-09T02:08:10.604Z",
+      "atUTC": "2026-11-12T07:50:36.337Z",
       "result": "priced"
     },
     "Killstreak Neon Annihilator": {
-      "atUTC": "2026-11-09T02:08:21.649Z",
+      "atUTC": "2026-11-12T07:50:47.289Z",
       "result": "priced"
     },
     "Specialized Killstreak Liberty Launcher": {
-      "atUTC": "2026-11-09T02:08:31.905Z",
+      "atUTC": "2026-11-12T07:50:58.103Z",
       "result": "priced"
     },
     "Killstreak Nessie's Nine Iron": {
-      "atUTC": "2026-11-09T02:08:42.408Z",
+      "atUTC": "2026-11-12T07:51:08.638Z",
       "result": "priced"
     },
     "Specialized Killstreak Pomson 6000": {
-      "atUTC": "2026-11-09T02:08:53.197Z",
+      "atUTC": "2026-11-12T07:51:19.730Z",
       "result": "priced"
     },
     "Killstreak Overdose": {
-      "atUTC": "2026-11-09T02:02:51.241Z",
+      "atUTC": "2026-11-12T07:45:35.196Z",
       "result": "priced"
     },
     "Specialized Killstreak Direct Hit": {
-      "atUTC": "2026-11-09T02:09:04.226Z",
+      "atUTC": "2026-11-12T07:51:30.380Z",
       "result": "priced"
     },
     "Killstreak Quickiebomb Launcher": {
@@ -660,7 +1151,7 @@
       "result": "priced"
     },
     "Specialized Killstreak Equalizer": {
-      "atUTC": "2026-11-12T04:15:08.030Z",
+      "atUTC": "2026-11-12T07:45:13.610Z",
       "result": "priced"
     },
     "Killstreak Scottish Resistance": {
@@ -672,7 +1163,7 @@
       "result": "priced"
     },
     "Killstreak Sniper Rifle": {
-      "atUTC": "2026-11-09T02:09:57.979Z",
+      "atUTC": "2026-11-12T07:52:03.067Z",
       "result": "priced"
     },
     "Specialized Killstreak Widowmaker": {
@@ -680,7 +1171,7 @@
       "result": "priced"
     },
     "Killstreak Solemn Vow": {
-      "atUTC": "2026-11-09T02:10:09.121Z",
+      "atUTC": "2026-11-12T07:52:13.963Z",
       "result": "priced"
     },
     "Specialized Killstreak Bonesaw": {
@@ -696,7 +1187,7 @@
       "result": "priced"
     },
     "Killstreak Amputator": {
-      "atUTC": "2026-11-12T04:16:42.270Z",
+      "atUTC": "2026-11-12T07:42:55.895Z",
       "result": "priced"
     },
     "Specialized Killstreak Pretty Boy's Pocket Pistol": {
@@ -712,7 +1203,7 @@
       "result": "priced"
     },
     "Killstreak Homewrecker": {
-      "atUTC": "2026-11-12T04:16:31.402Z",
+      "atUTC": "2026-11-12T07:44:21.165Z",
       "result": "priced"
     },
     "Specialized Killstreak Cleaner's Carbine": {
@@ -736,7 +1227,7 @@
       "result": "priced"
     },
     "Killstreak Backburner": {
-      "atUTC": "2026-11-12T04:20:06.398Z",
+      "atUTC": "2026-11-12T07:44:00.692Z",
       "result": "priced"
     },
     "Specialized Killstreak Tide Turner": {
@@ -784,7 +1275,7 @@
       "result": "priced"
     },
     "Killstreak Chargin' Targe": {
-      "atUTC": "2026-11-09T02:04:15.837Z",
+      "atUTC": "2026-11-12T07:47:01.308Z",
       "result": "priced"
     },
     "Specialized Killstreak Conniver's Kunai": {
@@ -856,7 +1347,7 @@
       "result": "priced"
     },
     "Killstreak Southern Hospitality": {
-      "atUTC": "2026-11-12T04:16:53.174Z",
+      "atUTC": "2026-11-12T07:42:34.129Z",
       "result": "priced"
     },
     "Specialized Killstreak Soda Popper": {
@@ -988,7 +1479,7 @@
       "result": "priced"
     },
     "Specialized Killstreak Half-Zatoichi": {
-      "atUTC": "2026-11-09T09:38:14.229Z",
+      "atUTC": "2026-11-12T07:53:06.998Z",
       "result": "priced"
     },
     "Killstreak Soda Popper": {
@@ -1152,7 +1643,7 @@
       "result": "priced"
     },
     "Killstreak Vita-Saw": {
-      "atUTC": "2026-11-12T04:16:10.682Z",
+      "atUTC": "2026-11-12T07:45:03.341Z",
       "result": "priced"
     },
     "Specialized Killstreak Pistol": {
@@ -1184,7 +1675,7 @@
       "result": "priced"
     },
     "Killstreak Detonator": {
-      "atUTC": "2026-11-12T04:15:59.715Z",
+      "atUTC": "2026-11-12T07:44:42.717Z",
       "result": "priced"
     },
     "Festivized Specialized Killstreak Detonator": {
@@ -2205,40 +2696,24 @@
     }
   },
   "cycle": {
-    "total": 60,
+    "total": 550,
     "completed": 60,
-    "priced": 58,
-    "unlisted": 2,
-    "startedAtUTC": "2026-11-12T04:14:46Z"
+    "priced": 60,
+    "unlisted": 0,
+    "startedAtUTC": "2026-11-12T07:42:33Z"
   },
-  "nextCycleAtUTC": "2026-11-09T22:02:30Z",
-  "nextAttemptAtUTC": null,
+  "nextCycleAtUTC": null,
+  "nextAttemptAtUTC": "2026-11-12T08:23:06Z",
   "lastError": null,
   "consecutiveRejections": 0,
-  "planningPolicy": "daily-and-cheap-v1",
-  "adaptiveSettings": {
-    "leading": 8,
-    "cheapRefreshMinutes": 60.0,
-    "dailyRefreshHours": 24.0,
-    "dailyHeadroomHours": 4.0
-  },
-  "deferredEntries": {},
-  "lastSuccessfulResponseAtUTC": "2026-11-12T04:25:16.325Z",
-  "updatedAtUTC": "2026-11-12T04:25:16Z",
+  "lastSuccessfulResponseAtUTC": "2026-11-12T07:53:06.998Z",
+  "updatedAtUTC": "2026-11-12T07:53:06Z",
   "lastRun": {
     "attempted": 60,
-    "updated": 58,
-    "unlisted": 2,
+    "updated": 60,
+    "unlisted": 0,
     "errors": 0,
     "verifiedResponses": 60,
-    "reason": "complete"
-  },
-  "dailyCoverage": {
-    "asOfUTC": "2026-11-12T04:25:16Z",
-    "total": 550,
-    "checkedLast24Hours": 193,
-    "neverChecked": 0,
-    "overdue": 357,
-    "cheapCandidates": 16
+    "reason": "batch_limit"
   }
 }
