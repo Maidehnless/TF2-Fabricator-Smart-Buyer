@@ -1,18 +1,7 @@
 {
   "schema": "maidehnless.tf2.price-updater-state.v1",
-  "status": "retrying",
-  "pending": [
-    "Specialized Killstreak Quick-Fix",
-    "Specialized Killstreak Force-a-Nature",
-    "Specialized Killstreak Lollichop",
-    "Specialized Killstreak Back Scratcher",
-    "Specialized Killstreak Claidheamh Mòr",
-    "Specialized Killstreak Machina",
-    "Specialized Killstreak Kukri",
-    "Specialized Killstreak Powerjack",
-    "Killstreak Classic",
-    "Killstreak Huntsman"
-  ],
+  "status": "complete",
+  "pending": [],
   "attemptHistory": {
     "Killstreak SMG": {
       "atUTC": "2026-11-13T16:24:14.581Z",
@@ -367,7 +356,7 @@
       "result": "priced"
     },
     "Specialized Killstreak Quick-Fix": {
-      "atUTC": "2026-11-12T04:23:39.950Z",
+      "atUTC": "2026-11-14T15:26:00.320Z",
       "result": "priced"
     },
     "Specialized Killstreak Bat": {
@@ -375,11 +364,11 @@
       "result": "priced"
     },
     "Specialized Killstreak Force-a-Nature": {
-      "atUTC": "2026-11-12T04:23:50.359Z",
+      "atUTC": "2026-11-14T15:26:11.242Z",
       "result": "priced"
     },
     "Specialized Killstreak Lollichop": {
-      "atUTC": "2026-11-12T04:24:01.604Z",
+      "atUTC": "2026-11-14T15:26:21.619Z",
       "result": "priced"
     },
     "Specialized Killstreak Bazaar Bargain": {
@@ -415,7 +404,7 @@
       "result": "priced"
     },
     "Specialized Killstreak Back Scratcher": {
-      "atUTC": "2026-11-12T04:24:12.016Z",
+      "atUTC": "2026-11-14T15:26:31.723Z",
       "result": "priced"
     },
     "Killstreak Fists": {
@@ -423,7 +412,7 @@
       "result": "priced"
     },
     "Specialized Killstreak Claidheamh Mòr": {
-      "atUTC": "2026-11-12T04:24:23.149Z",
+      "atUTC": "2026-11-14T15:26:42.049Z",
       "result": "priced"
     },
     "Killstreak Holy Mackerel": {
@@ -431,7 +420,7 @@
       "result": "priced"
     },
     "Specialized Killstreak Machina": {
-      "atUTC": "2026-11-12T04:24:33.384Z",
+      "atUTC": "2026-11-14T15:26:52.753Z",
       "result": "priced"
     },
     "Killstreak Huo-Long Heater": {
@@ -455,7 +444,7 @@
       "result": "priced"
     },
     "Specialized Killstreak Kukri": {
-      "atUTC": "2026-11-12T04:24:43.587Z",
+      "atUTC": "2026-11-14T15:27:03.562Z",
       "result": "priced"
     },
     "Killstreak Warrior's Spirit": {
@@ -463,7 +452,7 @@
       "result": "priced"
     },
     "Specialized Killstreak Powerjack": {
-      "atUTC": "2026-11-12T04:24:54.168Z",
+      "atUTC": "2026-11-14T15:27:13.726Z",
       "result": "priced"
     },
     "Killstreak Cleaner's Carbine": {
@@ -475,7 +464,7 @@
       "result": "priced"
     },
     "Killstreak Classic": {
-      "atUTC": "2026-11-12T04:25:05.201Z",
+      "atUTC": "2026-11-14T15:27:24.816Z",
       "result": "priced"
     },
     "Specialized Killstreak Übersaw": {
@@ -563,7 +552,7 @@
       "result": "priced"
     },
     "Killstreak Huntsman": {
-      "atUTC": "2026-11-12T04:25:16.325Z",
+      "atUTC": "2026-11-14T15:27:35.510Z",
       "result": "priced"
     },
     "Specialized Killstreak Warrior's Spirit": {
@@ -2217,31 +2206,38 @@
   },
   "cycle": {
     "total": 550,
-    "completed": 540,
-    "priced": 485,
+    "completed": 550,
+    "priced": 495,
     "unlisted": 55,
     "startedAtUTC": "2026-11-12T07:42:33Z"
   },
-  "nextCycleAtUTC": null,
-  "nextAttemptAtUTC": "2026-11-14T09:36:55Z",
+  "nextCycleAtUTC": "2026-11-12T08:42:34Z",
+  "nextAttemptAtUTC": null,
   "lastError": null,
   "consecutiveRejections": 0,
-  "lastSuccessfulResponseAtUTC": "2026-11-14T09:06:55.417Z",
-  "updatedAtUTC": "2026-11-14T09:06:55Z",
+  "lastSuccessfulResponseAtUTC": "2026-11-14T15:27:35.510Z",
+  "updatedAtUTC": "2026-11-14T15:27:35Z",
   "lastRun": {
-    "attempted": 60,
-    "updated": 53,
-    "unlisted": 7,
+    "attempted": 10,
+    "updated": 10,
+    "unlisted": 0,
     "errors": 0,
-    "verifiedResponses": 60,
-    "reason": "batch_limit"
+    "verifiedResponses": 10,
+    "reason": "complete"
   },
   "dailyCoverage": {
-    "asOfUTC": "2026-11-14T09:06:55Z",
+    "asOfUTC": "2026-11-14T15:27:35Z",
     "total": 550,
-    "checkedLast24Hours": 240,
+    "checkedLast24Hours": 250,
     "neverChecked": 0,
-    "overdue": 310,
+    "overdue": 300,
     "cheapCandidates": 16
+  },
+  "planningPolicy": "daily-and-cheap-v1",
+  "adaptiveSettings": {
+    "leading": 8,
+    "cheapRefreshMinutes": 60.0,
+    "dailyRefreshHours": 24.0,
+    "dailyHeadroomHours": 4.0
   }
 }
